@@ -51,6 +51,10 @@ fi
 pacman-key --init
 pacman-key --populate archlinux
 pacman -Syu
+
+
+# install yaourt the hard way..
+echo -e "\nyaourt:"
 curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
 tar -xvzf package-query.tar.gz
 chown android -R /package-query
@@ -68,13 +72,14 @@ cd ..
 
 # install teamviewer
 echo -e "\nteamviewer:"
-su -c - android "yaourt -Syu --noconfirm teamviewer"
+su -c - android "yaourt -S --noconfirm teamviewer"
 
-# enable dm
-systemctl enable lightdm
+# install display manager
+echo -e "\nDM:"
+su -c - android "yaourt -S --noconfirm mdm-display-manager"
+systemctl enable mdm
 
 systemctl enable pacman-init.service choose-mirror.service
-#systemctl set-default multi-user.target
 systemctl set-default graphical.target
 
 # cleanup
