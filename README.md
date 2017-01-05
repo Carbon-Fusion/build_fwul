@@ -7,7 +7,6 @@ Official XDA thread http://tinyurl.com/FWULatXDA
 
 1. install **archiso**
 1. clone this repo into ~/archlive
-1. `cd ~/archlive`
 
 ## Usage / Build
 
@@ -15,8 +14,16 @@ Official XDA thread http://tinyurl.com/FWULatXDA
 
 This is the only supported architecture for FWUL because of JOdin
 
-`./build_x64.sh -v -N FWUL_arch_x86_64 -V BETA-XXXX_$(date +%F) -L FWUL`
+1. `cd ~/archlive`
+1. `./build_x64.sh -v -N FWUL_arch_x86_64 -V BETA-XXXX_$(date +%F) -L FWUL`
 
 ### Dual ISO's (32 bit + 64 bit)
 
-`./build.sh -v -N FWUL_arch -V BETA-XXXX_$(date +%F) -L FWUL`
+1. `cd ~/archlive`
+1. `./build.sh -v -N FWUL_arch -V BETA-XXXX_$(date +%F) -L FWUL`
+
+## Rebuild / Update ISO
+
+1. `cd ~/archlive`
+1. `rm -v work/build.make_*`
+1. proceed with "Usage / Build"
