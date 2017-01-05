@@ -222,13 +222,13 @@ make_iso() {
 
 # clean lock files
 F_CLEANLOCKS() {
-	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the base system intact):\n\n"
+	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the ISO base intact):\n\n"
 	rm -fv ./work/build.make_*
 	echo finished..
 }
 
 F_FULLCLEAN(){
-	echo -e "\n\nCLEANING UP NOW! THIS WILL DELETE ALL AND ENFORCE A FULL(!) ISO REBUILD:\n\n"
+	echo -e "\n\nCLEANING UP WHOLE ISO BUILD BASE! ENFORCES A FULL(!) ISO REBUILD:\n\n"
 	rm -Rf ./work
 	echo finished..
 }
