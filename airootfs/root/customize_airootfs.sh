@@ -39,8 +39,15 @@ cat > $TMPSUDOERS <<EOSUDOERS
 ALL     ALL=(ALL) NOPASSWD: ALL
 EOSUDOERS
 
-# install yaourt the hard way..
-echo -e "\nyaourt:"
+# init pacman + multilib
+egrep -q '^\[multilib' /etc/pacman.conf
+if [ $? -eq 1 ];then
+    cat >>/etc/pacman.conf<<EOPACMAN
+[multilib]
+SigLevel = PackageRequired
+Include = /etc/pacman.d/mirrorlist
+EOPACMAN
+fi
 pacman-key --init
 pacman-key --populate archlinux
 pacman -Syu
