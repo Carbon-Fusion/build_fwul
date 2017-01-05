@@ -88,5 +88,17 @@ systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 
 # cleanup
-rm -vf $TMPSUDOERS
+echo -e "\nCleanup - pacman:"
+#IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail systemd-sysvcompat vi xfsprogs"
+IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs"
+for igpkg in $IGNPKG;do
+    pacman --noconfirm -Rns $igpkg || echo $igpkg is not installed
+done
 
+echo -e "\nCleanup - pacman orphans:"
+PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
+echo -e "\nCleanup - yaourt orphans:"
+YERR=$(su -c - android "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
+
+# this has always to be the very last thing!
+rm -vf $TMPSUDOERS
