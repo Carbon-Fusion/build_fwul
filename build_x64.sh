@@ -19,8 +19,10 @@ _usage ()
     echo "usage ${0} [options]"
     echo
     echo " General options:"
-    echo "    -C                 Enforce clean first (will rebuild whole ISO)"
-    echo
+    echo "    -C                 Enforce a rebuild by cleaning lock files"
+    echo "                       (will keep ISO base)"
+    echo "    -F                 Enforce a FULL(!) clean (implies -C)"
+    echo "                       (will delete the whole ISO base)"
     echo "    -N <iso_name>      Set an iso filename (prefix)"
     echo "                        Default: ${iso_name}"
     echo "    -V <iso_version>   Set an iso version (in filename)"
@@ -219,9 +221,15 @@ make_iso() {
 }
 
 # clean lock files
-F_CLEANUP() {
-	echo -e "\n\nCLEANING UP NOW! THIS WILL ENFORCE AN ISO REBUILD:\n\n"
+F_CLEANLOCKS() {
+	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the base system intact):\n\n"
 	rm -fv ./work/build.make_*
+	echo finished..
+}
+
+F_FULLCLEAN(){
+	echo -e "\n\nCLEANING UP NOW! THIS WILL DELETE ALL AND ENFORCE A FULL(!) ISO REBUILD:\n\n"
+	rm -Rf ./work
 	echo finished..
 }
 
@@ -235,9 +243,10 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
-while getopts 'N:V:L:D:w:o:g:vhC' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCF' arg; do
     case "${arg}" in
-	C) F_CLEANUP ;;
+	C) F_CLEANLOCKS ;;
+	F) F_FULLCLEAN ;;
         N) iso_name="${OPTARG}" ;;
         V) iso_version="${OPTARG}" ;;
         L) iso_label="${OPTARG}" ;;
