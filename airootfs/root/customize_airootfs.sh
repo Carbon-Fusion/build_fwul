@@ -42,15 +42,15 @@ curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
 tar -xvzf package-query.tar.gz
 chown android -R /package-query
 cd package-query
-su -c - android "makepkg --noconfirm -s"
-pacman --noconfirm -U package-query*
+su -c - android "makepkg --noconfirm -sf"
+pacman --noconfirm -U package-query*.pkg.tar.xz
 cd ..
 curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
 tar -xvzf yaourt.tar.gz
 chown android -R yaourt
 cd yaourt
-su -c - android "makepkg --noconfirm -s"
-pacman --noconfirm -U yaourt*
+su -c - android "makepkg --noconfirm -sf"
+pacman --noconfirm -U yaourt*.pkg.tar.xz
 cd ..
 
 # install teamviewer
@@ -58,8 +58,8 @@ echo -e "\nteamviewer:"
 su -c - android "yaourt --noconfirm -G teamviewer"
 chown android -R /teamviewer
 cd teamviewer
-su -c - android "makepkg --noconfirm -s"
-pacman --noconfirm -U teamviewer*
+su -c - android "makepkg --noconfirm -sf"
+pacman --noconfirm -U teamviewer*.pkg.tar.xz
 cd ..
 
 # enable lxdm
