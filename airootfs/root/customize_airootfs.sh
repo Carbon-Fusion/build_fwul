@@ -55,7 +55,7 @@ else
 fi
 pacman-key --init
 pacman-key --populate archlinux
-pacman -Syu
+pacman -Syu --noconfirm
 
 
 # install yaourt the hard way..
