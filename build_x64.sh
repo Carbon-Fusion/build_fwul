@@ -19,6 +19,8 @@ _usage ()
     echo "usage ${0} [options]"
     echo
     echo " General options:"
+    echo "    -C                 Enforce clean first (will rebuild whole ISO)"
+    echo
     echo "    -N <iso_name>      Set an iso filename (prefix)"
     echo "                        Default: ${iso_name}"
     echo "    -V <iso_version>   Set an iso version (in filename)"
@@ -216,6 +218,13 @@ make_iso() {
     mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}-${iso_version}.iso"
 }
 
+# clean lock files
+F_CLEANUP() {
+	echo -e "\n\nCLEANING UP NOW! THIS WILL ENFORCE AN ISO REBUILD:\n\n"
+	rm -v ./work/build.make_*
+	return 0
+}
+
 if [[ ${EUID} -ne 0 ]]; then
     echo "This script must be run as root."
     _usage 1
@@ -226,8 +235,9 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
-while getopts 'N:V:L:D:w:o:g:vh' arg; do
+while getopts 'N:V:L:D:w:o:g:vhC' arg; do
     case "${arg}" in
+	C) F_CLEANUP ;;
         N) iso_name="${OPTARG}" ;;
         V) iso_version="${OPTARG}" ;;
         L) iso_label="${OPTARG}" ;;
