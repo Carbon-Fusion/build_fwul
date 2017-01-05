@@ -221,8 +221,8 @@ make_iso() {
 # clean lock files
 F_CLEANUP() {
 	echo -e "\n\nCLEANING UP NOW! THIS WILL ENFORCE AN ISO REBUILD:\n\n"
-	rm -v ./work/build.make_*
-	return 0
+	rm -fv ./work/build.make_*
+	echo finished..
 }
 
 if [[ ${EUID} -ne 0 ]]; then
