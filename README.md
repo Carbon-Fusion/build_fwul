@@ -25,4 +25,4 @@ This is the only supported architecture for FWUL because of JOdin
 ## Rebuild / Update ISO
 
 1. `cd ~/archlive`
-1. Add the option "-C" to the instruction in "Usage / Build"
+1. Add the option "-C"  or "-F" option to the instruction in "Usage / Build"
