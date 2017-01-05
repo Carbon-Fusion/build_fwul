@@ -27,7 +27,7 @@ LOGINPW=linux
 
 # add live user but ensure this happens when not there already
 echo -e "\nuser setup:"
-! id $LOGINUSR && useradd -m -p "" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /usr/bin/bash $LOGINUSR
+! id $LOGINUSR && useradd -m -p "" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /usr/bin/zsh $LOGINUSR
 id $LOGINUSR
 passwd $LOGINUSR <<EOSETPW
 $LOGINPW
@@ -63,8 +63,8 @@ cd ..
 echo -e "\nteamviewer:"
 su -c - android "yaourt -Syu --noconfirm teamviewer"
 
-# enable lxdm
-systemctl enable lxdm
+# enable dm
+systemctl enable lightdm
 
 systemctl enable pacman-init.service choose-mirror.service
 #systemctl set-default multi-user.target
