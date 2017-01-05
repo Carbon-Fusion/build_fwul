@@ -20,20 +20,26 @@ sed -i 's/#\(HandleSuspendKey=\)suspend/\1ignore/' /etc/systemd/logind.conf
 sed -i 's/#\(HandleHibernateKey=\)hibernate/\1ignore/' /etc/systemd/logind.conf
 sed -i 's/#\(HandleLidSwitch=\)suspend/\1ignore/' /etc/systemd/logind.conf
 
+# some vars
+TMPSUDOERS=/etc/sudoers.d/build
+LOGINUSR=android
+LOGINPW=linux
+
 # add live user but ensure this happens when not there already
 echo -e "\nuser setup:"
-! id android && useradd -m -p "linux" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /usr/bin/bash android
-id android
-passwd android <<EOSETPW
-linux
-linux
+! id $LOGINUSR && useradd -m -p "" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /usr/bin/bash $LOGINUSR
+id $LOGINUSR
+passwd $LOGINUSR <<EOSETPW
+$LOGINPW
+$LOGINPW
 EOSETPW
 
-cat >/etc/sudoers.d/build<<EOSUDOERS
+# temp perms for archiso
+cat > $TMPSUDOERS <<EOSUDOERS
 ALL     ALL=(ALL) NOPASSWD: ALL
 EOSUDOERS
 
-# install yaourt
+# install yaourt the hard way..
 echo -e "\nyaourt:"
 pacman-key --init
 pacman-key --populate archlinux
@@ -55,12 +61,7 @@ cd ..
 
 # install teamviewer
 echo -e "\nteamviewer:"
-su -c - android "yaourt --noconfirm -G teamviewer"
-chown android -R /teamviewer
-cd teamviewer
-su -c - android "makepkg --noconfirm -sf"
-pacman --noconfirm -U teamviewer*.pkg.tar.xz
-cd ..
+su -c - android "yaourt -Syu --noconfirm teamviewer"
 
 # enable lxdm
 systemctl enable lxdm
@@ -68,3 +69,7 @@ systemctl enable lxdm
 systemctl enable pacman-init.service choose-mirror.service
 #systemctl set-default multi-user.target
 systemctl set-default graphical.target
+
+# cleanup
+rm -vf $TMPSUDOERS
+
