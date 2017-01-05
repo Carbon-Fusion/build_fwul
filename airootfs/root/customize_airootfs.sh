@@ -40,13 +40,18 @@ ALL     ALL=(ALL) NOPASSWD: ALL
 EOSUDOERS
 
 # init pacman + multilib
-egrep -q '^\[multilib' /etc/pacman.conf
-if [ $? -eq 1 ];then
+# O M G ! This is so crappy bullshit! when build.sh see's 
+# the returncode 1 it just stops?!! so I use that funny workaround..
+RET=$(egrep -q '^\[multilib' /etc/pacman.conf||echo missing)
+if [ "$RET" == "missing" ];then
+    echo "adding multilib to conf"
     cat >>/etc/pacman.conf<<EOPACMAN
 [multilib]
 SigLevel = PackageRequired
 Include = /etc/pacman.d/mirrorlist
 EOPACMAN
+else
+    echo skipping multilib because it is configured already
 fi
 pacman-key --init
 pacman-key --populate archlinux
