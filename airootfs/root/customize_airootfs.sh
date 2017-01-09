@@ -3,7 +3,6 @@
 
 set -e -u
 
-sed -i 's/#\(en_US\.UTF-8\)/\1/' /etc/locale.gen
 locale-gen
 
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
@@ -35,6 +34,10 @@ $LOGINPW
 $LOGINPW
 EOSETPW
 
+# prepare user home
+cp -aT /etc/fwul/ /home/android/
+chmod 700 /home/android
+
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
 cat > $TMPSUDOERS <<EOSUDOERS
@@ -59,32 +62,64 @@ pacman-key --init
 pacman-key --populate archlinux
 pacman -Syu --noconfirm
 
-
 # install yaourt the hard way..
-echo -e "\nyaourt:"
-curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
-tar -xvzf package-query.tar.gz
-chown android -R /package-query
-cd package-query
-su -c - android "makepkg --noconfirm -sf"
-pacman --noconfirm -U package-query*.pkg.tar.xz
-cd ..
-curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
-tar -xvzf yaourt.tar.gz
-chown android -R yaourt
-cd yaourt
-su -c - android "makepkg --noconfirm -sf"
-pacman --noconfirm -U yaourt*.pkg.tar.xz
-cd ..
+pacman -Q package-query
+if [ $? -ne 0 ];then
+    echo -e "\nyaourt:"
+    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+    tar -xvzf package-query.tar.gz
+    chown android -R /package-query
+    cd package-query
+    su -c - android "makepkg --noconfirm -sf"
+    pacman --noconfirm -U package-query*.pkg.tar.xz
+    cd ..
+    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+    tar -xvzf yaourt.tar.gz
+    chown android -R yaourt
+    cd yaourt
+    su -c - android "makepkg --noconfirm -sf"
+    pacman --noconfirm -U yaourt*.pkg.tar.xz
+    cd ..
+fi
+
+# install Oracle JRE (because JOdin will not run with OpenJDK)
+yaourt -Q jre || su -c - android "yaourt -S --noconfirm jre"
+
+# install JOdin3
+if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
+    mkdir /home/$LOGINUSR/programs/JOdin
+    cat >/home/$LOGINUSR/programs/JOdin/starter.sh <<EOEXECOD
+#!/bin/bash
+JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
+EOEXECOD
+    wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get"
+    mv index*get JOdin.tgz && tar -xvzf JOdin.tgz* -C /home/android/programs/JOdin/ && rm -rf JOdin.tgz /home/android/programs/JOdin/runtime
+    cat >/home/android/Desktop/JOdin.desktop <<EOODIN
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=Odin for Linux
+Terminal=false
+Name=JOdin3
+Exec=/home/$LOGINUSR/programs/JOdin/starter.sh
+Icon=/home/$LOGINUSR/.fwul/odin-logo.jpg
+EOODIN
+fi
 
 # install teamviewer
 echo -e "\nteamviewer:"
-su -c - android "yaourt -S --noconfirm teamviewer"
-
+yaourt -Q teamviewer || su -c - android "yaourt -S --noconfirm teamviewer"
+ 
 # install display manager
 echo -e "\nDM:"
-su -c - android "yaourt -S --noconfirm mdm-display-manager"
+yaourt -Q mdm-display-manager || su -c - android "yaourt -S --noconfirm mdm-display-manager"
 systemctl enable mdm
+
+
+# DEBUGGING
+pacman -Q openssh || pacman -S --noconfirm openssh
+systemctl enable sshd
+
 
 # enable services
 systemctl enable pacman-init.service choose-mirror.service
@@ -92,11 +127,22 @@ systemctl set-default graphical.target
 systemctl enable systemd-networkd
 systemctl enable NetworkManager
 
+# theming stuff
+yaourt -Q windows10-icons || su -c - android "yaourt -S --noconfirm windows10-icons"
+yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
+
+# ensure proper perms
+chown -R android /home/android/
+
 # cleanup
+echo -e "\nCleanup - locale:"
+for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
+    grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
+done
 echo -e "\nCleanup - pacman:"
-IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+"
+IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+"
 for igpkg in $IGNPKG;do
-    pacman --noconfirm -Rns $igpkg || echo $igpkg is not installed
+    pacman -Q $igpkg && pacman --noconfirm -Rns $igpkg
 done
 
 echo -e "\nCleanup - pacman orphans:"
@@ -109,6 +155,9 @@ rm -rvf /usr/share/man/*
 
 echo -e "\nCleanup - docs:"
 rm -rvf /usr/share/doc/*
+
+echo -e "\nCleanup - misc:"
+rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/
 
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
