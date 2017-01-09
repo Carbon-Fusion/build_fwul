@@ -29,7 +29,7 @@ RPW=$LOGINPW
 
 # add live user but ensure this happens when not there already
 echo -e "\nuser setup:"
-! id $LOGINUSR && useradd -m -p "" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /usr/bin/zsh $LOGINUSR
+! id $LOGINUSR && useradd -m -p "" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /bin/bash $LOGINUSR
 id $LOGINUSR
 passwd $LOGINUSR <<EOSETPW
 $LOGINPW
