@@ -63,8 +63,8 @@ pacman-key --populate archlinux
 pacman -Syu --noconfirm
 
 # install yaourt the hard way..
-pacman -Q package-query
-if [ $? -ne 0 ];then
+pacman -Q package-query || RET=$?
+if [ $RET -ne 0 ];then
     echo -e "\nyaourt:"
     curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
     tar -xvzf package-query.tar.gz
