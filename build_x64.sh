@@ -9,6 +9,7 @@ install_dir=arch
 work_dir=work
 out_dir=out
 gpg_key=
+PUBLISHER="Carbon-Fusion <https://github.com/Carbon-Fusion>"
 
 arch=$(uname -m)
 verbose=""
@@ -217,7 +218,7 @@ make_prepare() {
 
 # Build ISO
 make_iso() {
-    mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}-${iso_version}.iso"
+    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}-${iso_version}.iso"
 }
 
 # clean lock files
