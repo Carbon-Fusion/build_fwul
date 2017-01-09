@@ -94,7 +94,7 @@ systemctl enable NetworkManager
 
 # cleanup
 echo -e "\nCleanup - pacman:"
-IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ fakeroot"
+IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+"
 for igpkg in $IGNPKG;do
     pacman --noconfirm -Rns $igpkg || echo $igpkg is not installed
 done
