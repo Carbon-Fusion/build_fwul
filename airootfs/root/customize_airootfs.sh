@@ -43,6 +43,7 @@ $RPW
 EOSETPWROOT
 
 # temp perms for archiso
+[ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
 cat > $TMPSUDOERS <<EOSUDOERS
 ALL     ALL=(ALL) NOPASSWD: ALL
 EOSUDOERS
@@ -110,5 +111,15 @@ PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
 echo -e "\nCleanup - yaourt orphans:"
 YERR=$(su -c - android "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
 
+echo -e "\nCleanup - manpages:"
+rm -rf /usr/share/man/*
+
+# persistent perms for fwul
+cat > $RSUDOERS <<EOSUDOERS
+%wheel     ALL=(ALL) ALL
+EOSUDOERS
+
+
+#########################################################################################
 # this has always to be the very last thing!
 rm -vf $TMPSUDOERS
