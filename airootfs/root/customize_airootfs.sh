@@ -92,8 +92,10 @@ echo -e "\nDM:"
 su -c - android "yaourt -S --noconfirm mdm-display-manager"
 systemctl enable mdm
 
+# enable services
 systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
+systemctl enable systemd-networkd
 
 # cleanup
 echo -e "\nCleanup - pacman:"
