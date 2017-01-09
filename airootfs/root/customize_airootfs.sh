@@ -22,8 +22,10 @@ sed -i 's/#\(HandleLidSwitch=\)suspend/\1ignore/' /etc/systemd/logind.conf
 
 # some vars
 TMPSUDOERS=/etc/sudoers.d/build
+RSUDOERS=/etc/sudoers.d/fwul
 LOGINUSR=android
 LOGINPW=linux
+RPW=$LOGINPW
 
 # add live user but ensure this happens when not there already
 echo -e "\nuser setup:"
@@ -33,6 +35,12 @@ passwd $LOGINUSR <<EOSETPW
 $LOGINPW
 $LOGINPW
 EOSETPW
+
+# root pw
+passwd root <<EOSETPWROOT
+$RPW
+$RPW
+EOSETPWROOT
 
 # temp perms for archiso
 cat > $TMPSUDOERS <<EOSUDOERS
