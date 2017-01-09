@@ -115,7 +115,11 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
 EOSUDOERS
 
-
+# set root password
+passwd root <<EOSETPWROOTPW
+$RPW
+$RPW
+EOSETPWROOTPW
 #########################################################################################
 # this has always to be the very last thing!
 rm -vf $TMPSUDOERS
