@@ -94,7 +94,7 @@ systemctl enable NetworkManager
 
 # cleanup
 echo -e "\nCleanup - pacman:"
-IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+"
+IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ fakeroot"
 for igpkg in $IGNPKG;do
     pacman --noconfirm -Rns $igpkg || echo $igpkg is not installed
 done
@@ -105,7 +105,10 @@ echo -e "\nCleanup - yaourt orphans:"
 YERR=$(su -c - android "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
 
 echo -e "\nCleanup - manpages:"
-rm -rf /usr/share/man/*
+rm -rvf /usr/share/man/*
+
+echo -e "\nCleanup - docs:"
+rm -rvf /usr/share/doc/*
 
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
