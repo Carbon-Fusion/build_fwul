@@ -228,6 +228,7 @@ F_CLEANLOCKS() {
 
 F_FULLCLEAN(){
 	echo -e "\n\nCLEANING UP WHOLE ISO BUILD BASE! ENFORCES A FULL(!) ISO REBUILD:\n\n"
+        read -p "are you sure????? (CTRL+C to abort)" DUMMY
 	rm -Rf ./work
 	echo finished..
 }
