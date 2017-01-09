@@ -12,7 +12,6 @@ usermod -s /usr/bin/zsh root
 cp -aT /etc/skel/ /root/
 chmod 700 /root
 
-sed -i 's/#\(PermitRootLogin \).\+/\1yes/' /etc/ssh/sshd_config
 sed -i "s/#Server/Server/g" /etc/pacman.d/mirrorlist
 sed -i 's/#\(Storage=\)auto/\1volatile/' /etc/systemd/journald.conf
 
@@ -35,12 +34,6 @@ passwd $LOGINUSR <<EOSETPW
 $LOGINPW
 $LOGINPW
 EOSETPW
-
-# root pw
-passwd root <<EOSETPWROOT
-$RPW
-$RPW
-EOSETPWROOT
 
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
@@ -100,8 +93,7 @@ systemctl enable systemd-networkd
 
 # cleanup
 echo -e "\nCleanup - pacman:"
-#IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail systemd-sysvcompat vi xfsprogs"
-IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs"
+IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pciutils pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+"
 for igpkg in $IGNPKG;do
     pacman --noconfirm -Rns $igpkg || echo $igpkg is not installed
 done
