@@ -90,6 +90,7 @@ systemctl enable mdm
 systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 systemctl enable systemd-networkd
+systemctl enable NetworkManager
 
 # cleanup
 echo -e "\nCleanup - pacman:"
