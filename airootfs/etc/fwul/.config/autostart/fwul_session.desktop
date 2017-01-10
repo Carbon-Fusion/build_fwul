@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=FWUL-Session
+Comment=FWUL settings
+Exec=/home/android/.fwul/session.sh
+OnlyShowIn=XFCE;
+StartupNotify=true
+Terminal=false
+Hidden=false
+
