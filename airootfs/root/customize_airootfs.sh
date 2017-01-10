@@ -92,9 +92,10 @@ if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
 #!/bin/bash
 JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
+    chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
     wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get"
     mv index*get JOdin.tgz && tar -xvzf JOdin.tgz* -C /home/android/programs/JOdin/ && rm -rf JOdin.tgz /home/android/programs/JOdin/runtime
-    cat >/home/android/Desktop/JOdin.desktop <<EOODIN
+    cat >/home/$LOGINUSR/Desktop/JOdin.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -104,7 +105,12 @@ Name=JOdin3
 Exec=/home/$LOGINUSR/programs/JOdin/starter.sh
 Icon=/home/$LOGINUSR/.fwul/odin-logo.jpg
 EOODIN
+chmod +x /home/$LOGINUSR/Desktop/JOdin.desktop
 fi
+
+# install yad
+echo -e "\nyad:"
+yaourt -Q yad || su -c - android "yaourt -S --noconfirm yad"
 
 # install teamviewer
 echo -e "\nteamviewer:"
