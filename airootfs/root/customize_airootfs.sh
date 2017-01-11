@@ -113,9 +113,20 @@ echo -e "\nyad:"
 yaourt -Q yad || su -c - android "yaourt -S --noconfirm yad"
 
 # install teamviewer
-echo -e "\nteamviewer:"
-yaourt -Q teamviewer || su -c - android "yaourt -S --noconfirm teamviewer"
- 
+#echo -e "\nteamviewer:"
+#yaourt -Q teamviewer || su -c - android "yaourt -S --noconfirm teamviewer"
+cat >/home/$LOGINUSR/Desktop/install-TV.desktop <<EOODIN
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=Teamviewer installer
+Terminal=false
+Name=TeamViewer Installer
+Exec=/home/$LOGINUSR/.fwul/install_package.sh yaourt teamviewer
+Icon=preferences-desktop-default-applications
+EOODIN
+chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
+
 # install display manager
 echo -e "\nDM:"
 yaourt -Q mdm-display-manager || su -c - android "yaourt -S --noconfirm mdm-display-manager"
