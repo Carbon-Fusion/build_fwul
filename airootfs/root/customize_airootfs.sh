@@ -179,6 +179,7 @@ rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
+%wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount,size=* /run/archiso/cowspace
 EOSUDOERS
 
 # set root password
