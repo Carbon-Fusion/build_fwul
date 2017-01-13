@@ -157,9 +157,9 @@ for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+"
+IGNPKG="cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo"
 for igpkg in $IGNPKG;do
-    pacman -Q $igpkg && pacman --noconfirm -Rns $igpkg
+    pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
 
 echo -e "\nCleanup - pacman orphans:"
@@ -179,7 +179,7 @@ rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
-%wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount,size=* /run/archiso/cowspace
+%wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
 EOSUDOERS
 
 # set root password
