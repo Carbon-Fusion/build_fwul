@@ -132,6 +132,8 @@ echo -e "\nDM:"
 yaourt -Q mdm-display-manager || su -c - android "yaourt -S --noconfirm mdm-display-manager"
 systemctl enable mdm
 
+# configure display manager
+cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
 
 # DEBUGGING
 pacman -Q openssh || pacman -S --noconfirm openssh
@@ -146,7 +148,8 @@ systemctl enable NetworkManager
 
 # theming stuff
 yaourt -Q windows10-icons || su -c - android "yaourt -S --noconfirm windows10-icons"
-yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
+#yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
+yaourt -Q || su -c - android "yaourt -S --noconfirm mdmodern-mdm-theme-git"
 
 # ensure proper perms
 chown -R android /home/android/
