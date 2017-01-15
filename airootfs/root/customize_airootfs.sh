@@ -147,9 +147,11 @@ systemctl enable systemd-networkd
 systemctl enable NetworkManager
 
 # theming stuff
+echo -e "\nThemes"
+tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
 yaourt -Q windows10-icons || su -c - android "yaourt -S --noconfirm windows10-icons"
 #yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
-yaourt -Q || su -c - android "yaourt -S --noconfirm mdmodern-mdm-theme-git"
+#yaourt -Q mdmodern-mdm-theme-git || su -c - android "yaourt -S --noconfirm mdmodern-mdm-theme-git"
 
 # ensure proper perms
 chown -R android /home/android/
