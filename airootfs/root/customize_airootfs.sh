@@ -63,6 +63,7 @@ pacman-key --populate archlinux
 pacman -Syu --noconfirm
 
 # install yaourt the hard way..
+RET=0
 pacman -Q package-query || RET=$?
 if [ $RET -ne 0 ];then
     echo -e "\nyaourt:"
@@ -146,12 +147,19 @@ systemctl set-default graphical.target
 systemctl enable systemd-networkd
 systemctl enable NetworkManager
 
-# theming stuff
+# prepare theming stuff
 echo -e "\nThemes"
 tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
 yaourt -Q windows10-icons || su -c - android "yaourt -S --noconfirm windows10-icons"
-#yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
-#yaourt -Q mdmodern-mdm-theme-git || su -c - android "yaourt -S --noconfirm mdmodern-mdm-theme-git"
+yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
+
+# activate wallpaper, icons & theme
+[ -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ] || su -c - android "dbus-launch xfconf-query --create -t string -c xfce4-desktop -s /home/android/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml ];then
+    su -c - android "dbus-launch xfconf-query --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
+    su -c - android "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
+    su -c - android "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
+fi
 
 # ensure proper perms
 chown -R android /home/android/
