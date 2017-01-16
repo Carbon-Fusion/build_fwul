@@ -10,7 +10,7 @@ YBIN=/usr/bin/yad
 PMAN="$1"       # installer (e.g pacman or yaourt)
 PKG="$2"        # package name to install
 
-YAD="$YBIN --center --top --title FWUL-Installer"
+YAD="$YBIN --center --top --title FWUL-Installer --window-icon=preferences-desktop-default-applications"
 
 [ -z "$PMAN" ]&& echo "missing package manager variable! ABORT" && read -p "PRESS ANY KEY TO QUIT" DUMMY && exit
 [ -z "$PKG" ]&& echo "missing package name to install! ABORT" && read -p "PRESS ANY KEY TO QUIT" DUMMY && exit
