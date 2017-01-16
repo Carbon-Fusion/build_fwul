@@ -149,17 +149,22 @@ systemctl enable NetworkManager
 
 # prepare theming stuff
 echo -e "\nThemes:"
-tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
+[ -d /usr/share/mdm/themes/Arc-Wise/ ] || tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
 yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
 # activate wallpaper, icons & theme
 echo -e "\nActivate theme etc:"
-[ -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ] || su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ];then
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+    # stretch wallpaper
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v -c xfce4-desktop -s 3 -p /backdrop/screen0/monitor0/workspace0/image-style"
+fi
 if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml ];then
+    # the first line has to use --create the rest not otherwise they get overwritten
     su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v -c xsettings -p /Net/ThemeName -s Windows10Dark"
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
 fi
 
 # ensure proper perms
