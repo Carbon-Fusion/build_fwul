@@ -123,7 +123,7 @@ Type=Application
 Comment=Teamviewer installer
 Terminal=false
 Name=TeamViewer Installer
-Exec=/home/$LOGINUSR/.fwul/install_package.sh yaourt teamviewer
+Exec=/home/$LOGINUSR/.fwul/install_tv.sh
 Icon=preferences-desktop-default-applications
 EOODIN
 chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
@@ -247,8 +247,13 @@ rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
+
+# let the user sync the databases without asking for pw
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -Sy
+
+# special rules for special packages
+%wheel     ALL=(ALL) NOPASSWD: /bin/systemctl enable teamviewerd
 EOSUDOERS
 
 # set root password
