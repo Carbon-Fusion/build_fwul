@@ -2,4 +2,5 @@
 
 .fwul/install_package.sh yaourt teamviewer
 
-sudo systemctl enable teamviewerd
+sudo systemctl start teamviewerd
+cp /usr/share/applications/com.teamviewer.TeamViewer.desktop ~/Desktop/
