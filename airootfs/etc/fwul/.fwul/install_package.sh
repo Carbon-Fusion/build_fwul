@@ -27,19 +27,19 @@ $YAD --width 300 --height 100 --form --text "\nThis will start the installation 
 
 # do the magic
 if [ $? -eq 0 ];then
-    [ -f "/tmp/install-$PKG-failed" ]&&rm -f /tmp/install-$PKG-failed
+    [ -f "/tmp/install-$PKG-success" ]&&rm -f /tmp/install-$PKG-failed
     PREPRG="/tmp/progress.tmp"
     # start a progress bar to give some user feedback
     tail -f $PREPRG | $YAD --width=300 --progress --percentage=10 --auto-close &
     # install the package
-    xterm -e "$PMANEXEC --noconfirm -Sy"
-    xterm -e "$PMANEXEC -S --noconfirm $PKG||>/tmp/install-$PKG-failed"
+    xterm -e "sudo $YBIN --noconfirm -Sy"
+    xterm -e "$PMANEXEC -S --noconfirm $PKG && >/tmp/install-$PKG-success"
     echo 100 > $PREPRG
     # check if it was a success or not
-    if [ -f "/tmp/install-$PKG-failed" ];then
-        $YAD --width 300 --height 100 --form --text "\n\tERROR occured while installing $PKG."
-    else
+    if [ -f "/tmp/install-$PKG-success" ];then
         $YAD --width 300 --height 100 --form --text "\n\t$PKG installed successfully."
+    else
+        $YAD --width 300 --height 100 --form --text "\n\tERROR occured while installing $PKG."
     fi
 fi
 
