@@ -32,7 +32,7 @@ if [ $? -eq 0 ];then
     # start a progress bar to give some user feedback
     tail -f $PREPRG | $YAD --width=300 --progress --percentage=10 --auto-close &
     # install the package
-    xterm -e "sudo $YBIN --noconfirm -Sy"
+    xterm -e "sudo $PMAN --noconfirm -Sy"
     xterm -e "$PMANEXEC -S --noconfirm $PKG && >/tmp/install-$PKG-success"
     echo 100 > $PREPRG
     # check if it was a success or not
