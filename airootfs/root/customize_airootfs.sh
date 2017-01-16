@@ -199,6 +199,8 @@ rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -Sy
 EOSUDOERS
 
 # set root password

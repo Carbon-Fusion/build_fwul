@@ -32,7 +32,8 @@ if [ $? -eq 0 ];then
     # start a progress bar to give some user feedback
     tail -f $PREPRG | $YAD --width=300 --progress --percentage=10 --auto-close &
     # install the package
-    xterm -e "$PMANEXEC -Sy --noconfirm $PKG||>/tmp/install-$PKG-failed"
+    xterm -e "$PMANEXEC --noconfirm -Sy"
+    xterm -e "$PMANEXEC -S --noconfirm $PKG||>/tmp/install-$PKG-failed"
     echo 100 > $PREPRG
     # check if it was a success or not
     if [ -f "/tmp/install-$PKG-failed" ];then
