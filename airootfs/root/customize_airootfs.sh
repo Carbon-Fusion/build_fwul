@@ -153,19 +153,67 @@ echo -e "\nThemes:"
 yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
+# Create a MD5 for a given file or set to 0 if file is missing
+F_DOMD5(){
+    MFILE="$1"
+    [ -z "$MFILE" ]&& echo "MISSING ARG FOR $FUNCNAME!" && exit 3
+    if [ -f "$MFILE" ];then
+        md5sum $MFILE | cut -d " " -f 1
+    else
+        echo 0
+    fi
+}
+
+# wait until a file gets written or modified
+F_FILEWAIT(){
+    MD5C=$1
+    FILE="$2"
+
+    [ -z "$FILE" -o -z "$MD5C" ] && echo "MISSING ARG FOR $FUNCNAME!" && exit 3
+    while true; do
+        MD5NOW=$(F_DOMD5 "$FILE")
+        if [ "$MD5C" != "$MD5NOW" ];then
+            break
+        else
+            echo -e "\t.. waiting that the changes gets written for $FILE.."
+            sleep 1s
+        fi
+    done
+}
+
 # activate wallpaper, icons & theme
 echo -e "\nActivate theme etc:"
-if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ];then
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+FWULDESKTOP="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+FWULXFWM4="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+FWULXSETS="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+
+if [ ! -f "$FWULDESKTOP" ];then
+    echo -e "\t... setting desktop wallpaper"
+    MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
+    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+    F_FILEWAIT $MD5BEF "$FWULDESKTOP"
     # stretch wallpaper
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v -c xfce4-desktop -s 3 -p /backdrop/screen0/monitor0/workspace0/image-style"
+    MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
+    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t int -c xfce4-desktop -s 3 -p /backdrop/screen0/monitor0/workspace0/image-style"
+    F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 fi
-if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml ];then
-    # the first line has to use --create the rest not otherwise they get overwritten
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v -c xsettings -p /Net/ThemeName -s Windows10Dark"
-    su -c - $LOGINUSR "dbus-launch xfconf-query -v -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
+if [ ! -f "$FWULXFWM4" ];then
+    echo -e "\t... setting themes and icons"
+    MD5BEF=$(F_DOMD5 "$FWULXFWM4")
+    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
+    F_FILEWAIT $MD5BEF "$FWULXFWM4"
 fi
+if [ ! -f "$FWULXSETS" ];then
+    echo -e "\t... setting themes and icons"
+    MD5BEF=$(F_DOMD5 "$FWULXSETS")
+    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
+    F_FILEWAIT $MD5BEF "$FWULXSETS"
+    MD5BEF=$(F_DOMD5 "$FWULXSETS")
+    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
+    F_FILEWAIT $MD5BEF "$FWULXSETS"
+fi
+
+#su -c - $LOGINUSR "sleep 5s"
 
 # ensure proper perms
 chown -R $LOGINUSR /home/$LOGINUSR/
