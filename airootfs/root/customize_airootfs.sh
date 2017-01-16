@@ -156,7 +156,7 @@ yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm g
 # activate wallpaper, icons & theme
 echo -e "\nActivate theme etc:"
 [ -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ] || su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
-if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml ];then
+if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml ];then
     su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
     su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
     su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
