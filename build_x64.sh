@@ -19,11 +19,21 @@ _usage ()
 {
     echo "usage ${0} [options]"
     echo
-    echo " General options:"
+    echo "Cleaning options:"
+    echo 
     echo "    -C                 Enforce a rebuild by cleaning lock files"
     echo "                       (will keep ISO base)"
     echo "    -F                 Enforce a FULL(!) clean (implies -C)"
     echo "                       (will delete the whole ISO base)"
+    echo "    -c                 Enforce a re-run of customize script ONLY"
+    echo "                       (this is just useful for debugging purposes"
+    echo "                       of airootfs/root/customize_airootfs.sh"
+    echo "                       because it will NOT re-create the ISO)"
+    echo 
+    echo "******************************************************************"
+    echo 
+    echo " General options:"
+    echo 
     echo "    -N <iso_name>      Set an iso filename (prefix)"
     echo "                        Default: ${iso_name}"
     echo "    -V <iso_version>   Set an iso version (in filename)"
@@ -233,6 +243,12 @@ F_FULLCLEAN(){
 	echo finished..
 }
 
+F_CUSTCLEAN(){
+    echo -e "\nEnforcing re-run of customize script. This will NOT re-create the ISO!\n\n"
+    rm -vf ./work/build.make_customize_airootfs*
+    echo finished..
+}
+
 if [[ ${EUID} -ne 0 ]]; then
     echo "This script must be run as root."
     _usage 1
@@ -243,10 +259,11 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
-while getopts 'N:V:L:D:w:o:g:vhCF' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCFc' arg; do
     case "${arg}" in
 	C) F_CLEANLOCKS ;;
 	F) F_FULLCLEAN ;;
+        c) F_CUSTCLEAN ;;
         N) iso_name="${OPTARG}" ;;
         V) iso_version="${OPTARG}" ;;
         L) iso_label="${OPTARG}" ;;
