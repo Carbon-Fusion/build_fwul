@@ -35,8 +35,8 @@ $LOGINPW
 EOSETPW
 
 # prepare user home
-cp -aT /etc/fwul/ /home/android/
-chmod 700 /home/android
+cp -aT /etc/fwul/ /home/$LOGINUSR/
+chmod 700 /home/$LOGINUSR
 
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
@@ -69,22 +69,22 @@ if [ $RET -ne 0 ];then
     echo -e "\nyaourt:"
     curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
     tar -xvzf package-query.tar.gz
-    chown android -R /package-query
+    chown $LOGINUSR -R /package-query
     cd package-query
-    su -c - android "makepkg --noconfirm -sf"
+    su -c - $LOGINUSR "makepkg --noconfirm -sf"
     pacman --noconfirm -U package-query*.pkg.tar.xz
     cd ..
     curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
     tar -xvzf yaourt.tar.gz
-    chown android -R yaourt
+    chown $LOGINUSR -R yaourt
     cd yaourt
-    su -c - android "makepkg --noconfirm -sf"
+    su -c - $LOGINUSR "makepkg --noconfirm -sf"
     pacman --noconfirm -U yaourt*.pkg.tar.xz
     cd ..
 fi
 
 # install Oracle JRE (because JOdin will not run with OpenJDK)
-yaourt -Q jre || su -c - android "yaourt -S --noconfirm jre"
+yaourt -Q jre || su -c - $LOGINUSR "yaourt -S --noconfirm jre"
 
 # install JOdin3
 if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
@@ -95,7 +95,7 @@ JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
     chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
     wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get"
-    mv index*get JOdin.tgz && tar -xvzf JOdin.tgz* -C /home/android/programs/JOdin/ && rm -rf JOdin.tgz /home/android/programs/JOdin/runtime
+    mv index*get JOdin.tgz && tar -xvzf JOdin.tgz* -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
     cat >/home/$LOGINUSR/Desktop/JOdin.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
@@ -111,11 +111,11 @@ fi
 
 # install yad
 echo -e "\nyad:"
-yaourt -Q yad || su -c - android "yaourt -S --noconfirm yad"
+yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
 # install teamviewer
 #echo -e "\nteamviewer:"
-#yaourt -Q teamviewer || su -c - android "yaourt -S --noconfirm teamviewer"
+#yaourt -Q teamviewer || su -c - $LOGINUSR "yaourt -S --noconfirm teamviewer"
 cat >/home/$LOGINUSR/Desktop/install-TV.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
@@ -130,7 +130,7 @@ chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
 
 # install display manager
 echo -e "\nDM:"
-yaourt -Q mdm-display-manager || su -c - android "yaourt -S --noconfirm mdm-display-manager"
+yaourt -Q mdm-display-manager || su -c - $LOGINUSR "yaourt -S --noconfirm mdm-display-manager"
 systemctl enable mdm
 
 # configure display manager
@@ -141,28 +141,29 @@ pacman -Q openssh || pacman -S --noconfirm openssh
 systemctl enable sshd
 
 
-# enable services
+# denable services
 systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 systemctl enable systemd-networkd
 systemctl enable NetworkManager
 
 # prepare theming stuff
-echo -e "\nThemes"
+echo -e "\nThemes:"
 tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
-yaourt -Q windows10-icons || su -c - android "yaourt -S --noconfirm windows10-icons"
-yaourt -Q gtk-theme-windows10-dark || su -c - android "yaourt -S --noconfirm gtk-theme-windows10-dark"
+yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
+yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
 # activate wallpaper, icons & theme
-[ -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ] || su -c - android "dbus-launch xfconf-query --create -t string -c xfce4-desktop -s /home/android/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+echo -e "\nActivate theme etc:"
+[ -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml ] || su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
 if [ ! -f /home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml ];then
-    su -c - android "dbus-launch xfconf-query --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
-    su -c - android "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
-    su -c - android "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
+    su -c - $LOGINUSR "dbus-launch xfconf-query -v --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
 fi
 
 # ensure proper perms
-chown -R android /home/android/
+chown -R $LOGINUSR /home/$LOGINUSR/
 
 # cleanup
 echo -e "\nCleanup - locale:"
@@ -178,7 +179,7 @@ done
 echo -e "\nCleanup - pacman orphans:"
 PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
 echo -e "\nCleanup - yaourt orphans:"
-YERR=$(su -c - android "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
+YERR=$(su -c - $LOGINUSR "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
 
 echo -e "\nCleanup - manpages:"
 rm -rvf /usr/share/man/*
