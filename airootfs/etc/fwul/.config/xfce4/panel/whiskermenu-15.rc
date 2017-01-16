@@ -1,7 +1,7 @@
 favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,exo-web-browser.desktop
-recent=Thunar.desktop
+recent=exo-web-browser.desktop,Thunar.desktop
 button-title=Anwendungen
-button-icon=distributor-logo
+button-icon=/home/android/.fwul/arch_logo.jpg
 button-single-row=false
 show-button-title=false
 show-button-icon=true
@@ -10,7 +10,7 @@ launcher-show-description=true
 launcher-show-tooltip=true
 item-icon-size=3
 hover-switch-category=false
-category-icon-size=1
+category-icon-size=3
 load-hierarchy=false
 recent-items-max=10
 favorites-in-recent=true
@@ -64,5 +64,4 @@ name=Adresse öffnen
 pattern=^(file|http|https):\\/\\/(.*)$
 command=exo-open \\0
 regex=true
-
 
