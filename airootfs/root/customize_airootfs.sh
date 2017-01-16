@@ -241,7 +241,7 @@ echo -e "\nCleanup - docs:"
 rm -rvf /usr/share/doc/*
 
 echo -e "\nCleanup - misc:"
-rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/
+rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/ /home/$LOGINUSR/.fwul/tmp/*
 
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
@@ -252,8 +252,10 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -Sy
 
-# special rules for special packages
+# special rules for TeamViewer
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl enable teamviewerd
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/teamviewer*.pkg.tar.xz
 EOSUDOERS
 
 # set root password
