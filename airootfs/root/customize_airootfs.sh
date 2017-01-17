@@ -140,10 +140,29 @@ cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
 pacman -Q openssh || pacman -S --noconfirm openssh
 systemctl enable sshd
 
-# add desktop icons
+# add Heimdall
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/
 
-# make the desktop files usable
+# add simple ADB 
+# (https://forum.xda-developers.com/android/software/revive-simple-adb-tool-t3417155, https://github.com/mhashim6/Simple-ADB)
+cat >/home/$LOGINUSR/Desktop/ADB.desktop <<EOSADB
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=adb and fastboot GUI
+Terminal=false
+Name=Simple-ADB
+Exec=/home/$LOGINUSR/programs/sadb/starter.sh
+Icon=/home/$LOGINUSR/programs/sadb/sadb.jpg
+EOSADB
+
+cat >/home/$LOGINUSR/programs/sadb/starter.sh <<EOEXECADB
+#!/bin/bash
+java -jar /home/$LOGINUSR/programs/sadb/S-ADB.jar
+EOEXECADB
+chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
+
+# make all desktop files usable
 chmod +x /home/$LOGINUSR/Desktop/*.desktop
 chown -R $LOGINUSR /home/$LOGINUSR/Desktop/
 
