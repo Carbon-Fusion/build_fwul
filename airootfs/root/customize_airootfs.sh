@@ -288,6 +288,48 @@ passwd root <<EOSETPWROOTPW
 $RPW
 $RPW
 EOSETPWROOTPW
+
+########################################################################################
+# TEST AREA - TEST AREA - TEST AREA 
+
+echo -e "\nTESTING FWUL BUILD!"
+REQFILES="/home/$LOGINUSR/.fwul/wallpaper_fwul.png 
+$FWULDESKTOP
+$FWULXFWM4
+$FWULXSETS
+$RSUDOERS
+/usr/share/mdm/themes/Arc-Wise/MdmGreeterTheme.desktop
+/home/$LOGINUSR/Desktop/ADB.desktop
+/home/$LOGINUSR/programs/sadb/starter.sh
+/home/$LOGINUSR/programs/sadb/S-ADB.jar
+/home/$LOGINUSR/Desktop/heimdall.desktop
+/home/$LOGINUSR/Desktop/install-TV.desktop
+/usr/bin/adb
+/usr/bin/fastboot
+/usr/bin/yaourt
+/home/$LOGINUSR/Desktop/JOdin.desktop
+/home/$LOGINUSR/.fwul/odin-logo.jpg
+/home/$LOGINUSR/programs/JOdin/starter.sh
+/home/$LOGINUSR/programs/JOdin/JOdin3CASUAL"
+
+for req in $(echo -e "$REQFILES"|tr "\n" " ");do
+    if [ -f $req ];then 
+        echo -e "\t... testing: $req --> OK"
+    else
+        echo -e "\t******************************************************************************"
+        echo -e "\t... testing: $req --> FAILED!!"
+        echo -e "\t******************************************************************************"
+        exit 3
+    fi
+done
+# TEST AREA - END
+########################################################################################
+
+# list the biggest packages installed
+pacman --noconfirm -S expac
+expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 30
+pacman --noconfirm -Rns expac
+
 #########################################################################################
 # this has always to be the very last thing!
 rm -vf $TMPSUDOERS
