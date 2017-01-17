@@ -28,4 +28,6 @@ android-tools
 p7zip
 firefox-i18n-en-us
 leafpad
-libmtp
+mtpfs
+gvfs-mtp
+gvfs-gphoto2
