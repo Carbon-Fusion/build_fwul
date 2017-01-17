@@ -21,12 +21,11 @@ network-manager-applet
 nm-connection-editor
 dnsmasq
 dconf-editor
-firefox
+midori
 hexchat
 heimdall
 android-tools
 p7zip
-firefox-i18n-en-us
 leafpad
 mtpfs
 gvfs-mtp
