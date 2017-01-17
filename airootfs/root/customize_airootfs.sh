@@ -140,8 +140,14 @@ cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
 pacman -Q openssh || pacman -S --noconfirm openssh
 systemctl enable sshd
 
+# add desktop icons
+cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/
 
-# denable services
+# make the desktop files usable
+chmod +x /home/$LOGINUSR/Desktop/*.desktop
+chown -R $LOGINUSR /home/$LOGINUSR/Desktop/
+
+# enable services
 systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 systemctl enable systemd-networkd
