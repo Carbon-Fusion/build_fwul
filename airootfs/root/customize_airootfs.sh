@@ -281,6 +281,9 @@ rm -rvf /usr/share/doc/* /usr/share/gtk-doc/html/*
 echo -e "\nCleanup - misc:"
 rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/ /home/$LOGINUSR/.fwul/tmp/*
 
+echo -e "\nCleanup - archiso:"
+rm -rvf /etc/fwul
+
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
