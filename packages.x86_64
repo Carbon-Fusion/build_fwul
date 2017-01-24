@@ -16,6 +16,7 @@ xfce4-whiskermenu-plugin
 xorg-xkbcomp
 xterm
 xfconf
+gnome-keyring
 networkmanager
 network-manager-applet
 nm-connection-editor
