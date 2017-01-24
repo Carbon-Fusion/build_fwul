@@ -109,6 +109,19 @@ EOODIN
 chmod +x /home/$LOGINUSR/Desktop/JOdin.desktop
 fi
 
+# activate sony flashtools
+cat >/home/$LOGINUSR/Desktop/SonyFlash.desktop <<EOsflash
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=Sony Flashtools
+Terminal=false
+Name=Sony Flashtool
+Exec=/home/$LOGINUSR/programs/Sony_Flashtool/Flashtool
+Icon=/home/$LOGINUSR/.fwul/flashtool-icon.png
+EOsflash
+chmod +x /home/$LOGINUSR/Desktop/SonyFlash.desktop
+
 # install yad
 echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
@@ -311,6 +324,8 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/odin-logo.jpg
 /home/$LOGINUSR/programs/JOdin/starter.sh
 /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
+/home/$LOGINUSR/programs/Sony_Flashtool/Flashtool
+/home/$LOGINUSR/Desktop/SonyFlash.desktop
 /usr/lib/jvm/java-8-jre/jre/bin/java"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
