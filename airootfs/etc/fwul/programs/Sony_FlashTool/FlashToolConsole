@@ -154,7 +154,7 @@ then
 
     if test "${system64}" = "x86_64"
     then
-        export JAVA_HOME=./x10flasher_lib/linjre64
+        export JAVA_HOME=/usr/lib/jvm/java-8-jre/jre
     else
         export JAVA_HOME=./x10flasher_lib/linjre32
     fi
