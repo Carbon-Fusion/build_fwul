@@ -114,10 +114,10 @@ cat >/home/$LOGINUSR/Desktop/SonyFlash.desktop <<EOsflash
 [Desktop Entry]
 Version=1.0
 Type=Application
-Comment=Sony Flashtools
+Comment=Sony FlashTool
 Terminal=false
 Name=Sony Flashtool
-Exec=/home/$LOGINUSR/programs/Sony_Flashtool/Flashtool
+Exec=/home/$LOGINUSR/programs/Sony_FlashTool/FlashTool
 Icon=/home/$LOGINUSR/.fwul/flashtool-icon.png
 EOsflash
 chmod +x /home/$LOGINUSR/Desktop/SonyFlash.desktop
@@ -324,12 +324,12 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/odin-logo.jpg
 /home/$LOGINUSR/programs/JOdin/starter.sh
 /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
-/home/$LOGINUSR/programs/Sony_Flashtool/Flashtool
+/home/$LOGINUSR/programs/Sony_FlashTool/FlashTool
 /home/$LOGINUSR/Desktop/SonyFlash.desktop
 /usr/lib/jvm/java-8-jre/jre/bin/java"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
-    if [ -f $req ];then 
+    if [ -f "$req" ];then 
         echo -e "\t... testing: $req --> OK"
     else
         echo -e "\t******************************************************************************"
