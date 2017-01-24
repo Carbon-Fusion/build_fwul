@@ -310,7 +310,8 @@ $RSUDOERS
 /home/$LOGINUSR/Desktop/JOdin.desktop
 /home/$LOGINUSR/.fwul/odin-logo.jpg
 /home/$LOGINUSR/programs/JOdin/starter.sh
-/home/$LOGINUSR/programs/JOdin/JOdin3CASUAL"
+/home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
+/usr/lib/jvm/java-8-jre/jre/bin/java"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
     if [ -f $req ];then 
