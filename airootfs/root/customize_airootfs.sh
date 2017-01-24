@@ -276,7 +276,7 @@ echo -e "\nCleanup - manpages:"
 rm -rvf /usr/share/man/*
 
 echo -e "\nCleanup - docs:"
-rm -rvf /usr/share/doc/*
+rm -rvf /usr/share/doc/* /usr/share/gtk-doc/html/*
 
 echo -e "\nCleanup - misc:"
 rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/ /home/$LOGINUSR/.fwul/tmp/*
