@@ -90,6 +90,11 @@ fi
 # install Oracle JRE (because JOdin will not run with OpenJDK)
 yaourt -Q jre || su -c - $LOGINUSR "yaourt -S --noconfirm jre"
 
+# install yad
+echo -e "\nyad:"
+yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
+
+
 # install JOdin3
 if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
     mkdir /home/$LOGINUSR/programs/JOdin
@@ -126,8 +131,8 @@ Icon=/home/$LOGINUSR/.fwul/flashtool-icon.png
 EOsflash
 chmod +x /home/$LOGINUSR/Desktop/SonyFlash.desktop
 
-# install yad
-echo -e "\nyad:"
+# teamviewer installer
+echo -e "\nteamviewer:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
 # install teamviewer
