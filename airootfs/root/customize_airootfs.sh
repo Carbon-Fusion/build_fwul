@@ -350,6 +350,7 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm extra/swig extra/ruby extra/python2 extra/python
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --asdeps --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/libse*.pkg.tar.xz
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/xperia-flashtool-*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv ~/.fwul/x10flasher.jar /usr/lib/xperia-flashtool/
 
 # special rule for SP Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
