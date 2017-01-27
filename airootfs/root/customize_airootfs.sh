@@ -118,26 +118,32 @@ EOODIN
 chmod +x /home/$LOGINUSR/Desktop/JOdin.desktop
 fi
 
-# activate sony flashtools
-cat >/home/$LOGINUSR/Desktop/SonyFlash.desktop <<EOsflash
+# sony flashtools installer
+cat >/home/$LOGINUSR/Desktop/install-sonyflash.desktop <<EOsflashinst
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=Sony FlashTool Installer
+Terminal=false
+Name=Sony Flashtool Installer
+Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
+Icon=preferences-desktop-default-applications
+EOsflashinst
+chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
+
+cat >/home/$LOGINUSR/.fwul/sonyflash.desktop <<EOsflash
 [Desktop Entry]
 Version=1.0
 Type=Application
 Comment=Sony FlashTool
 Terminal=false
 Name=Sony Flashtool
-Exec=/home/$LOGINUSR/programs/Sony_FlashTool/FlashTool
+Exec=xperia-flashtool
 Icon=/home/$LOGINUSR/.fwul/flashtool-icon.png
 EOsflash
-chmod +x /home/$LOGINUSR/Desktop/SonyFlash.desktop
 
 # teamviewer installer
 echo -e "\nteamviewer:"
-yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
-
-# install teamviewer
-#echo -e "\nteamviewer:"
-#yaourt -Q teamviewer || su -c - $LOGINUSR "yaourt -S --noconfirm teamviewer"
 cat >/home/$LOGINUSR/Desktop/install-TV.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
@@ -149,6 +155,34 @@ Exec=/home/$LOGINUSR/.fwul/install_tv.sh
 Icon=preferences-desktop-default-applications
 EOODIN
 chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
+
+# SP Flash Tools installer
+echo -e "\nSP Flash Tools:"
+cat >/home/$LOGINUSR/Desktop/install-spflash.desktop <<EOSPF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=SP FlashTools installer
+Terminal=false
+Name=SP FlashTools Installer
+Exec=/home/$LOGINUSR/.fwul/install_spflash.sh
+Icon=preferences-desktop-default-applications
+EOSPF
+chmod +x /home/$LOGINUSR/Desktop/install-spflash.desktop
+
+# Sony Flash Tools installer
+echo -e "\nSony Flash Tools:"
+cat >/home/$LOGINUSR/Desktop/install-sonyflash.desktop <<EOSFT
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=Sony FlashTools installer
+Terminal=false
+Name=Sony FlashTools Installer
+Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
+Icon=preferences-desktop-default-applications
+EOSFT
+chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 
 # install display manager
 echo -e "\nDM:"
@@ -310,6 +344,17 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/teamviewer*.pkg.tar.xz
+
+# special rule for Sony Flashtool
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm extra/swig extra/ruby extra/python2 extra/python
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --asdeps --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/libse*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/xperia-flashtool-*.pkg.tar.xz
+
+# special rule for SP Flashtool
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm extra/qtwebkit community/gendesk
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/spflashtool-bin-*.pkg.tar.xz
 EOSUDOERS
 
 # set root password
@@ -340,8 +385,10 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/odin-logo.jpg
 /home/$LOGINUSR/programs/JOdin/starter.sh
 /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
-/home/$LOGINUSR/programs/Sony_FlashTool/FlashTool
-/home/$LOGINUSR/Desktop/SonyFlash.desktop
+/home/$LOGINUSR/.fwul/install_spflash.sh
+/home/$LOGINUSR/Desktop/install-spflash.desktop
+/home/$LOGINUSR/.fwul/install_sonyflash.sh
+/home/$LOGINUSR/Desktop/install-sonyflash.desktop
 /usr/lib/jvm/java-8-jre/jre/bin/java"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
