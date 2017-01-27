@@ -3,6 +3,10 @@
 
 set -e -u
 
+# debug means e.g. SSH server will be added and enabled
+# 1 means debug on, 0 off.
+DEBUG=1
+
 locale-gen
 
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
@@ -149,9 +153,13 @@ systemctl enable mdm
 # configure display manager
 cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
 
-# DEBUGGING
-pacman -Q openssh || pacman -S --noconfirm openssh
-systemctl enable sshd
+# Special things needed for easier DEBUGGING
+if [ "$DEBUG" -eq 1 ];then
+    pacman -Q openssh || pacman -S --noconfirm openssh
+    systemctl enable sshd
+    pacman -Q spice-vdagent || pacman -S --noconfirm spice-vdagent
+    systemctl enable spice-vdagentd
+fi
 
 # add Heimdall
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/
@@ -336,11 +344,19 @@ for req in $(echo -e "$REQFILES"|tr "\n" " ");do
         echo -e "\t... testing: $req --> OK"
     else
         echo -e "\t******************************************************************************"
-        echo -e "\t... testing: $req --> FAILED!!"
+        echo -e "\tERROR: testing $req --> FAILED!!"
         echo -e "\t******************************************************************************"
         exit 3
     fi
 done
+
+# add a warning when debugging is enabled
+if [ "$DEBUG" -eq 1 ];then
+        echo -e "\t******************************************************************************"
+        echo -e "\tWARNING: DEBUG MODE ENABLED !!!"
+        echo -e "\t******************************************************************************"
+fi
+
 # TEST AREA - END
 ########################################################################################
 
