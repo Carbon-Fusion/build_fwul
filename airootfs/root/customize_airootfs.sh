@@ -293,13 +293,13 @@ if [ ! -f "$FWULDESKTOP" ];then
     F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 fi
 if [ ! -f "$FWULXFWM4" ];then
-    echo -e "\t... setting themes and icons"
+    echo -e "\t... setting themes and icons 1"
     MD5BEF=$(F_DOMD5 "$FWULXFWM4")
     su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
     F_FILEWAIT $MD5BEF "$FWULXFWM4"
 fi
 if [ ! -f "$FWULXSETS" ];then
-    echo -e "\t... setting themes and icons"
+    echo -e "\t... setting themes and icons 2"
     MD5BEF=$(F_DOMD5 "$FWULXSETS")
     su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
     F_FILEWAIT $MD5BEF "$FWULXSETS"
@@ -398,6 +398,7 @@ $RSUDOERS
 /home/$LOGINUSR/Desktop/install-spflash.desktop
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
 /home/$LOGINUSR/Desktop/install-sonyflash.desktop
+/usr/share/icons/Windows-10-Icons/README.md
 /usr/lib/jvm/java-8-jre/jre/bin/java"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
