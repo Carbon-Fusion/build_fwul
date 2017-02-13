@@ -94,7 +94,6 @@ yaourt -Q jre || su -c - $LOGINUSR "yaourt -S --noconfirm jre"
 echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
-
 # install JOdin3
 if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
     mkdir /home/$LOGINUSR/programs/JOdin
@@ -127,7 +126,7 @@ Comment=Sony FlashTool Installer
 Terminal=false
 Name=Sony Flashtool Installer
 Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
-Icon=preferences-desktop-default-applications
+Icon=aptoncd
 EOsflashinst
 chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 
@@ -152,7 +151,7 @@ Comment=Teamviewer installer
 Terminal=false
 Name=TeamViewer Installer
 Exec=/home/$LOGINUSR/.fwul/install_tv.sh
-Icon=preferences-desktop-default-applications
+Icon=aptoncd
 EOODIN
 chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
 
@@ -166,7 +165,7 @@ Comment=SP FlashTools installer
 Terminal=false
 Name=SP FlashTools Installer
 Exec=/home/$LOGINUSR/.fwul/install_spflash.sh
-Icon=preferences-desktop-default-applications
+Icon=aptoncd
 EOSPF
 chmod +x /home/$LOGINUSR/Desktop/install-spflash.desktop
 
@@ -180,7 +179,7 @@ Comment=Sony FlashTools installer
 Terminal=false
 Name=Sony FlashTools Installer
 Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
-Icon=preferences-desktop-default-applications
+Icon=aptoncd
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 
