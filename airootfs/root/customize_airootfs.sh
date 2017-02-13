@@ -237,7 +237,7 @@ echo -e "\nThemes:"
 [ -d /usr/share/mdm/themes/Arc-Wise/ ] || tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
 # windows 10 icons URL in AUR are broken..
 #yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
-yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -Pi ~/.fwul/tmp/win10icons/"
+yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt --noconfirm -Pi ~/.fwul/tmp/win10icons/"
 rm /home/$LOGINUSR/.fwul/tmp/win10icons/*.xz
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
