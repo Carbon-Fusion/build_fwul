@@ -235,7 +235,10 @@ systemctl enable NetworkManager
 # prepare theming stuff
 echo -e "\nThemes:"
 [ -d /usr/share/mdm/themes/Arc-Wise/ ] || tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
-yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
+# windows 10 icons URL in AUR are broken..
+#yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
+yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -Pi ~/.fwul/tmp/win10icons/"
+rm /home/$LOGINUSR/.fwul/tmp/win10icons/*.xz
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
 # adding qtwebkit as it takes VERY i mean VERY ! long to compile..

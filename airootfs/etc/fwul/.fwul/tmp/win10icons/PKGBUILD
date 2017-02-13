@@ -1,0 +1,26 @@
+# Maintainer: Michael Lojkovic <mikelojkovic@gmail.com>
+
+pkgname=windows10-icons
+pkgver=0.5
+pkgrel=1
+pkgdesc="Icons to emulate a Windows 10 look"
+arch=('any')
+url="https://github.com/Elbullazul/Windows-10"
+license=('GPL')
+# depends
+source=("https://github.com/Elbullazul/Windows-10-Icons/archive/Rolling.tar.gz")
+sha1sums=('942c21510131c084393e758276d846b8b656b71b')
+
+
+package()
+{
+	cd Windows-10-Icons-Rolling
+
+	install -d -m 755 "$pkgdir/usr/share/icons/Windows-10-Icons"
+
+	find . -type f -exec \
+		install -D -m 644 '{}' "$pkgdir/usr/share/icons/Windows-10-Icons/{}" \;
+
+	find . -type l -exec \
+		install -D -m 644 '{}' "$pkgdir/usr/share/icons/Windows-10-Icons/{}" \;
+}
