@@ -351,19 +351,17 @@ cat > $RSUDOERS <<EOSUDOERS
 # special rules for TeamViewer
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/teamviewer*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/teamviewer*.pkg.tar.xz
 
 # special rule for Sony Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm extra/swig extra/ruby extra/python2 extra/python
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --asdeps --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/libse*.pkg.tar.xz
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/xperia-flashtool-*.pkg.tar.xz
-%wheel     ALL=(ALL) NOPASSWD: /bin/mv ~/.fwul/x10flasher.jar /usr/lib/xperia-flashtool/
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --asdeps --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/libse*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/xperia-flashtool-*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /bin/cp /home/$LOGINUSR/.fwul/x10flasher.jar /usr/lib/xperia-flashtool/
 
 # special rule for SP Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm extra/qtwebkit community/gendesk
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-android/PKGDEST*/spflashtool-bin-*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/spflashtool-bin-*.pkg.tar.xz
 EOSUDOERS
 
 # set root password
