@@ -238,6 +238,9 @@ echo -e "\nThemes:"
 yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
+# adding qtwebkit as it takes VERY long to compile..
+yaourt -Q qtwebkit || su -c - $LOGINUSR "yaourt -S --noconfirm qtwebkit"
+
 # Create a MD5 for a given file or set to 0 if file is missing
 F_DOMD5(){
     MFILE="$1"
