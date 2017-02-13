@@ -23,7 +23,7 @@ else
     PMANEXEC="$PMAN"
 fi
 
-$YAD --width 300 --height 100 --form --text "\nThis will start the installation of $PKG!\nRequires a working Internet connection ;-)"
+$YAD --image=preferences-system-sharing-symbolic --text-align=center --width 350 --height 50 --form --text "Continuing will start the installation of:\n\n<span color=\"green\">$PKG</span>\n<i>(this requires a working Internet connection)</i>\n\n<span color=\"red\">Watch the console window:</span>\nYou may have to type in the <u>password</u> of the user <b>$USER</b> to confirm the installation!"
 
 # do the magic
 if [ $? -eq 0 ];then
