@@ -238,8 +238,12 @@ echo -e "\nThemes:"
 yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
-# adding qtwebkit as it takes VERY long to compile..
-yaourt -Q qtwebkit || su -c - $LOGINUSR "yaourt -S --noconfirm qtwebkit"
+# adding qtwebkit as it takes VERY i mean VERY ! long to compile..
+TGZWK=/home/$LOGINUSR/.fwul/tmp/qtwebkit-*.pkg.tar.xz
+pacman --noconfirm -U $TGZWK && rm $TGZWK
+
+# Even as a fallback this takes hours!
+# yaourt -Q qtwebkit || su -c - $LOGINUSR "yaourt -S --noconfirm qtwebkit"
 
 # Create a MD5 for a given file or set to 0 if file is missing
 F_DOMD5(){
