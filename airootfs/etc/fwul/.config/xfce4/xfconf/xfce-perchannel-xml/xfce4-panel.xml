@@ -29,7 +29,7 @@
       <property name="position-locked" type="bool" value="true"/>
       <property name="length" type="uint" value="100"/>
       <property name="nrows" type="uint" value="1"/>
-      <property name="size" type="uint" value="46"/>
+      <property name="size" type="uint" value="25"/>
     </property>
   </property>
   <property name="plugins" type="empty">
