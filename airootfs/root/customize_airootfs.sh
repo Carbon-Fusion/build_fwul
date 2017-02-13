@@ -237,8 +237,11 @@ echo -e "\nThemes:"
 [ -d /usr/share/mdm/themes/Arc-Wise/ ] || tar -xvzf /home/$LOGINUSR/.fwul/tmp/login-theme.tgz -C /
 # windows 10 icons URL in AUR are broken..
 #yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt -S --noconfirm windows10-icons"
-yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt --noconfirm -Pi ~/.fwul/tmp/win10icons/"
-rm /home/$LOGINUSR/.fwul/tmp/win10icons/*.xz
+#yaourt -Q windows10-icons || su -c - $LOGINUSR "yaourt --noconfirm -Pi ~/.fwul/tmp/win10icons/"
+#rm /home/$LOGINUSR/.fwul/tmp/win10icons/*.xz
+# install numix circle instead (minimal)
+yaourt -Q numix-circle-icon-theme-git || su -c - $LOGINUSR "yaourt -S --noconfirm numix-circle-icon-theme-git"
+rm -Rf /usr/share/icons/Numix-Circle-Light/
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
 # adding qtwebkit as it takes VERY i mean VERY ! long to compile..
@@ -304,7 +307,7 @@ if [ ! -f "$FWULXSETS" ];then
     su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
     F_FILEWAIT $MD5BEF "$FWULXSETS"
     MD5BEF=$(F_DOMD5 "$FWULXSETS")
-    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Windows-10-Icons"
+    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Numix-Circle"
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
 
@@ -396,7 +399,7 @@ $RSUDOERS
 /home/$LOGINUSR/Desktop/install-spflash.desktop
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
 /home/$LOGINUSR/Desktop/install-sonyflash.desktop
-/usr/share/icons/Windows-10-Icons/README.md
+/usr/share/icons/Numix-Circle/index.theme
 /usr/lib/jvm/java-8-jre/jre/bin/java"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
