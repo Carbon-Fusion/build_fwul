@@ -298,8 +298,6 @@ if [ ! -f "$FWULXSETS" ];then
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
 
-#su -c - $LOGINUSR "sleep 5s"
-
 # ensure proper perms
 chown -R $LOGINUSR /home/$LOGINUSR/
 
