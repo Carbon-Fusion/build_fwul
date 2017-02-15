@@ -1,3 +1,9 @@
+# Maybe we should just use a catch all?! 
+# Taken from http://ktnr74.blogspot.de/2013/04/universal-udev-rule-for-all-android.html 
+# disabled for the moment but i let it here for future use:
+#ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{ID_USB_INTERFACES}=="*:ff420?:*", MODE="0666"
+
+
 # These rules refer: https://developer.android.com/studio/run/device.html
 # and include many suggestions from Arch Linux, GitHub and other Communities.
 # Latest version can be found at: https://github.com/M0Rf30/android-udev-rules
