@@ -31,3 +31,4 @@ mtpfs
 gvfs-mtp
 gvfs-gphoto2
 ttf-freefont
+python2-pyusb
