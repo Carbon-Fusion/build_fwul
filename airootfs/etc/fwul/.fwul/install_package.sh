@@ -23,7 +23,7 @@ else
     PMANEXEC="$PMAN"
 fi
 
-$YAD --image=aptoncd --text-align=center --width 350 --height 50 --form --text "Continuing will start the installation of:\n\n<span color=\"green\">$PKG</span>\n<i>(this requires a working Internet connection)</i>\n\n<span color=\"red\">Watch the console window:</span>\nYou may have to type in the <u>password</u> of the user <b>$USER</b> to confirm the installation!"
+$YAD --image=aptoncd --text-align=center --width 380 --form --text "Continuing will start the installation of:\n\n<span color=\"green\">$PKG</span>\n<i>(this requires a working Internet connection)</i>\n\n<span color=\"red\">Watch the console window:</span>\nYou may have to type in the <u>password</u> of the user <b>$USER</b> to confirm the installation!\n\nYou may see a warning like:\n<i><span color=\"red\">Unsupported package: Potentially dangerous</span></i>\n\nThat is expected and you have to continue to complete the installation."
 
 # do the magic
 if [ $? -eq 0 ];then
