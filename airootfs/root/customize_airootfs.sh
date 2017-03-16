@@ -5,7 +5,7 @@ set -e -u
 
 # debug means e.g. SSH server will be added and enabled
 # 1 means debug on, 0 off.
-DEBUG=1
+DEBUG=0
 
 locale-gen
 
