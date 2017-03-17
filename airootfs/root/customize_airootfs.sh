@@ -123,7 +123,7 @@ cat >/home/$LOGINUSR/Desktop/install-sonyflash.desktop <<EOsflashinst
 Version=1.0
 Type=Application
 Comment=Sony FlashTool Installer
-Terminal=false
+Terminal=true
 Name=Sony Flashtool Installer
 Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
 Icon=aptoncd
@@ -176,7 +176,7 @@ cat >/home/$LOGINUSR/Desktop/install-sonyflash.desktop <<EOSFT
 Version=1.0
 Type=Application
 Comment=Sony FlashTools installer
-Terminal=false
+Terminal=true
 Name=Sony FlashTools Installer
 Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
 Icon=aptoncd
