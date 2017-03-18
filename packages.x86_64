@@ -32,3 +32,5 @@ gvfs-mtp
 gvfs-gphoto2
 ttf-freefont
 python2-pyusb
+virtualbox-guest-utils
+virtualbox-guest-modules-arch
