@@ -3,10 +3,13 @@
 
 Official XDA thread http://tinyurl.com/FWULatXDA
 
-## Setup & Prepare
+## Setup & Prepare (Arch Linux)
+
+No other distribution then Arch Linux is supported.
 
 1. install **archiso**
-1. clone this repo into ~/archlive
+1. clone this repo into ~/build_fwul
+
 
 ## Usage / Build
 
@@ -14,15 +17,15 @@ Official XDA thread http://tinyurl.com/FWULatXDA
 
 This is the only supported architecture for FWUL because of JOdin
 
-1. `cd ~/archlive`
+1. `cd ~/build_fwul`
 1. `./build_x64.sh -v -N FWUL_arch_x86_64 -V BETA-XXXX_$(date +%F) -L FWUL`
 
 ### Dual ISO's (32 bit + 64 bit)
 
-1. `cd ~/archlive`
+1. `cd ~/build_fwul`
 1. `./build.sh -v -N FWUL_arch -V BETA-XXXX_$(date +%F) -L FWUL`
 
 ## Rebuild / Update ISO
 
-1. `cd ~/archlive`
+1. `cd ~/build_fwul`
 1. Add the option "-C"  or "-F" option to the instruction in "Usage / Build"
