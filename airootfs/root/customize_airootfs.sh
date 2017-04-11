@@ -117,18 +117,31 @@ EOODIN
 chmod +x /home/$LOGINUSR/Desktop/JOdin.desktop
 fi
 
-# sony flashtools installer
-cat >/home/$LOGINUSR/Desktop/install-sonyflash.desktop <<EOsflashinst
+# firefox installer
+cat >/home/$LOGINUSR/Desktop/install-firefox.desktop <<EOsflashinst
 [Desktop Entry]
 Version=1.0
 Type=Application
-Comment=Sony FlashTool Installer
-Terminal=true
-Name=Sony Flashtool Installer
-Exec=/home/$LOGINUSR/.fwul/install_sonyflash.sh
+Comment=Mozilla Firefox Installer
+Terminal=false
+Name=Firefox installer
+Exec=/home/$LOGINUSR/.fwul/install-firefox.sh
 Icon=aptoncd
 EOsflashinst
-chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
+chmod +x /home/$LOGINUSR/Desktop/install-firefox.desktop
+
+# chromium installer
+cat >/home/$LOGINUSR/Desktop/install-chromium.desktop <<EOsflashinst
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=Chromium Browser Installer
+Terminal=false
+Name=Chromium installer
+Exec=/home/$LOGINUSR/.fwul/install-chromium.sh
+Icon=aptoncd
+EOsflashinst
+chmod +x /home/$LOGINUSR/Desktop/install-chromium.desktop
 
 cat >/home/$LOGINUSR/.fwul/sonyflash.desktop <<EOsflash
 [Desktop Entry]
