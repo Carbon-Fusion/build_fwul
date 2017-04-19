@@ -216,7 +216,7 @@ Type=Application
 Comment=LG LAF shell with authentication challenge (for newer devices)
 Terminal=false
 Name=LG LAF (auth)
-Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf/ -e python2 lglaf.py --unlock
+Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf/ -e "/usr/bin/python2 lglaf.py --unlock"
 Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafauthshell.desktop
@@ -229,8 +229,8 @@ Version=1.0
 Type=Application
 Comment=LG LAF shell without authentication challenge (for older devices)
 Terminal=false
-Name=LG LAF (auth)
-Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf/ -e python2 lglaf.py
+Name=LG LAF (no auth)
+Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf/ -e "/usr/bin/python2 lglaf.py"
 Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
@@ -368,7 +368,7 @@ for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo"
+IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib"
 for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
@@ -474,7 +474,7 @@ fi
 
 # list the biggest packages installed
 pacman --noconfirm -S expac
-expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 30
+expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 40
 pacman --noconfirm -Rns expac
 
 #########################################################################################
