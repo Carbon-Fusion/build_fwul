@@ -23,9 +23,12 @@ dnsmasq
 dconf-editor
 midori
 hexchat
-heimdall
 android-tools
+thunar-archive-plugin
+file-roller
+thunar-volman
 p7zip
+python2-crypto
 leafpad
 mtpfs
 gvfs-mtp
