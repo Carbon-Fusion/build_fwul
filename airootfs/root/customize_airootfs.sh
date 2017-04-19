@@ -95,7 +95,7 @@ echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
 # prepare Samsung tool dir
-mkdir /home/$LOGINUSR/Desktop/Samsung
+[ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
 
 # install & add Heimdall
 echo -e "\nheimdall:"
@@ -205,7 +205,7 @@ EOSFT
 chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 
 # prepare LG tools
-mkdir /home/$LOGINUSR/Desktop/LG/
+[ ! -d /home/$LOGINUSR/Desktop/LG ] && mkdir /home/$LOGINUSR/Desktop/LG/
 
 # LG LAF shortcut with auth
 echo -e "\nLG LAF shortcut with auth:"
@@ -368,7 +368,7 @@ for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib qt5-base zeitgeist gnome-icon-theme webkit2gtk"
+IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk"
 for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
