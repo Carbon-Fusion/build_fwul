@@ -216,7 +216,7 @@ Type=Application
 Comment=LG LAF shell with authentication challenge (for newer devices)
 Terminal=false
 Name=LG LAF (auth)
-Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf/ -e "/usr/bin/python2 lglaf.py --unlock"
+Exec=/home/$LOGINUSR/.fwul/lglaf.sh --unlock
 Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafauthshell.desktop
@@ -230,7 +230,7 @@ Type=Application
 Comment=LG LAF shell without authentication challenge (for older devices)
 Terminal=false
 Name=LG LAF (no auth)
-Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf/ -e "/usr/bin/python2 lglaf.py"
+Exec=/home/$LOGINUSR/.fwul/lglaf.sh
 Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
