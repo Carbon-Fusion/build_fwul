@@ -40,6 +40,7 @@ EOSETPW
 
 # prepare user home
 cp -aT /etc/fwul/ /home/$LOGINUSR/
+[ ! -d /home/$LOGINUSR/Desktop ] && mkdir /home/$LOGINUSR/Desktop
 chmod 700 /home/$LOGINUSR
 
 # temp perms for archiso
