@@ -29,6 +29,9 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
+# current java version provided with FWUL (to save disk space compressedn and not installed)
+CURJAVA=jre-8u131-1-x86_64.pkg.tar.xz
+
 # add live user but ensure this happens when not there already
 echo -e "\nuser setup:"
 ! id $LOGINUSR && useradd -m -p "" -g users -G "adm,audio,floppy,log,network,rfkill,scanner,storage,optical,power,wheel" -s /bin/bash $LOGINUSR
@@ -40,6 +43,7 @@ EOSETPW
 
 # prepare user home
 cp -aT /etc/fwul/ /home/$LOGINUSR/
+[ ! -d /home/$LOGINUSR/Desktop ] && mkdir /home/$LOGINUSR/Desktop
 chmod 700 /home/$LOGINUSR
 
 # temp perms for archiso
@@ -88,11 +92,16 @@ if [ $RET -ne 0 ];then
 fi
 
 # install Oracle JRE (because JOdin will not run with OpenJDK)
-yaourt -Q jre || su -c - $LOGINUSR "yaourt -S --noconfirm jre"
+#yaourt -Q jre || su -c - $LOGINUSR "yaourt -S --noconfirm jre"
 
 # install yad
 echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
+
+# minimal web browser
+yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
+#yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"
+#yaourt -Q min || su -c - $LOGINUSR "yaourt -S --noconfirm min"
 
 # prepare Samsung tool dir
 [ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
@@ -107,6 +116,7 @@ if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
     mkdir /home/$LOGINUSR/programs/JOdin
     cat >/home/$LOGINUSR/programs/JOdin/starter.sh <<EOEXECOD
 #!/bin/bash
+yaourt -Q jre || xterm -e "sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA"
 JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
     chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
@@ -266,6 +276,7 @@ EOSADB
 
 cat >/home/$LOGINUSR/programs/sadb/starter.sh <<EOEXECADB
 #!/bin/bash
+yaourt -Q jre || xterm -e "sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA"
 java -jar /home/$LOGINUSR/programs/sadb/S-ADB.jar
 EOEXECADB
 chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
@@ -413,6 +424,9 @@ cat > $RSUDOERS <<EOSUDOERS
 # special rule for SP Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/spflashtool-bin-*.pkg.tar.xz
+
+# special rule for JAVA
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA
 EOSUDOERS
 
 # set root password
@@ -449,7 +463,7 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
 /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 /usr/share/icons/Numix-Circle/index.theme
-/usr/lib/jvm/java-8-jre/jre/bin/java"
+/home/$LOGINUSR/.fwul/$CURJAVA"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
     if [ -f "$req" ];then 

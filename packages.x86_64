@@ -21,7 +21,6 @@ network-manager-applet
 nm-connection-editor
 dnsmasq
 dconf-editor
-midori
 hexchat
 android-tools
 thunar-archive-plugin
@@ -37,3 +36,4 @@ ttf-freefont
 python2-pyusb
 virtualbox-guest-utils
 virtualbox-guest-modules-arch
+java-runtime-common

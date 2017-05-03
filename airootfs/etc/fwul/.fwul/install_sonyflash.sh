@@ -14,7 +14,8 @@ if [ $? -ne 0 ];then
     wget http://www.flashtool.net/torrents/patches/linux/x10flasher.jar
     [ ! -f x10flasher.jar ]&& echo "ERROR downloading PATCH file" && exit 3
     pacman -Q libselinux || ~/.fwul/install_package.sh yaourt libselinux
-    makepkg -si && cp x10flasher.jar /usr/lib/xperia-flashtool/ && echo full success 
+    makepkg -si
+    sudo cp x10flasher.jar /usr/lib/xperia-flashtool/
 fi
 
 pacman -Q libselinux && pacman -Q xperia-flashtool && cp ~/.fwul/sonyflash.desktop ~/Desktop/ && chmod +x ~/Desktop/sonyflash.desktop && rm ~/Desktop/install-sonyflash.desktop

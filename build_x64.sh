@@ -2,8 +2,8 @@
 
 set -e -u
 
-iso_name=archlinux
-iso_label="ARCH_$(date +%Y%m)"
+iso_name=fwul
+iso_label="FWUL_$(date +%Y%m)"
 iso_version=$(date +%Y.%m.%d)
 install_dir=arch
 work_dir=work
@@ -232,20 +232,20 @@ make_iso() {
 # clean lock files
 F_CLEANLOCKS() {
 	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the ISO base intact):\n\n"
-	rm -fv ./work/build.make_*
+	rm -fv ${work_dir}/build.make_*
 	echo finished..
 }
 
 F_FULLCLEAN(){
 	echo -e "\n\nCLEANING UP WHOLE ISO BUILD BASE! ENFORCES A FULL(!) ISO REBUILD:\n\n"
         read -p "are you sure????? (CTRL+C to abort)" DUMMY
-	rm -Rf ./work
+	rm -Rf ${work_dir}
 	echo finished..
 }
 
 F_CUSTCLEAN(){
     echo -e "\nEnforcing re-run of customize script. This will NOT re-create the ISO!\n\n"
-    rm -vf ./work/build.make_customize_airootfs*
+    rm -vf ${work_dir}/build.make_customize_airootfs*
     echo finished..
 }
 
