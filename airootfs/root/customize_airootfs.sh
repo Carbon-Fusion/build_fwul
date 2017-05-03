@@ -379,7 +379,7 @@ for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk"
+IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs testdisk"
 for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
@@ -490,6 +490,15 @@ fi
 pacman --noconfirm -S expac
 expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 40
 pacman --noconfirm -Rns expac
+
+# create a XDA copy template for the important FWUL package versions
+echo -ne '[*]Versions of the main FWUL components:\n[INDENT]ADB and fastboot: '
+pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
+CHLOG="heimdall-git xfwm4 xorg-server virtualbox-guest-utils" 
+for i in $CHLOG;do
+        pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
+done
+echo -e '[/INDENT]'
 
 #########################################################################################
 # this has always to be the very last thing!
