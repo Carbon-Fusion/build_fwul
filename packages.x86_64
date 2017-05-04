@@ -37,3 +37,5 @@ python2-pyusb
 virtualbox-guest-utils
 virtualbox-guest-modules-arch
 java-runtime-common
+pulseaudio
+xfce4-pulseaudio-plugin
