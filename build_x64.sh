@@ -224,9 +224,34 @@ make_prepare() {
     # rm -rf ${work_dir}/${arch}/airootfs (if low space, this helps)
 }
 
+# Enable persistent mode
+persistent_iso() {
+    # partition will be #3 usually
+    ISOPARTN=3
+
+    # blow up the ISO
+    dd status=progress if=/dev/zero bs=512 count=$PERSISTENTSIZE >> ${out_dir}/${iso_name}${iso_version}.iso
+    # the following will magically create a partition (#3) with all space from the previous blowed space 
+    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}.iso
+    # format that partition
+    # USBSIZEGB=4       # the target full size of the USB device
+    # get the size of the FWUL ISO
+    # ISOFSIZEB=$(du -s ${out_dir}/${iso_name}${iso_version}.iso | sed 's#\s/.*##g')
+    # make it GB (will auto-round)
+    # ISOSIZEG=((($USBSIZEGB-$ISOFSIZE)*1024*1024*2))
+    # get the start of the new created partition
+    # LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
+    # LOOFFSET=(($LOOF * 512))
+    # LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
+    # LOSZLIMIT=(($LOSZ * 512))
+    # losetup -o $LOOFFSET --sizelimit $LOSZLIMIT /dev/loop1 ${out_dir}/${iso_name}${iso_version}.iso
+    # mkfs -t ext4 -L fwulforever /dev/loop1
+}
+
 # Build ISO
 make_iso() {
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}.iso"
+    persistent_iso
 }
 
 # clean lock files
