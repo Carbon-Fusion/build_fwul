@@ -305,7 +305,8 @@ yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm g
 
 # adding qtwebkit as it takes VERY i mean VERY ! long to compile..
 TGZWK=/home/$LOGINUSR/.fwul/tmp/qtwebkit-*.pkg.tar.xz
-pacman --noconfirm -U $TGZWK && rm $TGZWK
+pacman -Q qtwebkit || pacman --noconfirm -U $TGZWK
+rm $TGZWK
 
 # Even as a fallback this takes hours!
 # yaourt -Q qtwebkit || su -c - $LOGINUSR "yaourt -S --noconfirm qtwebkit"
