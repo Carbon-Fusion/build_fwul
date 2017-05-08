@@ -265,7 +265,7 @@ while getopts 'N:V:L:D:w:o:g:vhCFc' arg; do
 	F) F_FULLCLEAN ;;
         c) F_CUSTCLEAN ;;
         N) iso_name="${OPTARG}" ;;
-        V) iso_version="${OPTARG}" ;;
+        V) export iso_version="${OPTARG}" ;;
         L) iso_label="${OPTARG}" ;;
         D) install_dir="${OPTARG}" ;;
         w) work_dir="${OPTARG}" ;;

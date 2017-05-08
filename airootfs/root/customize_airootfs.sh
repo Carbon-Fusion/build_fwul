@@ -29,6 +29,8 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
+echo $iso_version > /etc/fwul_release
+
 # current java version provided with FWUL (to save disk space compressedn and not installed)
 CURJAVA=jre-8u131-1-x86_64.pkg.tar.xz
 
