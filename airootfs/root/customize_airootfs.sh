@@ -341,6 +341,9 @@ F_FILEWAIT(){
     done
 }
 
+# ensure proper perms (have to be done BEFORE using any su LOGINUSER cmd which writes to home dir!)
+chown -R ${LOGINUSR}.users /home/$LOGINUSR/
+
 # activate wallpaper, icons & theme
 echo -e "\nActivate theme etc:"
 FWULDESKTOP="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
@@ -372,9 +375,6 @@ if [ ! -f "$FWULXSETS" ];then
     su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Numix-Circle"
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
-
-# ensure proper perms
-chown -R $LOGINUSR /home/$LOGINUSR/
 
 # cleanup
 echo -e "\nCleanup - locale:"
