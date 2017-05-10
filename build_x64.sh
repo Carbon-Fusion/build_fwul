@@ -226,26 +226,57 @@ make_prepare() {
 
 # Enable persistent mode
 persistent_iso() {
+    # define a label for the persistent partition (if changed here - change it in boot conf as well!)
+    PERSLABEL=fwulforever 
+
     # partition will be #3 usually
     ISOPARTN=3
+    echo -e "\nPreparing persistent setup:\n"
 
-    # blow up the ISO
-    dd status=progress if=/dev/zero bs=512 count=$PERSISTENTSIZE >> ${out_dir}/${iso_name}${iso_version}.iso
-    # the following will magically create a partition (#3) with all space from the previous blowed space 
-    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}.iso
-    # format that partition
-    # USBSIZEGB=4       # the target full size of the USB device
+    # the available space in MB on the target (e.g. the full space u want to use on a USB stick)
+    USBSIZEMB=4000
+
+    # part1: blow the ISO up
     # get the size of the FWUL ISO
-    # ISOFSIZEB=$(du -s ${out_dir}/${iso_name}${iso_version}.iso | sed 's#\s/.*##g')
-    # make it GB (will auto-round)
-    # ISOSIZEG=((($USBSIZEGB-$ISOFSIZE)*1024*1024*2))
-    # get the start of the new created partition
-    # LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
-    # LOOFFSET=(($LOOF * 512))
-    # LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
-    # LOSZLIMIT=(($LOSZ * 512))
-    # losetup -o $LOOFFSET --sizelimit $LOSZLIMIT /dev/loop1 ${out_dir}/${iso_name}${iso_version}.iso
-    # mkfs -t ext4 -L fwulforever /dev/loop1
+    ISOFSIZEK=$(du -s ${out_dir}/${iso_name}${iso_version}.iso | sed 's#\s.*##g')
+    echo -e "\tISOFSIZEK:\t$ISOFSIZEK"
+    # calculation of the space to use (bash will auto-round! could be not what we want though..)
+    ISOFSIZEMB=$((ISOFSIZEK / 1024))
+    echo -e "\tISOFSIZEMB:\t$ISOFSIZEMB"
+    REMAINSIZE=$((USBSIZEMB - ISOFSIZEMB))
+    echo -e "\tREMAINSIZE:\t$REMAINSIZE"
+    ISOSIZEG=$((REMAINSIZE / 1024))
+    echo -e "\tISOSIZEG:\t$ISOSIZEG"
+    PERSISTSIZE=$((ISOSIZEG * 1024 * 1024 * 2))
+    echo -e "\tPERSISTSIZE:\t$PERSISTSIZE"
+    # extend the ISO with the calculated amount
+    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}.iso
+    
+    # part2: partitioning
+    echo -e "\nCreating persistent partition:\n"
+    # the following will magically create a partition with all space of the previous blowed up space
+    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}.iso
+
+    # part3: format it
+    echo -e "\nFormatting persistent partition:\n"
+    # get start of the persistent partition
+    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
+    echo -e "\tLOOFF:\t\t$LOOFF"
+    LOOFFSET=$((LOOFF * 512))
+    echo -e "\tLOOFFSET:\t$LOOFFSET"
+    # get end of the persistent partition
+    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
+    echo -e "\tLOSZ:\t\t$LOSZ"
+    LOSZLIMIT=$((LOSZ * 512))
+    echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
+    # prepare loop device
+    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT /dev/loop1 ${out_dir}/${iso_name}${iso_version}.iso
+    # format it (label is important for the Arch boot later!)
+    mkfs -t ext4 -L $PERSLABEL /dev/loop1
+    losetup -d /dev/loop1
+
+    # part4: compress & cleanup
+    zip ${out_dir}/${iso_name}${iso_version}.zip ${out_dir}/${iso_name}${iso_version}.iso && rm ${out_dir}/${iso_name}${iso_version}.iso
 }
 
 # Build ISO
