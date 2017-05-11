@@ -10,6 +10,11 @@ work_dir=../fwul-work
 out_dir=../fwul-out
 gpg_key=
 PUBLISHER="Carbon-Fusion <https://github.com/Carbon-Fusion>"
+persistent=no
+
+# the default value for available space in MB on a persistent target (e.g. the full space u want to use on a USB stick)
+# can be overwritten by -U
+USBSIZEMB=4000
 
 arch=$(uname -m)
 verbose=""
@@ -29,6 +34,15 @@ _usage ()
     echo "                       (this is just useful for debugging purposes"
     echo "                       of airootfs/root/customize_airootfs.sh"
     echo "                       because it will NOT re-create the ISO)"
+    echo 
+    echo "******************************************************************"
+    echo 
+    echo " Persistent mode options:"
+    echo 
+    echo "    -P                 Creates a persistent ISO with a defined USB disk space"
+    echo "                        Default (if -U is not specified): $USBSIZE"
+    echo "    -U <USBSIZE-in-MB> Overwriting the default disk space in MB"
+    echo "                        -P have to be specified as well!"
     echo 
     echo "******************************************************************"
     echo 
@@ -166,12 +180,14 @@ make_efi() {
 
     mkdir -p ${work_dir}/iso/loader/entries
     cp ${script_path}/efiboot/loader/loader.conf ${work_dir}/iso/loader/
-    cp ${script_path}/efiboot/loader/entries/uefi-shell-v2-x86_64.conf ${work_dir}/iso/loader/entries/
-    cp ${script_path}/efiboot/loader/entries/uefi-shell-v1-x86_64.conf ${work_dir}/iso/loader/entries/
-
-    sed "s|%ARCHISO_LABEL%|${iso_label}|g;
-         s|%INSTALL_DIR%|${install_dir}|g" \
-        ${script_path}/efiboot/loader/entries/archiso-x86_64-usb.conf > ${work_dir}/iso/loader/entries/archiso-x86_64.conf
+    for econf in $(find ${script_path}/efiboot/loader/entries/ -name "*-usb.conf");do
+        econfalone=${econf##*/}
+        echo "econfalone: $econfalone"
+        rneconf="${econfalone/-usb.conf/.conf}"
+        echo "rneconf: $rneconf"
+        sed "s|%ARCHISO_LABEL%|${iso_label}|g;
+             s|%INSTALL_DIR%|${install_dir}|g" $econf > ${work_dir}/iso/loader/entries/$rneconf
+    done
 
     # EFI Shell 2.0 for UEFI 2.3+
     curl -o ${work_dir}/iso/EFI/shellx64_v2.efi https://raw.githubusercontent.com/tianocore/edk2/master/ShellBinPkg/UefiShell/X64/Shell.efi
@@ -205,9 +221,15 @@ make_efiboot() {
     cp ${script_path}/efiboot/loader/entries/uefi-shell-v2-x86_64.conf ${work_dir}/efiboot/loader/entries/
     cp ${script_path}/efiboot/loader/entries/uefi-shell-v1-x86_64.conf ${work_dir}/efiboot/loader/entries/
 
-    sed "s|%ARCHISO_LABEL%|${iso_label}|g;
-         s|%INSTALL_DIR%|${install_dir}|g" \
-        ${script_path}/efiboot/loader/entries/archiso-x86_64-cd.conf > ${work_dir}/efiboot/loader/entries/archiso-x86_64.conf
+    for econf in $(find ${script_path}/efiboot/loader/entries/ -name "*-cd.conf");do
+        econfalone=${econf##*/}
+        echo "econfalone: $econfalone"
+        rneconf="${econfalone/-cd.conf/.conf}"
+        echo "rneconf: $rneconf"
+        sed "s|%ARCHISO_LABEL%|${iso_label}|g;
+             s|%INSTALL_DIR%|${install_dir}|g" \
+            $econf > ${work_dir}/efiboot/loader/entries/$rneconf
+    done
 
     cp ${work_dir}/iso/EFI/shellx64_v2.efi ${work_dir}/efiboot/EFI/
     cp ${work_dir}/iso/EFI/shellx64_v1.efi ${work_dir}/efiboot/EFI/
@@ -233,9 +255,6 @@ persistent_iso() {
     ISOPARTN=3
     echo -e "\nPreparing persistent setup:\n"
 
-    # the available space in MB on the target (e.g. the full space u want to use on a USB stick)
-    USBSIZEMB=4000
-
     # part1: blow the ISO up
     # get the size of the FWUL ISO
     ISOFSIZEK=$(du -s ${out_dir}/${iso_name}${iso_version}.iso | sed 's#\s.*##g')
@@ -243,11 +262,12 @@ persistent_iso() {
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
     ISOFSIZEMB=$((ISOFSIZEK / 1024))
     echo -e "\tISOFSIZEMB:\t$ISOFSIZEMB"
+    [ "$USBSIZEMB" -lt "$ISOFSIZEMB" ] && echo -e "\n\nERROR: USBSIZEMB $USBSIZEMB has to be equal or higher than the ISO size: $ISOFSIZEMB!" && exit 3
     REMAINSIZE=$((USBSIZEMB - ISOFSIZEMB))
     echo -e "\tREMAINSIZE:\t$REMAINSIZE"
     ISOSIZEG=$((REMAINSIZE / 1024))
     echo -e "\tISOSIZEG:\t$ISOSIZEG"
-    PERSISTSIZE=$((ISOSIZEG * 1024 * 1024 * 2))
+    PERSISTSIZE=$((REMAINSIZE * 1024 * 2))
     echo -e "\tPERSISTSIZE:\t$PERSISTSIZE"
     # extend the ISO with the calculated amount
     dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}.iso
@@ -270,19 +290,22 @@ persistent_iso() {
     LOSZLIMIT=$((LOSZ * 512))
     echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
     # prepare loop device
-    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT /dev/loop1 ${out_dir}/${iso_name}${iso_version}.iso
+    LOOPDEV="$(losetup -f)"
+    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}.iso
     # format it (label is important for the Arch boot later!)
-    mkfs -t ext4 -L $PERSLABEL /dev/loop1
-    losetup -d /dev/loop1
+    mkfs -t ext4 -L $PERSLABEL $LOOPDEV
+    losetup -d $LOOPDEV
 
     # part4: compress & cleanup
-    zip ${out_dir}/${iso_name}${iso_version}.zip ${out_dir}/${iso_name}${iso_version}.iso && rm ${out_dir}/${iso_name}${iso_version}.iso
+    CURDIR=$(pwd)
+    cd ${out_dir} && zip ${iso_name}${iso_version}.zip ${iso_name}${iso_version}.iso && rm ${iso_name}${iso_version}.iso
+    cd "$CURDIR"
 }
 
 # Build ISO
 make_iso() {
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}.iso"
-    persistent_iso
+    [ "x$persistent" == "xyes" ] && persistent_iso
 }
 
 # clean lock files
@@ -315,8 +338,10 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
-while getopts 'N:V:L:D:w:o:g:vhCFc' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCFcPU:' arg; do
     case "${arg}" in
+        P) persistent=yes ;;
+        U) USBSIZEMB="$OPTARG";;
 	C) F_CLEANLOCKS ;;
 	F) F_FULLCLEAN ;;
         c) F_CUSTCLEAN ;;
@@ -369,3 +394,5 @@ for arch in x86_64; do
 done
 
 run_once make_iso
+
+echo -e "\n\nALL FINISHED SUCCESSFULLY"
