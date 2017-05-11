@@ -2,12 +2,12 @@
 
 set -e -u
 
-iso_name=fwul
-iso_label="FWUL_$(date +%Y%m)"
-iso_version=$(date +%Y-%m-%d_%H-%M)
+iso_name=FWUL_
+iso_label="FWUL"
+export iso_version=$(date +%Y-%m-%d_%H-%M)
 install_dir=arch
-work_dir=work
-out_dir=out
+work_dir=../fwul-work
+out_dir=../fwul-out
 gpg_key=
 PUBLISHER="Carbon-Fusion <https://github.com/Carbon-Fusion>"
 
