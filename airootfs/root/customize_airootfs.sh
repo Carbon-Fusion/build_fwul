@@ -122,7 +122,7 @@ yaourt -Q jre || xterm -e "sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CUR
 JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
     chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
-    wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get" -o JOdin.tgz
+    wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get" -O JOdin.tgz
     tar -xzf JOdin.tgz -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
     cat >/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop <<EOODIN
 [Desktop Entry]
