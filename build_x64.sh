@@ -4,7 +4,7 @@ set -e -u
 
 iso_name=FWUL_
 iso_label="FWUL"
-export iso_version=$(date +%Y-%m-%d_%H-%M)
+export iso_version="$(echo $(date +%Y-%m-%d_%H-%M)_x86-64)"
 install_dir=arch
 work_dir=../fwul-work
 out_dir=../fwul-out
