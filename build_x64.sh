@@ -11,6 +11,7 @@ out_dir=../fwul-out
 gpg_key=
 PUBLISHER="Carbon-Fusion <https://github.com/Carbon-Fusion>"
 persistent=no
+silent=no
 
 # the default value for available space in MB on a persistent target (e.g. the full space u want to use on a USB stick)
 # can be overwritten by -U
@@ -47,7 +48,8 @@ _usage ()
     echo "******************************************************************"
     echo 
     echo " General options:"
-    echo 
+    echo
+    echo "    -S                 Set silent mode without any questions"
     echo "    -N <iso_name>      Set an iso filename (prefix)"
     echo "                        Default: ${iso_name}"
     echo "    -V <iso_version>   Set an iso version (in filename)"
@@ -317,7 +319,7 @@ F_CLEANLOCKS() {
 
 F_FULLCLEAN(){
 	echo -e "\n\nCLEANING UP WHOLE ISO BUILD BASE! ENFORCES A FULL(!) ISO REBUILD:\n\n"
-        read -p "are you sure????? (CTRL+C to abort)" DUMMY
+        [ "x$SILENT" != "yes" ] && read -p "are you sure????? (CTRL+C to abort)" DUMMY
 	rm -Rf ${work_dir}
 	echo finished..
 }
@@ -338,7 +340,7 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
-while getopts 'N:V:L:D:w:o:g:vhCFcPU:' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCFcPU:S' arg; do
     case "${arg}" in
         P) persistent=yes ;;
         U) USBSIZEMB="$OPTARG";;
@@ -354,6 +356,7 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:' arg; do
         g) gpg_key="${OPTARG}" ;;
         v) verbose="-v" ;;
         h) _usage 0 ;;
+        S) SILENT=yes;;
         *)
            echo "Invalid argument '${arg}'"
            _usage 1
