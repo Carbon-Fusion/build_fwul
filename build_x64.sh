@@ -250,8 +250,14 @@ make_prepare() {
 
 # Enable persistent mode
 persistent_iso() {
-    # define a label for the persistent partition (if changed here - change it in boot conf as well!)
+    # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
+
+    # ensure we get not too big by substracting 8% of the given usb size
+    USBBORDER=$((USBSIZEMB/100*8))
+    echo -e "\tUSBBORDER: $USBBORDER"    
+    USBSIZE=$((USBSIZEMB - USBBORDER))
+    echo -e "\tUSBSIZE: $USBSIZE"    
 
     # partition will be #3 usually
     ISOPARTN=3
@@ -264,8 +270,8 @@ persistent_iso() {
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
     ISOFSIZEMB=$((ISOFSIZEK / 1024))
     echo -e "\tISOFSIZEMB:\t$ISOFSIZEMB"
-    [ "$USBSIZEMB" -lt "$ISOFSIZEMB" ] && echo -e "\n\nERROR: USBSIZEMB $USBSIZEMB has to be equal or higher than the ISO size: $ISOFSIZEMB!" && exit 3
-    REMAINSIZE=$((USBSIZEMB - ISOFSIZEMB))
+    [ "$USBSIZE" -lt "$ISOFSIZEMB" ] && echo -e "\n\nERROR: USBSIZEMB-$USBBORDER=$USBSIZEMB has to be equal or higher than the ISO size: $ISOFSIZEMB!" && exit 3
+    REMAINSIZE=$((USBSIZE - ISOFSIZEMB))
     echo -e "\tREMAINSIZE:\t$REMAINSIZE"
     ISOSIZEG=$((REMAINSIZE / 1024))
     echo -e "\tISOSIZEG:\t$ISOSIZEG"
