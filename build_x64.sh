@@ -11,7 +11,7 @@ out_dir=../fwul-out
 gpg_key=
 PUBLISHER="Carbon-Fusion <https://github.com/Carbon-Fusion>"
 persistent=no
-silent=no
+SILENT=no
 
 # the default value for available space in MB on a persistent target (e.g. the full space u want to use on a USB stick)
 # can be overwritten by -U
