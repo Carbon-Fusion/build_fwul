@@ -100,6 +100,10 @@ fi
 echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
+# install GUI for software installation
+cp /usr/share/applications/pamac-manager.desktop /home/$LOGINUSR/Desktop/
+sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.desktop
+
 # minimal web browser
 yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
 #yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"

@@ -26,6 +26,7 @@ android-tools
 thunar-archive-plugin
 file-roller
 thunar-volman
+pamac
 p7zip
 python2-crypto
 leafpad
