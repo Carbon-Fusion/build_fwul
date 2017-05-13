@@ -29,6 +29,8 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
+echo $iso_version > /etc/fwul_release
+
 # current java version provided with FWUL (to save disk space compressedn and not installed)
 CURJAVA=jre-8u131-1-x86_64.pkg.tar.xz
 
@@ -98,6 +100,10 @@ fi
 echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
+# install GUI for software installation
+cp /usr/share/applications/pamac-manager.desktop /home/$LOGINUSR/Desktop/
+sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.desktop
+
 # minimal web browser
 yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
 #yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"
@@ -105,6 +111,13 @@ yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browse
 
 # prepare Samsung tool dir
 [ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
+
+# install udev-rules
+[ ! -d /home/$LOGINUSR/.android ] && mkdir /home/$LOGINUSR/.android
+[ ! -f /home/$LOGINUSR/.android/adb_usb.ini ] && wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/adb_usb.ini -O /home/$LOGINUSR/.android/adb_usb.ini
+
+# always update the udev rules to be top current
+wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-android.rules -O /etc/udev/rules.d/51-android.rules
 
 # install & add Heimdall
 echo -e "\nheimdall:"
@@ -120,8 +133,8 @@ yaourt -Q jre || xterm -e "sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CUR
 JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
     chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
-    wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get"
-    mv index*get JOdin.tgz && tar -xvzf JOdin.tgz* -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
+    wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get" -O JOdin.tgz
+    tar -xzf JOdin.tgz -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
     cat >/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
@@ -305,7 +318,8 @@ yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm g
 
 # adding qtwebkit as it takes VERY i mean VERY ! long to compile..
 TGZWK=/home/$LOGINUSR/.fwul/tmp/qtwebkit-*.pkg.tar.xz
-pacman --noconfirm -U $TGZWK && rm $TGZWK
+pacman -Q qtwebkit || pacman --noconfirm -U $TGZWK
+rm $TGZWK
 
 # Even as a fallback this takes hours!
 # yaourt -Q qtwebkit || su -c - $LOGINUSR "yaourt -S --noconfirm qtwebkit"
@@ -337,6 +351,9 @@ F_FILEWAIT(){
         fi
     done
 }
+
+# ensure proper perms (have to be done BEFORE using any su LOGINUSER cmd which writes to home dir!)
+chown -R ${LOGINUSR}.users /home/$LOGINUSR/
 
 # activate wallpaper, icons & theme
 echo -e "\nActivate theme etc:"
@@ -370,16 +387,13 @@ if [ ! -f "$FWULXSETS" ];then
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
 
-# ensure proper perms
-chown -R $LOGINUSR /home/$LOGINUSR/
-
 # cleanup
 echo -e "\nCleanup - locale:"
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk"
+IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs testdisk"
 for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
@@ -463,6 +477,8 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
 /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 /usr/share/icons/Numix-Circle/index.theme
+/home/$LOGINUSR/.android/adb_usb.ini
+/etc/udev/rules.d/51-android.rules
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
@@ -490,6 +506,15 @@ fi
 pacman --noconfirm -S expac
 expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 40
 pacman --noconfirm -Rns expac
+
+# create a XDA copy template for the important FWUL package versions
+echo -ne '[*]Versions of the main FWUL components:\n[INDENT]ADB and fastboot: '
+pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
+CHLOG="heimdall-git xfwm4 xorg-server virtualbox-guest-utils" 
+for i in $CHLOG;do
+        pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
+done
+echo -e '[/INDENT]'
 
 #########################################################################################
 # this has always to be the very last thing!

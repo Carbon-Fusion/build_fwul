@@ -23,6 +23,7 @@
         <value type="int" value="4"/>
         <value type="int" value="8"/>
         <value type="int" value="11"/>
+        <value type="int" value="9"/>
       </property>
       <property name="length-adjust" type="bool" value="true"/>
       <property name="disable-struts" type="bool" value="false"/>
@@ -71,6 +72,9 @@
     <property name="plugin-13" type="string" value="tasklist"/>
     <property name="plugin-14" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
+    </property>
+    <property name="plugin-9" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
     </property>
   </property>
 </channel>
