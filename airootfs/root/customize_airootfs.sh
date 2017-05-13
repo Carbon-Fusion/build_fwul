@@ -473,6 +473,8 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
 /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 /usr/share/icons/Numix-Circle/index.theme
+/home/$LOGINUSR/.android/adb_usb.ini
+/etc/udev/rules.d/51-android.rules
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 for req in $(echo -e "$REQFILES"|tr "\n" " ");do
