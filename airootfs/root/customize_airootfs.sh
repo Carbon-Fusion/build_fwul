@@ -112,6 +112,9 @@ yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browse
 [ ! -d /home/$LOGINUSR/.android ] && mkdir /home/$LOGINUSR/.android
 [ -f /home/$LOGINUSR/.android/android.ini ] && wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/adb_usb.ini -O /home/$LOGINUSR/.android/android.ini
 
+# always update the udev rules to be top current
+wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-android.rules -O /etc/udev/rules.d/51-android.rules
+
 # install & add Heimdall
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
