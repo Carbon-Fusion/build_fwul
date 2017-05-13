@@ -108,6 +108,10 @@ yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browse
 # prepare Samsung tool dir
 [ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
 
+# install udev-rules
+[ ! -d /home/$LOGINUSR/.android ] && mkdir /home/$LOGINUSR/.android
+[ -f /home/$LOGINUSR/.android/android.ini ] && wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/adb_usb.ini -O /home/$LOGINUSR/.android/android.ini
+
 # install & add Heimdall
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
