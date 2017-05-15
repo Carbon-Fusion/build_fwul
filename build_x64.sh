@@ -4,7 +4,6 @@ set -e -u
 
 iso_name=FWUL_
 iso_label="FWUL"
-export iso_version="$(echo $(date +%Y-%m-%d_%H-%M)_x86-64)"
 install_dir=arch
 work_dir=../fwul-work
 out_dir=../fwul-out
@@ -18,6 +17,9 @@ SILENT=no
 USBSIZEMB=4000
 
 arch=$(uname -m)
+export arch=$arch
+export iso_version="$(echo $(date +%Y-%m-%d_%H-%M)_$arch)"
+
 verbose=""
 script_path=$(readlink -f ${0%/*})
 
