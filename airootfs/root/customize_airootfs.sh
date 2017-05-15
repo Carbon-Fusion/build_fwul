@@ -100,9 +100,12 @@ fi
 echo -e "\nyad:"
 yaourt -Q yad || su -c - $LOGINUSR "yaourt -S --noconfirm yad"
 
-# install GUI for software installation
+# GUI based package manager
 cp /usr/share/applications/pamac-manager.desktop /home/$LOGINUSR/Desktop/
 sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.desktop
+
+# disable tray to avoid bothering users for updating
+rm /etc/xdg/autostart/pamac-tray.desktop
 
 # minimal web browser
 yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
