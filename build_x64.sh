@@ -323,7 +323,7 @@ persistent_iso() {
 
 # Build ISO
 make_iso() {
-    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o ${out_dir} iso ${iso_name}${iso_version}_${arch}.iso"
+    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}/$arch" iso ${iso_name}${iso_version}_${arch}.iso"
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
     if [ "x$persistent" == "xyes" ];then
         persistent_iso
