@@ -2,6 +2,7 @@
 
 set -e -u
 
+lock_file="./build.lock"
 iso_name=FWUL_
 iso_label="FWUL"
 install_dir=arch
@@ -371,6 +372,10 @@ CLEANALL=0
 CLEANCUST=0
 CLEANLOCK=0
 
+# do not run builds in parallel 
+[ -f $lock_file ] && echo -e "\nERROR: There is a build currently running?!\nIf you are sure that there is none running delete $lock_file\n" && exit
+> $lock_file
+
 while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
     case "${arg}" in
         S) SILENT=yes;;
@@ -459,4 +464,5 @@ for arch in $ARCH; do
     run_once make_iso
 done
 
+rm $lock_file
 echo -e "\n\nALL FINISHED SUCCESSFULLY"
