@@ -31,8 +31,9 @@ RPW=$LOGINPW
 
 echo $iso_version > /etc/fwul_release
 
-# current java version provided with FWUL (to save disk space compressedn and not installed)
-CURJAVA=jre-8u131-1-x86_64.pkg.tar.xz
+# current java version provided with FWUL (to save disk space compressed and not installed)
+CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
+INSTJAVA="sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/jre-8u131-1-${arch}.pkg.tar.xz"
 
 # add live user but ensure this happens when not there already
 echo -e "\nuser setup:"
@@ -54,19 +55,23 @@ cat > $TMPSUDOERS <<EOSUDOERS
 ALL     ALL=(ALL) NOPASSWD: ALL
 EOSUDOERS
 
-# init pacman + multilib
-# O M G ! This is so crappy bullshit! when build.sh see's 
-# the returncode 1 it just stops?!! so I use that funny workaround..
-RET=$(egrep -q '^\[multilib' /etc/pacman.conf||echo missing)
-if [ "$RET" == "missing" ];then
-    echo "adding multilib to conf"
-    cat >>/etc/pacman.conf<<EOPACMAN
+if [ $arch == "x86_64" ];then
+    # init pacman + multilib
+    # O M G ! This is so crappy bullshit! when build.sh see's 
+    # the returncode 1 it just stops?!! so I use that funny workaround..
+    RET=$(egrep -q '^\[multilib' /etc/pacman.conf||echo missing)
+    if [ "$RET" == "missing" ];then
+        echo "adding multilib to conf"
+        cat >>/etc/pacman.conf<<EOPACMAN
 [multilib]
 SigLevel = PackageRequired
 Include = /etc/pacman.d/mirrorlist
 EOPACMAN
+    else
+        echo skipping multilib because it is configured already
+    fi
 else
-    echo skipping multilib because it is configured already
+    echo "SKIPPING multilib because of $arch"
 fi
 pacman-key --init
 pacman-key --populate archlinux
@@ -125,17 +130,18 @@ yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
 
 # install JOdin3
-if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
-    mkdir /home/$LOGINUSR/programs/JOdin
-    cat >/home/$LOGINUSR/programs/JOdin/starter.sh <<EOEXECOD
+if [ $arch == "x86_64" ];then
+    if [ ! -d /home/$LOGINUSR/programs/JOdin ];then
+        mkdir /home/$LOGINUSR/programs/JOdin
+        cat >/home/$LOGINUSR/programs/JOdin/starter.sh <<EOEXECOD
 #!/bin/bash
-yaourt -Q jre || xterm -e "sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA"
+yaourt -Q jre || xterm -e "$INSTJAVA"
 JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
-    chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
-    wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get" -O JOdin.tgz
-    tar -xzf JOdin.tgz -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
-    cat >/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop <<EOODIN
+        chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
+        wget "https://forum.xda-developers.com/devdb/project/dl/?id=20803&task=get" -O JOdin.tgz
+        tar -xzf JOdin.tgz -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
+        cat >/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -145,7 +151,10 @@ Name=JOdin3
 Exec=/home/$LOGINUSR/programs/JOdin/starter.sh
 Icon=/home/$LOGINUSR/.fwul/odin-logo.jpg
 EOODIN
-chmod +x /home/$LOGINUSR/Desktop/Samsung/JOdin.desktop
+        chmod +x /home/$LOGINUSR/Desktop/Samsung/JOdin.desktop
+    fi
+else
+    echo "SKIPPING JODIN INSTALL: Arch $arch detected!"
 fi
 
 # firefox installer
@@ -199,9 +208,13 @@ Icon=aptoncd
 EOODIN
 chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
 
-# SP Flash Tools installer
-echo -e "\nSP Flash Tools:"
-cat >/home/$LOGINUSR/Desktop/install-spflash.desktop <<EOSPF
+# even when there is an old/outdated version of spflashtool on an old website it is not possible to 
+# get it working on 32bit
+# http://spflashtool.org/download/SP_Flash_Tool_Linux_32Bit_v5.1520.00.100.zip <--- THIS CONTAINS 64bit BINARIES!!!
+if [ $arch == "x86_64" ];then
+    # SP Flash Tools installer
+    echo -e "\nSP Flash Tools:"
+    cat >/home/$LOGINUSR/Desktop/install-spflash.desktop <<EOSPF
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -211,7 +224,8 @@ Name=SP FlashTools Installer
 Exec=/home/$LOGINUSR/.fwul/install_spflash.sh
 Icon=aptoncd
 EOSPF
-chmod +x /home/$LOGINUSR/Desktop/install-spflash.desktop
+    chmod +x /home/$LOGINUSR/Desktop/install-spflash.desktop
+fi
 
 # Sony Flash Tools installer
 echo -e "\nSony Flash Tools:"
@@ -289,7 +303,7 @@ EOSADB
 
 cat >/home/$LOGINUSR/programs/sadb/starter.sh <<EOEXECADB
 #!/bin/bash
-yaourt -Q jre || xterm -e "sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA"
+yaourt -Q jre || xterm -e "$INSTJAVA"
 java -jar /home/$LOGINUSR/programs/sadb/S-ADB.jar
 EOEXECADB
 chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
@@ -316,13 +330,12 @@ yaourt -Q numix-circle-icon-theme-git || su -c - $LOGINUSR "yaourt -S --noconfir
 rm -Rf /usr/share/icons/Numix-Circle-Light/
 yaourt -Q gtk-theme-windows10-dark || su -c - $LOGINUSR "yaourt -S --noconfirm gtk-theme-windows10-dark"
 
-# adding qtwebkit as it takes VERY i mean VERY ! long to compile..
-TGZWK=/home/$LOGINUSR/.fwul/tmp/qtwebkit-*.pkg.tar.xz
+# the hell of qtwebkit (required for SP flashtool ONLY)
+# Even as a fallback this takes HOURS!
+# as building for 32bit was not possible I use the precompiled i686 package from:
+# https://sourceforge.net/projects/bluestarlinux/files/repo/i686/
+TGZWK=/home/$LOGINUSR/.fwul/tmp/qtwebkit-*-${arch}.pkg.tar.xz
 pacman -Q qtwebkit || pacman --noconfirm -U $TGZWK
-rm $TGZWK
-
-# Even as a fallback this takes hours!
-# yaourt -Q qtwebkit || su -c - $LOGINUSR "yaourt -S --noconfirm qtwebkit"
 
 # Create a MD5 for a given file or set to 0 if file is missing
 F_DOMD5(){
@@ -412,6 +425,13 @@ rm -rvf /usr/share/doc/* /usr/share/gtk-doc/html/*
 echo -e "\nCleanup - misc:"
 rm -rvf /*.tgz /*.tar.gz /yaourt/ /package-query/ /home/$LOGINUSR/.fwul/tmp/*
 
+echo -e "\nCleanup - arch dependent:"
+if [ $arch == "i686" ];then
+    rm "/home/$LOGINUSR/.fwul/jre-8u131-1-x86_64.pkg.tar.xz"
+else
+    rm "/home/$LOGINUSR/.fwul/jre-8u131-1-i686.pkg.tar.xz"
+fi
+
 echo -e "\nCleanup - archiso:"
 rm -rvf /etc/fwul
 
@@ -453,6 +473,8 @@ EOSETPWROOTPW
 # TEST AREA - TEST AREA - TEST AREA 
 
 echo -e "\nTESTING FWUL BUILD!"
+
+# arch independent requirements
 REQFILES="/home/$LOGINUSR/.fwul/wallpaper_fwul.png 
 $FWULDESKTOP
 $FWULXFWM4
@@ -468,12 +490,8 @@ $RSUDOERS
 /usr/bin/fastboot
 /usr/bin/heimdall
 /usr/bin/yaourt
-/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop
 /home/$LOGINUSR/.fwul/odin-logo.jpg
-/home/$LOGINUSR/programs/JOdin/starter.sh
-/home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 /home/$LOGINUSR/.fwul/install_spflash.sh
-/home/$LOGINUSR/Desktop/install-spflash.desktop
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
 /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 /usr/share/icons/Numix-Circle/index.theme
@@ -481,12 +499,27 @@ $RSUDOERS
 /etc/udev/rules.d/51-android.rules
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
-for req in $(echo -e "$REQFILES"|tr "\n" " ");do
-    if [ -f "$req" ];then 
-        echo -e "\t... testing: $req --> OK"
+# 32bit requirements (extend with 32bit ONLY.
+# If the test is the same for both arch use REQFILES instead)
+REQFILES_i686="$REQFILES"
+
+# 64bit requirements (extend with 64bit ONLY. 
+# If the test is the same for both arch use REQFILES instead)
+REQFILES_x86_64="$REQFILES
+/home/$LOGINUSR/Desktop/install-spflash.desktop
+/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop
+/home/$LOGINUSR/programs/JOdin/starter.sh
+/home/$LOGINUSR/programs/JOdin/JOdin3CASUAL"
+
+
+CURREQ="REQFILES_${arch}"
+
+for req in $(echo -e "${!CURREQ}"|tr "\n" " ");do
+    if [ -f "$req" ];then
+        echo -e "\t... testing ($arch): $req --> OK"
     else
         echo -e "\t******************************************************************************"
-        echo -e "\tERROR: testing $req --> FAILED!!"
+        echo -e "\tERROR: testing ($arch) $req --> FAILED!!"
         echo -e "\t******************************************************************************"
         exit 3
     fi

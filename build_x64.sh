@@ -12,13 +12,16 @@ PUBLISHER="Carbon-Fusion <https://github.com/Carbon-Fusion>"
 persistent=no
 SILENT=no
 
+# default arch to build for
+ARCH='i686 x86_64'
+
 # the default value for available space in MB on a persistent target (e.g. the full space u want to use on a USB stick)
 # can be overwritten by -U
 USBSIZEMB=4000
 
 arch=$(uname -m)
 export arch=$arch
-export iso_version="$(echo $(date +%Y-%m-%d_%H-%M)_$arch)"
+export iso_version="$(date +%Y-%m-%d_%H-%M)"
 
 verbose=""
 script_path=$(readlink -f ${0%/*})
@@ -51,6 +54,8 @@ _usage ()
     echo 
     echo " General options:"
     echo
+    echo "    -A '<arch1 arch2>' Set architecture(s) to build for"
+    echo "                        Default: '${ARCH}'"
     echo "    -S                 Set silent mode without any questions"
     echo "    -N <iso_name>      Set an iso filename (prefix)"
     echo "                        Default: ${iso_name}"
@@ -318,14 +323,19 @@ persistent_iso() {
 
 # Build ISO
 make_iso() {
-    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}.iso"
-    [ "x$persistent" == "xyes" ] && persistent_iso
+    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o ${out_dir} iso ${iso_name}${iso_version}_${arch}.iso"
+    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
+    if [ "x$persistent" == "xyes" ];then
+        persistent_iso
+    fi
 }
 
 # clean lock files
 F_CLEANLOCKS() {
 	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the ISO base intact):\n\n"
-	rm -fv ${work_dir}/build.make_*
+        for arch in i686 x86_64;do
+	    rm -fv ${work_dir}/$arch/build.make_*
+        done
 	echo finished..
 }
 
@@ -338,7 +348,9 @@ F_FULLCLEAN(){
 
 F_CUSTCLEAN(){
     echo -e "\nEnforcing re-run of customize script. This will NOT re-create the ISO!\n\n"
-    rm -vf ${work_dir}/build.make_customize_airootfs*
+    for arch in i686 x86_64;do
+        rm -vf ${work_dir}/$arch/build.make_customize_airootfs*
+    done
     echo finished..
 }
 
@@ -352,7 +364,7 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
-while getopts 'N:V:L:D:w:o:g:vhCFcPU:S' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
     case "${arg}" in
         P) persistent=yes ;;
         U) USBSIZEMB="$OPTARG";;
@@ -369,6 +381,7 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:S' arg; do
         v) verbose="-v" ;;
         h) _usage 0 ;;
         S) SILENT=yes;;
+        A) ARCH="${OPTARG}" ;;
         *)
            echo "Invalid argument '${arg}'"
            _usage 1
@@ -376,38 +389,63 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:S' arg; do
     esac
 done
 
-mkdir -p ${work_dir}
+basedir=$work_dir
 
-run_once make_pacman_conf
+
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
+    mkdir -p $work_dir
+    run_once make_pacman_conf
+done
 
 # Do all stuff for each airootfs
-for arch in x86_64; do
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
     run_once make_basefs
     run_once make_packages
 done
 
-run_once make_packages_efi
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
+    run_once make_packages_efi
+done
 
-for arch in x86_64; do
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
     run_once make_setup_mkinitcpio
     run_once make_customize_airootfs
 done
 
-for arch in x86_64; do
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
     run_once make_boot
 done
 
 # Do all stuff for "iso"
-run_once make_boot_extra
-run_once make_syslinux
-run_once make_isolinux
-run_once make_efi
-run_once make_efiboot
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
+    run_once make_boot_extra
+    run_once make_syslinux
+    run_once make_isolinux
+done
 
-for arch in x86_64; do
+for arch in $ARCH;do
+    # UEFI support when 64bit only
+    if [ $arch == "x86_64" ];then
+        export work_dir="${basedir}/${arch}"
+        run_once make_efi
+        run_once make_efiboot
+    fi
+done
+
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
     run_once make_prepare
 done
 
-run_once make_iso
+for arch in $ARCH; do
+    export work_dir="${basedir}/${arch}"
+    run_once make_iso
+done
 
 echo -e "\n\nALL FINISHED SUCCESSFULLY"
