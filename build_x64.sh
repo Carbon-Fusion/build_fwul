@@ -43,7 +43,7 @@ _usage ()
     echo " Persistent mode options:"
     echo 
     echo "    -P                 Creates a persistent ISO with a defined USB disk space"
-    echo "                        Default (if -U is not specified): $USBSIZE"
+    echo "                        Default (if -U is not specified): $USBSIZEMB"
     echo "    -U <USBSIZE-in-MB> Overwriting the default disk space in MB"
     echo "                        -P have to be specified as well!"
     echo 
@@ -72,8 +72,12 @@ _usage ()
 # Helper function to run make_*() only one time per architecture.
 run_once() {
     if [[ ! -e ${work_dir}/build.${1}_${arch} ]]; then
+        echo "Starting task $1 ($arch):"
         $1
         touch ${work_dir}/build.${1}_${arch}
+        echo "Task $1 ($arch) finished successfully"
+    else 
+        echo "Skipping $1 ($arch) as already done"
     fi
 }
 
