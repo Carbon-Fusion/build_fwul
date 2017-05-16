@@ -323,7 +323,7 @@ persistent_iso() {
 
 # Build ISO
 make_iso() {
-    export out_dir="${out_dir}/${arch}"
+    export out_dir="${baseoutdir}/${arch}"
     echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}.iso"
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
     if [ "x$persistent" == "xyes" ];then
@@ -391,7 +391,7 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
 done
 
 basedir=$work_dir
-
+baseoutdir=$out_dir
 
 for arch in $ARCH; do
     export work_dir="${basedir}/${arch}"
