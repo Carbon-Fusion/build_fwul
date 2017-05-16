@@ -375,6 +375,7 @@ CLEANLOCK=0
 # do not run builds in parallel 
 [ -f $lock_file ] && echo -e "\nERROR: There is a build currently running?!\nIf you are sure that there is none running delete $lock_file\n" && exit 9
 > $lock_file
+chmod 666 $lock_file
 
 while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
     case "${arg}" in
