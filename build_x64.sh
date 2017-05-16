@@ -276,7 +276,7 @@ persistent_iso() {
 
     # part1: blow the ISO up
     # get the size of the FWUL ISO
-    ISOFSIZEK=$(du -s ${out_dir}/${iso_name}${iso_version}.iso | sed 's#\s.*##g')
+    ISOFSIZEK=$(du -s ${out_dir}/${iso_name}${iso_version}_${arch}.iso | sed 's#\s.*##g')
     echo -e "\tISOFSIZEK:\t$ISOFSIZEK"
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
     ISOFSIZEMB=$((ISOFSIZEK / 1024))
@@ -289,41 +289,42 @@ persistent_iso() {
     PERSISTSIZE=$((REMAINSIZE * 1024 * 2))
     echo -e "\tPERSISTSIZE:\t$PERSISTSIZE"
     # extend the ISO with the calculated amount
-    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}.iso
+    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}_${arch}.iso
     
     # part2: partitioning
     echo -e "\nCreating persistent partition:\n"
     # the following will magically create a partition with all space of the previous blowed up space
-    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}.iso
+    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}_${arch}.iso
 
     # part3: format it
     echo -e "\nFormatting persistent partition:\n"
     # get start of the persistent partition
-    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOOFF:\t\t$LOOFF"
     LOOFFSET=$((LOOFF * 512))
     echo -e "\tLOOFFSET:\t$LOOFFSET"
     # get end of the persistent partition
-    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOSZ:\t\t$LOSZ"
     LOSZLIMIT=$((LOSZ * 512))
     echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
     # prepare loop device
     LOOPDEV="$(losetup -f)"
-    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}.iso
+    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}_${arch}.iso
     # format it (label is important for the Arch boot later!)
     mkfs -t ext4 -L $PERSLABEL $LOOPDEV
     losetup -d $LOOPDEV
 
     # part4: compress & cleanup
     CURDIR=$(pwd)
-    cd ${out_dir} && zip ${iso_name}${iso_version}.zip ${iso_name}${iso_version}.iso && rm ${iso_name}${iso_version}.iso
+    cd ${out_dir} && zip ${iso_name}${iso_version}_${arch}.zip ${iso_name}${iso_version}_${arch}.iso && rm ${iso_name}${iso_version}_${arch}.iso
     cd "$CURDIR"
 }
 
 # Build ISO
 make_iso() {
-    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}/$arch" iso ${iso_name}${iso_version}_${arch}.iso"
+    export out_dir="${out_dir}/${arch}"
+    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}.iso"
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
     if [ "x$persistent" == "xyes" ];then
         persistent_iso
