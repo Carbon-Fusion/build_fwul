@@ -367,13 +367,18 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
+CLEANALL=0
+CLEANCUST=0
+CLEANLOCK=0
+
 while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
     case "${arg}" in
+        S) SILENT=yes;;
         P) persistent=yes ;;
         U) USBSIZEMB="$OPTARG";;
-	C) F_CLEANLOCKS ;;
-	F) F_FULLCLEAN ;;
-        c) F_CUSTCLEAN ;;
+        C) CLEANLOCK=1 ;;
+        F) CLEANALL=1 ;;
+        c) CLEANCUST=1 ;;
         N) iso_name="${OPTARG}" ;;
         V) export iso_version="${OPTARG}" ;;
         L) iso_label="${OPTARG}" ;;
@@ -383,7 +388,6 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
         g) gpg_key="${OPTARG}" ;;
         v) verbose="-v" ;;
         h) _usage 0 ;;
-        S) SILENT=yes;;
         A) ARCH="${OPTARG}" ;;
         *)
            echo "Invalid argument '${arg}'"
@@ -391,6 +395,10 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
            ;;
     esac
 done
+
+[ "$CLEANALL" -eq 1 ]&& F_FULLCLEAN
+[ "$CLEANCUST" -eq 1 ]&& F_CUSTCLEAN
+[ "$CLEANLOCK" -eq 1 ]&& F_CLEANLOCKS
 
 basedir=$work_dir
 baseoutdir=$out_dir
