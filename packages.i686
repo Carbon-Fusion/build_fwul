@@ -38,5 +38,6 @@ xfconf
 xfdesktop
 xfwm4
 xorg-server
+xf86-video-intel
 xorg-xkbcomp
 xterm
