@@ -271,8 +271,15 @@ persistent_iso() {
     USBSIZE=$((USBSIZEMB - USBBORDER))
     echo -e "\tUSBSIZE: $USBSIZE"    
 
-    # partition will be #3 usually
-    ISOPARTN=3
+    # the partition number depends on arch (or better on UEFI or not)
+    if [ "$arch" == "i686" ];then
+        # partition will be #2 when UEFI is NOT in place
+        ISOPARTN=2
+    else
+        # partition will be #3 when UEFI is in place
+        ISOPARTN=3
+    fi
+
     echo -e "\nPreparing persistent setup:\n"
 
     # part1: blow the ISO up
