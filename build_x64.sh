@@ -334,9 +334,15 @@ make_iso() {
     export out_dir="${baseoutdir}/${arch}"
     echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}.iso"
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
+    targetfile="${iso_name}${iso_version}_${arch}.iso"
     if [ "x$persistent" == "xyes" ];then
         persistent_iso
+        targetfile=${iso_name}${iso_version}_${arch}.zip
     fi
+    CURDIR=$(pwd)
+    cd ${out_dir}
+    make_md5 "$targetfile"
+    cd "$CURDIR"
 }
 
 # clean lock files
@@ -363,6 +369,16 @@ F_CUSTCLEAN(){
         rm -vf ${work_dir}/$arch/build.make_customize_airootfs*
     done
     echo finished..
+}
+
+make_md5(){
+    CHKFILE="$1"
+    if [ -f "$CHKFILE" ];then
+        md5sum $CHKFILE > ${CHKFILE}.md5
+    else
+        echo ERROR: MISSING FILE FOR MD5 CHECK
+        exit 3
+    fi
 }
 
 if [[ ${EUID} -ne 0 ]]; then
