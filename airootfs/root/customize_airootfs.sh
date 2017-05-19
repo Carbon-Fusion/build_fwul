@@ -114,6 +114,9 @@ yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browse
 #yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"
 #yaourt -Q min || su -c - $LOGINUSR "yaourt -S --noconfirm min"
 
+# set default browser
+xdg-settings set default-web-browser otter-browser.desktop
+
 # prepare Samsung tool dir
 [ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
 
@@ -128,6 +131,39 @@ wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-andro
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
+
+# install welcome screen
+echo -e "\nwelcome-screen:"
+if [ ! -d /home/$LOGINUSR/programs/welcome ];then
+    git clone https://github.com/Carbon-Fusion/fwul_welcome.git /home/$LOGINUSR/programs/welcome
+    # install the regular welcome screen
+    if [ ! -f /home/$LOGINUSR/.config/autostart/welcome.desktop ];then
+        cat > /home/$LOGINUSR/.config/autostart/welcome.desktop<<EOWAS
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=FWUL Welcome Screen
+Terminal=false
+Name=Welcome
+Exec=/home/$LOGINUSR/programs/welcome/welcome.sh
+Icon=/home/$LOGINUSR/programs/welcome/icons/welcome.png
+EOWAS
+    fi
+    # install the force welcome screen (when user manually want to start it)
+    if [ ! -f /home/$LOGINUSR/Desktop/welcome.desktop ];then
+        cat > /home/$LOGINUSR/Desktop/welcome.desktop <<EOWASF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=FWUL Welcome Screen
+Terminal=false
+Name=Welcome
+Exec=/home/$LOGINUSR/programs/welcome/welcome-force.sh
+Icon=/home/$LOGINUSR/programs/welcome/icons/welcome.png
+EOWASF
+    fi
+    chmod +x /home/$LOGINUSR/.config/autostart/welcome.desktop /home/$LOGINUSR/Desktop/welcome.desktop
+fi
 
 # install JOdin3
 if [ $arch == "x86_64" ];then
