@@ -286,10 +286,10 @@ persistent_iso() {
 
     # part1: blow the ISO up
     # get the size of the FWUL ISO
-    ISOFSIZEK=$(du -s ${out_dir}/${iso_name}${iso_version}_${arch}.iso | sed 's#\s.*##g')
-    echo -e "\tISOFSIZEK:\t$ISOFSIZEK"
+    ISOFSIZEB=$(stat -c %s ${out_dir}/${iso_name}${iso_version}_${arch}.iso)
+    echo -e "\tISOFSIZEB:\t$ISOFSIZEB"
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
-    ISOFSIZEMB=$((ISOFSIZEK / 1024))
+    ISOFSIZEMB=$((ISOFSIZEB / 1024 / 1024))
     echo -e "\tISOFSIZEMB:\t$ISOFSIZEMB"
     [ "$USBSIZE" -lt "$ISOFSIZEMB" ] && echo -e "\n\nERROR: USBSIZEMB-$USBBORDER=$USBSIZEMB has to be equal or higher than the ISO size: $ISOFSIZEMB!" && exit 3
     REMAINSIZE=$((USBSIZE - ISOFSIZEMB))
