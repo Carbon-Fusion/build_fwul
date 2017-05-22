@@ -474,7 +474,11 @@ rm -rvf /etc/fwul
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
+
+# special rules for session
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
+%wheel     ALL=(ALL) NOPASSWD: /bin/umount -l /tmp
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv ~/tmptmp/* /tmp/
 
 # let the user sync the databases without asking for pw
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
@@ -484,6 +488,8 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/teamviewer*.pkg.tar.xz
+# i686 rule
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm community/libpng12 community/libjpeg6-turbo
 
 # special rule for Sony Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool

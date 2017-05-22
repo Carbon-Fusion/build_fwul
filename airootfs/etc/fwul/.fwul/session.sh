@@ -25,3 +25,13 @@ if [ "$MEMMB" -ge 100 ];then
     sudo mount -o remount,size=${MEMMB}m /run/archiso/cowspace
 fi
 
+# check if we run in persistent mode or not and unmount /tmp if RAM less than required min
+for opt in $(cat /proc/cmdline);do
+        if [ "${opt%=*}" == "cow_label" ] && [ "$AVAILMEM" -lt 1024 ];then
+            cp -a /tmp ~/tmptmp
+            sudo umount -l /tmp
+            sudo mv ~/tmptmp/* /tmp/
+            rm -Rf ~/tmptmp
+        fi
+done
+
