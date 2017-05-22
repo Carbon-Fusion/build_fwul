@@ -5,3 +5,4 @@
 /orig_packages.both
 /orig_packages.x86_64
 /packages.x86_64.xfce
+*.lock
