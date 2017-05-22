@@ -468,6 +468,9 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -Sy
 
+# query file sizes without any prompt
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --print-format %s -S *
+
 # special rules for TeamViewer
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
