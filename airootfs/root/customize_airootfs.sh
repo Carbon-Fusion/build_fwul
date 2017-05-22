@@ -190,19 +190,6 @@ else
     echo "SKIPPING JODIN INSTALL: Arch $arch detected!"
 fi
 
-# firefox installer
-cat >/home/$LOGINUSR/Desktop/install-firefox.desktop <<EOsflashinst
-[Desktop Entry]
-Version=1.0
-Type=Application
-Comment=Mozilla Firefox Installer
-Terminal=false
-Name=Firefox installer
-Exec=/home/$LOGINUSR/.fwul/install-firefox.sh
-Icon=aptoncd
-EOsflashinst
-chmod +x /home/$LOGINUSR/Desktop/install-firefox.desktop
-
 # chromium installer
 cat >/home/$LOGINUSR/Desktop/install-chromium.desktop <<EOsflashinst
 [Desktop Entry]
