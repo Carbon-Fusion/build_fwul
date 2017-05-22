@@ -110,12 +110,9 @@ sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.d
 [ -f /etc/xdg/autostart/pamac-tray.desktop ] && rm /etc/xdg/autostart/pamac-tray.desktop
 
 # minimal web browser
-yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
+#yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
 #yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"
 #yaourt -Q min || su -c - $LOGINUSR "yaourt -S --noconfirm min"
-
-# set default browser
-xdg-settings set default-web-browser otter-browser.desktop
 
 # prepare Samsung tool dir
 [ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
@@ -478,7 +475,7 @@ cat > $RSUDOERS <<EOSUDOERS
 # special rules for session
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
 %wheel     ALL=(ALL) NOPASSWD: /bin/umount -l /tmp
-%wheel     ALL=(ALL) NOPASSWD: /bin/mv ~/tmptmp/* /tmp/
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv /var/tmp/* /tmp/
 
 # let the user sync the databases without asking for pw
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
