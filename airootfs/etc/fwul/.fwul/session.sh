@@ -21,17 +21,16 @@ AVAILMEM=$(cat /proc/meminfo |grep MemFree| egrep -o '[0-9]*')
 MEMMB=$((AVAILMEM*2/3/1024))
 
 # remount with the new size when the value is valid
-if [ "$MEMMB" -ge 100 ];then
+if [ "$MEMMB" -ge 700 ];then
     sudo mount -o remount,size=${MEMMB}m /run/archiso/cowspace
 fi
 
 # check if we run in persistent mode or not and unmount /tmp if RAM less than required min
 for opt in $(cat /proc/cmdline);do
-        if [ "${opt%=*}" == "cow_label" ] && [ "$AVAILMEM" -lt 1024 ];then
-            cp -a /tmp ~/tmptmp
+        if [ "${opt%=*}" == "cow_label" ] && [ "$MEMMB" -lt 1024 ];then
+            cp -a /tmp/* /var/tmp/
             sudo umount -l /tmp
-            sudo mv ~/tmptmp/* /tmp/
-            rm -Rf ~/tmptmp
+            sudo mv /var/tmp/* /tmp/
         fi
 done
 
