@@ -73,8 +73,11 @@ EOPACMAN
 else
     echo "SKIPPING multilib because of $arch"
 fi
+
+# initialize the needed keyrings
+haveged -w 1024
 pacman-key --init
-pacman-key --populate archlinux
+pacman-key --populate archlinux antergos
 pacman -Syu --noconfirm
 
 # install yaourt the hard way..
