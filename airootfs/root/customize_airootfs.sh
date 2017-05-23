@@ -78,25 +78,25 @@ pacman-key --populate archlinux
 pacman -Syu --noconfirm
 
 # install yaourt the hard way..
-RET=0
-pacman -Q package-query || RET=$?
-if [ $RET -ne 0 ];then
-    echo -e "\nyaourt:"
-    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
-    tar -xvzf package-query.tar.gz
-    chown $LOGINUSR -R /package-query
-    cd package-query
-    su -c - $LOGINUSR "makepkg --noconfirm -sf"
-    pacman --noconfirm -U package-query*.pkg.tar.xz
-    cd ..
-    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
-    tar -xvzf yaourt.tar.gz
-    chown $LOGINUSR -R yaourt
-    cd yaourt
-    su -c - $LOGINUSR "makepkg --noconfirm -sf"
-    pacman --noconfirm -U yaourt*.pkg.tar.xz
-    cd ..
-fi
+#RET=0
+#pacman -Q package-query || RET=$?
+#if [ $RET -ne 0 ];then
+#    echo -e "\nyaourt:"
+#    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+#    tar -xvzf package-query.tar.gz
+#    chown $LOGINUSR -R /package-query
+#    cd package-query
+#    su -c - $LOGINUSR "makepkg --noconfirm -sf"
+#    pacman --noconfirm -U package-query*.pkg.tar.xz
+#    cd ..
+#    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+#    tar -xvzf yaourt.tar.gz
+#    chown $LOGINUSR -R yaourt
+#    cd yaourt
+#    su -c - $LOGINUSR "makepkg --noconfirm -sf"
+#    pacman --noconfirm -U yaourt*.pkg.tar.xz
+#    cd ..
+#fi
 
 # install yad
 echo -e "\nyad:"
