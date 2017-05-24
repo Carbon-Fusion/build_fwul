@@ -2,6 +2,7 @@
 
 set -e -u
 
+lock_file="./build.lock"
 iso_name=FWUL_
 iso_label="FWUL"
 install_dir=arch
@@ -135,6 +136,8 @@ make_setup_mkinitcpio() {
 
 # Customize installation (airootfs)
 make_customize_airootfs() {
+    export persistent=$persistent
+
     cp -af ${script_path}/airootfs ${work_dir}/${arch}
 
     curl -o ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
@@ -270,16 +273,23 @@ persistent_iso() {
     USBSIZE=$((USBSIZEMB - USBBORDER))
     echo -e "\tUSBSIZE: $USBSIZE"    
 
-    # partition will be #3 usually
-    ISOPARTN=3
+    # the partition number depends on arch (or better on UEFI or not)
+    if [ "$arch" == "i686" ];then
+        # partition will be #2 when UEFI is NOT in place
+        ISOPARTN=2
+    else
+        # partition will be #3 when UEFI is in place
+        ISOPARTN=3
+    fi
+
     echo -e "\nPreparing persistent setup:\n"
 
     # part1: blow the ISO up
     # get the size of the FWUL ISO
-    ISOFSIZEK=$(du -s ${out_dir}/${iso_name}${iso_version}.iso | sed 's#\s.*##g')
-    echo -e "\tISOFSIZEK:\t$ISOFSIZEK"
+    ISOFSIZEB=$(stat -c %s ${out_dir}/${iso_name}${iso_version}_${arch}.iso)
+    echo -e "\tISOFSIZEB:\t$ISOFSIZEB"
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
-    ISOFSIZEMB=$((ISOFSIZEK / 1024))
+    ISOFSIZEMB=$((ISOFSIZEB / 1024 / 1024))
     echo -e "\tISOFSIZEMB:\t$ISOFSIZEMB"
     [ "$USBSIZE" -lt "$ISOFSIZEMB" ] && echo -e "\n\nERROR: USBSIZEMB-$USBBORDER=$USBSIZEMB has to be equal or higher than the ISO size: $ISOFSIZEMB!" && exit 3
     REMAINSIZE=$((USBSIZE - ISOFSIZEMB))
@@ -289,45 +299,52 @@ persistent_iso() {
     PERSISTSIZE=$((REMAINSIZE * 1024 * 2))
     echo -e "\tPERSISTSIZE:\t$PERSISTSIZE"
     # extend the ISO with the calculated amount
-    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}.iso
+    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}_${arch}.iso
     
     # part2: partitioning
     echo -e "\nCreating persistent partition:\n"
     # the following will magically create a partition with all space of the previous blowed up space
-    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}.iso
+    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}_${arch}.iso
 
     # part3: format it
     echo -e "\nFormatting persistent partition:\n"
     # get start of the persistent partition
-    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOOFF:\t\t$LOOFF"
     LOOFFSET=$((LOOFF * 512))
     echo -e "\tLOOFFSET:\t$LOOFFSET"
     # get end of the persistent partition
-    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOSZ:\t\t$LOSZ"
     LOSZLIMIT=$((LOSZ * 512))
     echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
     # prepare loop device
     LOOPDEV="$(losetup -f)"
-    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}.iso
+    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}_${arch}.iso
     # format it (label is important for the Arch boot later!)
     mkfs -t ext4 -L $PERSLABEL $LOOPDEV
     losetup -d $LOOPDEV
 
     # part4: compress & cleanup
     CURDIR=$(pwd)
-    cd ${out_dir} && zip ${iso_name}${iso_version}.zip ${iso_name}${iso_version}.iso && rm ${iso_name}${iso_version}.iso
+    cd ${out_dir} && zip ${iso_name}${iso_version}_${arch}.zip ${iso_name}${iso_version}_${arch}.iso && rm ${iso_name}${iso_version}_${arch}.iso
     cd "$CURDIR"
 }
 
 # Build ISO
 make_iso() {
-    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}/$arch" iso ${iso_name}${iso_version}_${arch}.iso"
+    export out_dir="${baseoutdir}/${arch}"
+    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}.iso"
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
+    targetfile="${iso_name}${iso_version}_${arch}.iso"
     if [ "x$persistent" == "xyes" ];then
         persistent_iso
+        targetfile=${iso_name}${iso_version}_${arch}.zip
     fi
+    CURDIR=$(pwd)
+    cd ${out_dir}
+    make_md5 "$targetfile"
+    cd "$CURDIR"
 }
 
 # clean lock files
@@ -341,7 +358,9 @@ F_CLEANLOCKS() {
 
 F_FULLCLEAN(){
 	echo -e "\n\nCLEANING UP WHOLE ISO BUILD BASE! ENFORCES A FULL(!) ISO REBUILD:\n\n"
-        [ "x$SILENT" != "xyes" ] && read -p "are you sure????? (CTRL+C to abort)" DUMMY
+        if [ "x$SILENT" != "xyes" ];then
+            read -p "are you sure????? (CTRL+C to abort)" DUMMY
+        fi
 	rm -Rf ${work_dir}
 	echo finished..
 }
@@ -354,6 +373,16 @@ F_CUSTCLEAN(){
     echo finished..
 }
 
+make_md5(){
+    CHKFILE="$1"
+    if [ -f "$CHKFILE" ];then
+        md5sum $CHKFILE > ${CHKFILE}.md5
+    else
+        echo ERROR: MISSING FILE FOR MD5 CHECK
+        exit 3
+    fi
+}
+
 if [[ ${EUID} -ne 0 ]]; then
     echo "This script must be run as root."
     _usage 1
@@ -364,13 +393,23 @@ if [[ ${arch} != x86_64 ]]; then
     _usage 1
 fi
 
+CLEANALL=0
+CLEANCUST=0
+CLEANLOCK=0
+
+# do not run builds in parallel 
+[ -f $lock_file ] && echo -e "\nERROR: There is a build currently running?!\nIf you are sure that there is none running delete $lock_file\n" && exit 9
+> $lock_file
+chmod 666 $lock_file
+
 while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
     case "${arg}" in
+        S) SILENT=yes;;
         P) persistent=yes ;;
         U) USBSIZEMB="$OPTARG";;
-	C) F_CLEANLOCKS ;;
-	F) F_FULLCLEAN ;;
-        c) F_CUSTCLEAN ;;
+        C) CLEANLOCK=1 ;;
+        F) CLEANALL=1 ;;
+        c) CLEANCUST=1 ;;
         N) iso_name="${OPTARG}" ;;
         V) export iso_version="${OPTARG}" ;;
         L) iso_label="${OPTARG}" ;;
@@ -380,7 +419,6 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
         g) gpg_key="${OPTARG}" ;;
         v) verbose="-v" ;;
         h) _usage 0 ;;
-        S) SILENT=yes;;
         A) ARCH="${OPTARG}" ;;
         *)
            echo "Invalid argument '${arg}'"
@@ -389,8 +427,12 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
     esac
 done
 
-basedir=$work_dir
+[ "$CLEANALL" -eq 1 ]&& F_FULLCLEAN
+[ "$CLEANCUST" -eq 1 ]&& F_CUSTCLEAN
+[ "$CLEANLOCK" -eq 1 ]&& F_CLEANLOCKS
 
+basedir=$work_dir
+baseoutdir=$out_dir
 
 for arch in $ARCH; do
     export work_dir="${basedir}/${arch}"
@@ -448,4 +490,5 @@ for arch in $ARCH; do
     run_once make_iso
 done
 
+rm $lock_file
 echo -e "\n\nALL FINISHED SUCCESSFULLY"

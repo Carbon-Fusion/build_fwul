@@ -29,7 +29,7 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
-echo $iso_version > /etc/fwul_release
+echo $iso_version > /etc/fwul-release
 
 # current java version provided with FWUL (to save disk space compressed and not installed)
 CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
@@ -73,30 +73,33 @@ EOPACMAN
 else
     echo "SKIPPING multilib because of $arch"
 fi
+
+# initialize the needed keyrings
+haveged -w 1024
 pacman-key --init
-pacman-key --populate archlinux
+pacman-key --populate archlinux antergos
 pacman -Syu --noconfirm
 
 # install yaourt the hard way..
-RET=0
-pacman -Q package-query || RET=$?
-if [ $RET -ne 0 ];then
-    echo -e "\nyaourt:"
-    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
-    tar -xvzf package-query.tar.gz
-    chown $LOGINUSR -R /package-query
-    cd package-query
-    su -c - $LOGINUSR "makepkg --noconfirm -sf"
-    pacman --noconfirm -U package-query*.pkg.tar.xz
-    cd ..
-    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
-    tar -xvzf yaourt.tar.gz
-    chown $LOGINUSR -R yaourt
-    cd yaourt
-    su -c - $LOGINUSR "makepkg --noconfirm -sf"
-    pacman --noconfirm -U yaourt*.pkg.tar.xz
-    cd ..
-fi
+#RET=0
+#pacman -Q package-query || RET=$?
+#if [ $RET -ne 0 ];then
+#    echo -e "\nyaourt:"
+#    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+#    tar -xvzf package-query.tar.gz
+#    chown $LOGINUSR -R /package-query
+#    cd package-query
+#    su -c - $LOGINUSR "makepkg --noconfirm -sf"
+#    pacman --noconfirm -U package-query*.pkg.tar.xz
+#    cd ..
+#    curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+#    tar -xvzf yaourt.tar.gz
+#    chown $LOGINUSR -R yaourt
+#    cd yaourt
+#    su -c - $LOGINUSR "makepkg --noconfirm -sf"
+#    pacman --noconfirm -U yaourt*.pkg.tar.xz
+#    cd ..
+#fi
 
 # install yad
 echo -e "\nyad:"
@@ -110,7 +113,7 @@ sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.d
 [ -f /etc/xdg/autostart/pamac-tray.desktop ] && rm /etc/xdg/autostart/pamac-tray.desktop
 
 # minimal web browser
-yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
+#yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
 #yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"
 #yaourt -Q min || su -c - $LOGINUSR "yaourt -S --noconfirm min"
 
@@ -128,6 +131,39 @@ wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-andro
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
+
+# install welcome screen
+echo -e "\nwelcome-screen:"
+if [ ! -d /home/$LOGINUSR/programs/welcome ];then
+    git clone https://github.com/Carbon-Fusion/fwul_welcome.git /home/$LOGINUSR/programs/welcome
+    # install the regular welcome screen
+    if [ ! -f /home/$LOGINUSR/.config/autostart/welcome.desktop ];then
+        cat > /home/$LOGINUSR/.config/autostart/welcome.desktop<<EOWAS
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=FWUL Welcome Screen
+Terminal=false
+Name=Welcome
+Exec=/home/$LOGINUSR/programs/welcome/welcome.sh
+Icon=/home/$LOGINUSR/programs/welcome/icons/welcome.png
+EOWAS
+    fi
+    # install the force welcome screen (when user manually want to start it)
+    if [ ! -f /home/$LOGINUSR/Desktop/welcome.desktop ];then
+        cat > /home/$LOGINUSR/Desktop/welcome.desktop <<EOWASF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=FWUL Welcome Screen
+Terminal=false
+Name=Welcome
+Exec=/home/$LOGINUSR/programs/welcome/welcome-force.sh
+Icon=/home/$LOGINUSR/programs/welcome/icons/welcome.png
+EOWASF
+    fi
+    chmod +x /home/$LOGINUSR/.config/autostart/welcome.desktop /home/$LOGINUSR/Desktop/welcome.desktop
+fi
 
 # install JOdin3
 if [ $arch == "x86_64" ];then
@@ -156,19 +192,6 @@ EOODIN
 else
     echo "SKIPPING JODIN INSTALL: Arch $arch detected!"
 fi
-
-# firefox installer
-cat >/home/$LOGINUSR/Desktop/install-firefox.desktop <<EOsflashinst
-[Desktop Entry]
-Version=1.0
-Type=Application
-Comment=Mozilla Firefox Installer
-Terminal=false
-Name=Firefox installer
-Exec=/home/$LOGINUSR/.fwul/install-firefox.sh
-Icon=aptoncd
-EOsflashinst
-chmod +x /home/$LOGINUSR/Desktop/install-firefox.desktop
 
 # chromium installer
 cat >/home/$LOGINUSR/Desktop/install-chromium.desktop <<EOsflashinst
@@ -438,16 +461,25 @@ rm -rvf /etc/fwul
 # persistent perms for fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
+
+# special rules for session
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
+%wheel     ALL=(ALL) NOPASSWD: /bin/umount -l /tmp
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv /var/tmp/* /tmp/
 
 # let the user sync the databases without asking for pw
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -Sy
 
+# query file sizes without any prompt
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --print-format %s -S *
+
 # special rules for TeamViewer
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/teamviewer*.pkg.tar.xz
+# i686 rule
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm community/libpng12 community/libjpeg6-turbo
 
 # special rule for Sony Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
