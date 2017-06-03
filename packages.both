@@ -39,11 +39,11 @@ wget
 wireless_tools
 wpa_actiond
 xdg-utils
-xf86-video-vesa
 xf86-video-ati
 xf86-video-fbdev
 xf86-video-intel
 xf86-video-nouveau
+xf86-video-vesa
 xfce4-mount-plugin
 xfce4-notifyd
 xfce4-panel
