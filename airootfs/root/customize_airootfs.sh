@@ -531,6 +531,10 @@ $RSUDOERS
 /usr/share/icons/Numix-Circle/index.theme
 /home/$LOGINUSR/.android/adb_usb.ini
 /etc/udev/rules.d/51-android.rules
+/home/$LOGINUSR/programs/welcome/welcome.sh
+/home/$LOGINUSR/programs/welcome/icons/welcome.png
+/home/$LOGINUSR/.config/autostart/welcome.desktop
+/home/$LOGINUSR/Desktop/welcome.desktop
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 # 32bit requirements (extend with 32bit ONLY.
