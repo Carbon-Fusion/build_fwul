@@ -78,7 +78,9 @@ fi
 haveged -w 1024
 pacman-key --init
 pacman-key --populate archlinux antergos
-pacman -Syu --noconfirm
+#pacman -Syu --noconfirm
+# workaround until systemd is =>233
+pacman -Syu --noconfirm --ignore netctl
 
 # install yaourt the hard way..
 #RET=0
