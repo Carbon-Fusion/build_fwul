@@ -97,6 +97,8 @@ make_pacman_conf() {
 # Base installation, plus needed packages (airootfs)
 make_basefs() {
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
+    cp $script_path/antergos-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/
+    rankmirrors -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked && mv ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode nbd" install
 }
 
