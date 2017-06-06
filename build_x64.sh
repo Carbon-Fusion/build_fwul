@@ -327,7 +327,7 @@ persistent_iso() {
 
     # part4: compress & cleanup
     CURDIR=$(pwd)
-    cd ${out_dir} && zip ${iso_name}${iso_version}_${arch}.zip ${iso_name}${iso_version}_${arch}.iso && rm ${iso_name}${iso_version}_${arch}.iso
+    cd ${out_dir} && zip $targetfile ${iso_name}${iso_version}_${arch}.iso && rm ${iso_name}${iso_version}_${arch}.iso
     cd "$CURDIR"
 }
 
@@ -338,8 +338,9 @@ make_iso() {
     mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
     targetfile="${iso_name}${iso_version}_${arch}.iso"
     if [ "x$persistent" == "xyes" ];then
+        PERSGB=$((USBSIZEMB/1024))
+        export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
         persistent_iso
-        targetfile=${iso_name}${iso_version}_${arch}.zip
     fi
     CURDIR=$(pwd)
     cd ${out_dir}
