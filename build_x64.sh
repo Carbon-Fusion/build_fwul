@@ -168,6 +168,10 @@ make_syslinux() {
         sed "s|%ARCHISO_LABEL%|${iso_label}|g;
              s|%INSTALL_DIR%|${install_dir}|g" ${_cfg} > ${work_dir}/iso/${install_dir}/boot/syslinux/${_cfg##*/}
     done
+
+    # TODO: show persistent mode entries when needed only
+    #[ "x$persistent" != "xyes" ]&& rm ${work_dir}/iso/${install_dir}/boot/syslinux/fwul_persistent*
+
     cp ${script_path}/syslinux/splash.png ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/*.c32 ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/lpxelinux.0 ${work_dir}/iso/${install_dir}/boot/syslinux
@@ -204,6 +208,9 @@ make_efi() {
         sed "s|%ARCHISO_LABEL%|${iso_label}|g;
              s|%INSTALL_DIR%|${install_dir}|g" $econf > ${work_dir}/iso/loader/entries/$rneconf
     done
+
+    # show persistent mode entries when needed only
+    [ "x$persistent" != "xyes" ]&& rm ${work_dir}/iso/loader/entries/fwul-persistent*
 
     # EFI Shell 2.0 for UEFI 2.3+
     curl -o ${work_dir}/iso/EFI/shellx64_v2.efi https://raw.githubusercontent.com/tianocore/edk2/master/ShellBinPkg/UefiShell/X64/Shell.efi
@@ -246,6 +253,9 @@ make_efiboot() {
              s|%INSTALL_DIR%|${install_dir}|g" \
             $econf > ${work_dir}/efiboot/loader/entries/$rneconf
     done
+
+    # show persistent mode entries when needed only
+    [ "x$persistent" != "xyes" ]&& rm ${work_dir}/efiboot/loader/entries/fwul-persistent*
 
     cp ${work_dir}/iso/EFI/shellx64_v2.efi ${work_dir}/efiboot/EFI/
     cp ${work_dir}/iso/EFI/shellx64_v1.efi ${work_dir}/efiboot/EFI/
