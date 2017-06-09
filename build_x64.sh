@@ -171,8 +171,8 @@ make_syslinux() {
              s|%INSTALL_DIR%|${install_dir}|g" ${_cfg} > ${work_dir}/iso/${install_dir}/boot/syslinux/${_cfg##*/}
     done
 
-    # TODO: show persistent mode entries when needed only
-    #[ "x$persistent" != "xyes" ]&& rm ${work_dir}/iso/${install_dir}/boot/syslinux/fwul_persistent*
+    # show persistent mode entries when needed only
+    [ "x$persistent" != "xyes" ]&& rm ${work_dir}/iso/${install_dir}/boot/syslinux/fwul*-persistent.cfg
 
     cp ${script_path}/syslinux/splash.png ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/*.c32 ${work_dir}/iso/${install_dir}/boot/syslinux
