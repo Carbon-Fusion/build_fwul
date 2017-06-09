@@ -74,6 +74,15 @@ else
     echo "SKIPPING multilib because of $arch"
 fi
 
+# adding antergos and arch32 mirrors
+RET=$(egrep -q '^\[antergos' /etc/pacman.conf||echo missing)
+    if [ "$RET" == "missing" ];then
+        echo "adding custom mirrors to conf"
+        cat >>/etc/pacman.conf<<EOPACMAN
+[antergos]
+Include = /etc/pacman.d/fwul-mirrorlist
+EOPACMAN
+
 # initialize the needed keyrings
 haveged -w 1024
 pacman-key --init
