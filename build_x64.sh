@@ -18,7 +18,7 @@ ARCH='i686 x86_64'
 
 # the default value for available space in MB on a persistent target (e.g. the full space u want to use on a USB stick)
 # can be overwritten by -U
-USBSIZEMB=4000
+USBSIZEMB=4096
 
 arch=$(uname -m)
 export arch=$arch
@@ -301,6 +301,9 @@ persistent_iso() {
         ISOPARTN=3
     fi
 
+    echo -e "\nEnsure we get a forgetful ISO always - even when persistent mode was selected\n"
+    cp -v ${out_dir}/${iso_name}${iso_version}_${arch}_forgetful.iso ${out_dir}/${iso_name}${iso_version}_${arch}.iso
+
     echo -e "\nPreparing persistent setup:\n"
 
     # part1: blow the ISO up
@@ -353,9 +356,9 @@ persistent_iso() {
 # Build ISO
 make_iso() {
     export out_dir="${baseoutdir}/${arch}"
-    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}.iso"
-    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
-    targetfile="${iso_name}${iso_version}_${arch}.iso"
+    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
+    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
+    targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
     if [ "x$persistent" == "xyes" ];then
         PERSGB=$((USBSIZEMB/1024))
         export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
