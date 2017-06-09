@@ -33,14 +33,20 @@ _usage ()
     echo
     echo "Cleaning options:"
     echo 
-    echo "    -C                 Enforce a rebuild by cleaning lock files"
-    echo "                       (will keep ISO base)"
-    echo "    -F                 Enforce a FULL(!) clean (implies -C)"
-    echo "                       (will delete the whole ISO base)"
-    echo "    -c                 Enforce a re-run of customize script ONLY"
-    echo "                       (this is just useful for debugging purposes"
-    echo "                       of airootfs/root/customize_airootfs.sh"
-    echo "                       because it will NOT re-create the ISO)"
+    echo "    -C                     Enforce a rebuild by cleaning lock files"
+    echo "                           (will keep ISO base)"
+    echo "    -F                     Enforce a FULL(!) clean (implies -C)"
+    echo "                           (will delete the whole ISO base)"
+    echo "    -c                     Enforce a re-run of customize script ONLY"
+    echo "                           (this is just useful for debugging purposes"
+    echo "                           of airootfs/root/customize_airootfs.sh"
+    echo "                           because it will NOT re-create the ISO)"
+    echo "    -u 'lock1 lock2 ..'    Define your own set of lockfiles (MEGA ADVANCED!)"
+    echo "                           Use this with care it can result in completely"
+    echo "                           broken builds and/or may leave you with an unusable"
+    echo "                           build server! Multiple lock files = space separated list."
+    echo "                           Specify filename not path and do not add _{arch} because"
+    echo "                           this gets auto added."
     echo 
     echo "******************************************************************"
     echo 
@@ -379,6 +385,17 @@ F_CLEANLOCKS() {
 	echo finished..
 }
 
+F_CLEANUSER(){
+    b_lock="$1"
+    echo -e "\n\nCLEANING UP CUSTOM BUILD LOCK: ${b_lock}\n"
+    if [ -f ${work_dir}/$arch/${b_lock}_${arch} ];then
+        rm -fv ${work_dir}/$arch/${b_lock}_${arch}
+    else
+        echo "${work_dir}/$arch/${b_lock}_${arch} does not exists. skipped."
+    fi
+    echo done.
+}
+
 F_FULLCLEAN(){
 	echo -e "\n\nCLEANING UP WHOLE ISO BUILD BASE! ENFORCES A FULL(!) ISO REBUILD:\n\n"
         if [ "x$SILENT" != "xyes" ];then
@@ -419,18 +436,20 @@ fi
 CLEANALL=0
 CLEANCUST=0
 CLEANLOCK=0
+unset CLEANISO
 
 # do not run builds in parallel 
 [ -f $lock_file ] && echo -e "\nERROR: There is a build currently running?!\nIf you are sure that there is none running delete $lock_file\n" && exit 9
 > $lock_file
 chmod 666 $lock_file
 
-while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:u:' arg; do
     case "${arg}" in
         S) SILENT=yes;;
         P) persistent=yes ;;
         U) USBSIZEMB="$OPTARG";;
         C) CLEANLOCK=1 ;;
+        u) CLEANUSER="$OPTARG";;
         F) CLEANALL=1 ;;
         c) CLEANCUST=1 ;;
         N) iso_name="${OPTARG}" ;;
@@ -453,6 +472,8 @@ done
 [ "$CLEANALL" -eq 1 ]&& F_FULLCLEAN
 [ "$CLEANCUST" -eq 1 ]&& F_CUSTCLEAN
 [ "$CLEANLOCK" -eq 1 ]&& F_CLEANLOCKS
+[ ! -z "$CLEANUSER" ]&& for b_lock in $CLEANUSER; do F_CLEANUSER "$b_lock";done
+
 
 basedir=$work_dir
 baseoutdir=$out_dir
