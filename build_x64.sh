@@ -472,7 +472,7 @@ done
 [ "$CLEANALL" -eq 1 ]&& F_FULLCLEAN
 [ "$CLEANCUST" -eq 1 ]&& F_CUSTCLEAN
 [ "$CLEANLOCK" -eq 1 ]&& F_CLEANLOCKS
-[ "$CLEANUSER" -ne 0 ]&& for b_lock in $CLEANUSER; do F_CLEANUSER "$b_lock";done
+[ "$CLEANUSER" != "0" ]&& for b_lock in $CLEANUSER; do F_CLEANUSER "$b_lock";done
 
 
 basedir=$work_dir
