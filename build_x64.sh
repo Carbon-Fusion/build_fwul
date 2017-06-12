@@ -388,10 +388,10 @@ F_CLEANLOCKS() {
 F_CLEANUSER(){
     b_lock="$1"
     echo -e "\n\nCLEANING UP CUSTOM BUILD LOCK: ${b_lock}\n"
-    if [ -f ${work_dir}/$arch/${b_lock}_${arch} ];then
-        rm -fv ${work_dir}/$arch/${b_lock}_${arch}
+    if [ -f ${work_dir}/$ARCH/${b_lock}_${ARCH} ];then
+        rm -fv ${work_dir}/$ARCH/${b_lock}_${ARCH}
     else
-        echo "${work_dir}/$arch/${b_lock}_${arch} does not exists. skipped."
+        echo "${work_dir}/$ARCH/${b_lock}_${ARCH} does not exists. skipped."
     fi
     echo done.
 }
