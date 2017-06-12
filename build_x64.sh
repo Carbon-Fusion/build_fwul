@@ -436,7 +436,7 @@ fi
 CLEANALL=0
 CLEANCUST=0
 CLEANLOCK=0
-unset CLEANISO
+CLEANUSER=0
 
 # do not run builds in parallel 
 [ -f $lock_file ] && echo -e "\nERROR: There is a build currently running?!\nIf you are sure that there is none running delete $lock_file\n" && exit 9
@@ -472,7 +472,7 @@ done
 [ "$CLEANALL" -eq 1 ]&& F_FULLCLEAN
 [ "$CLEANCUST" -eq 1 ]&& F_CUSTCLEAN
 [ "$CLEANLOCK" -eq 1 ]&& F_CLEANLOCKS
-[ ! -z "$CLEANUSER" ]&& for b_lock in $CLEANUSER; do F_CLEANUSER "$b_lock";done
+[ "$CLEANUSER" -ne 0 ]&& for b_lock in $CLEANUSER; do F_CLEANUSER "$b_lock";done
 
 
 basedir=$work_dir
