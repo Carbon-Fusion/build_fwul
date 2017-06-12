@@ -461,7 +461,7 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:u:' arg; do
         g) gpg_key="${OPTARG}" ;;
         v) verbose="-v" ;;
         h) _usage 0 ;;
-        A) ARCH="${OPTARG}" ;;
+        A) export ARCH="${OPTARG}" ;;
         *)
            echo "Invalid argument '${arg}'"
            _usage 1
