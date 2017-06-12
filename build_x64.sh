@@ -379,7 +379,7 @@ make_iso() {
 # clean lock files
 F_CLEANLOCKS() {
 	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the ISO base intact):\n\n"
-        for arch in i686 x86_64;do
+        for arch in $ARCH;do
 	    rm -fv ${work_dir}/$arch/build.make_*
         done
 	echo finished..
@@ -407,7 +407,7 @@ F_FULLCLEAN(){
 
 F_CUSTCLEAN(){
     echo -e "\nEnforcing re-run of customize script. This will NOT re-create the ISO!\n\n"
-    for arch in i686 x86_64;do
+    for arch in $ARCH;do
         rm -vf ${work_dir}/$arch/build.make_customize_airootfs*
     done
     echo finished..
