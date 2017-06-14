@@ -387,7 +387,7 @@ F_CLEANLOCKS() {
 
 F_CLEANUSER(){
     b_lock="$1"
-    echo -e "\n\nCLEANING UP CUSTOM BUILD LOCK: ${b_lock}\n"
+    echo -e "\n\nCLEANING UP CUSTOM BUILD LOCK: ${b_lock} for arch $ARCH\n"
     if [ -f ${work_dir}/$ARCH/${b_lock}_${ARCH} ];then
         rm -fv ${work_dir}/$ARCH/${b_lock}_${ARCH}
     else
