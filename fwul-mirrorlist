@@ -1,7 +1,3 @@
 ### automatic Antergos mirrors
 Server = http://mirrors.antergos.com/$repo/$arch
 Server = http://sourceforge.net/projects/antergos/files/mirror/$repo/$arch
-
-### automatic Arch32 mirrors
-Server = http://mirror.archlinux32.org/$repo/$arch
-
