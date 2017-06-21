@@ -80,7 +80,7 @@ if [ "$RET" == "missing" ];then
     echo "adding custom mirrors to conf"
     cat >>/etc/pacman.conf<<EOPACMAN
 [antergos]
-Include = /etc/pacman.d/fwul-mirrorlist_${arch}
+Include = /etc/pacman.d/fwul-mirrorlist
 EOPACMAN
 else
     echo skipping antergos mirror because it is configured already
