@@ -311,6 +311,7 @@ chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 
 # install display manager
 echo -e "\nDM:"
+yaourt -Q webkitgtk2 || su -c - $LOGINUSR "yaourt -S --noconfirm webkitgtk2"
 yaourt -Q mdm-display-manager || su -c - $LOGINUSR "yaourt -S --noconfirm mdm-display-manager"
 systemctl enable mdm
 
