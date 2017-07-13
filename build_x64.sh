@@ -103,6 +103,7 @@ make_pacman_conf() {
 # Base installation, plus needed packages (airootfs)
 make_basefs() {
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
+
     mkdir -p ${work_dir}/${arch}/airootfs/etc/pacman.d/
 
     # copy the correct mirrorlist depending on the arch to build
@@ -117,15 +118,16 @@ Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/fwul-mirrorlist
 EOAN
 
     rankmirrors -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked && mv -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
-    
+
     # add archlinux32 mirror to the top of the list
-    [ "$arch" == "i686" ] && sed -i '1s#^#Server = http://mirror.archlinux32.org/$repo/$arch#' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    [ "$arch" == "i686" ] && sed -i '1s|^|## Archlinux32 mirror\nServer = http://mirror.archlinux32.org/$repo/$arch\n|' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
     
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode nbd" install
 }
 
 # Additional packages (airootfs)
 make_packages() {
+    head ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "$(grep -h -v ^# ${script_path}/packages.{both,${arch}})" install
 }
 
