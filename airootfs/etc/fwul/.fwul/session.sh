@@ -7,10 +7,19 @@
 
 ######
 # Language & Locale
-SETLAYOUT=$(locale |grep LANG=|cut -d "=" -f 2 |cut -d "_" -f 1)
-SETLANG=$(locale |grep LANG=)
+LANGFILE="$HOME/.dmrc"
+
+# extract, fix and export $LANG
+TEMPLANG=$(cat "$LANGFILE" | grep ^Language= | cut -d '=' -f 2 | sed 's/utf8/UTF8/')
+[ ! -z "$TEMPLANG" ] && export LANG=$TEMPLANG
+
+# convert $LANG to $LANGUAGE and export
+SETLAYOUT="$(echo $LANG | cut -d '@' -f 1 | cut -d '.' -f 1 | cut -d '_' -f 1)"
+TEMPLANGUAGE="$(echo $LANG | cut -d '@' -f 1 | cut -d '.' -f 1):${SETLAYOUT}"
+[ ! -z "$TEMPLANGUAGE" ] && export LANGUAGE=$TEMPLANGUAGE
+
 setxkbmap -layout $SETLAYOUT
-echo "$SETLANG" > /etc/locale.conf
+echo "LANG=$LANG" > /etc/locale.conf
 
 ######
 # make more space available so we can install new software while running

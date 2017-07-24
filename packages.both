@@ -63,4 +63,5 @@ xorg-server
 xorg-xkbcomp
 xterm
 yaourt
-lxdm
+lightdm
+lightdm-gtk-greeter

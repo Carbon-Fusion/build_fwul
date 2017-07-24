@@ -89,10 +89,11 @@ fi
 # initialize the needed keyrings
 haveged -w 1024
 pacman-key --init
-pacman-key --populate archlinux antergos
-#pacman -Syu --noconfirm
+pacman-key --populate archlinux manjaro
+pacman-key --refresh-keys
+pacman -Syyu --noconfirm
 # workaround until systemd is =>233
-pacman -Syu --noconfirm --ignore netctl
+#pacman -Syu --noconfirm --ignore netctl
 
 # install yaourt the hard way..
 #RET=0
@@ -311,12 +312,16 @@ chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 
 # install display manager
 echo -e "\nDM:"
-yaourt -Q webkitgtk2 || su -c - $LOGINUSR "yaourt -S --noconfirm webkitgtk2"
-yaourt -Q mdm-display-manager || su -c - $LOGINUSR "yaourt -S --noconfirm mdm-display-manager"
-systemctl enable mdm
+#yaourt -Q webkitgtk2 || su -c - $LOGINUSR "yaourt -S --noconfirm webkitgtk2"
+#yaourt -Q mdm-display-manager || su -c - $LOGINUSR "yaourt -S --noconfirm mdm-display-manager"
+systemctl enable lightdm
 
-# configure display manager
-cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
+# configure login/display manager
+#cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
+cp -v /home/$LOGINUSR/.fwul/lightdm-gtk-greeter.conf /etc/lightdm/
+# copy background + icon for greeter
+cp -v /home/$LOGINUSR/.fwul/wallpaper_fwul.png /usr/share/pixmaps/greeter_background.png
+cp -v  /home/$LOGINUSR/.fwul/greeter_icon.png /usr/share/pixmaps/
 
 # Special things needed for easier DEBUGGING
 if [ "$DEBUG" -eq 1 ];then
