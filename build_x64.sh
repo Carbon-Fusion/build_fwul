@@ -136,7 +136,7 @@ Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 EOPACC
 
     echo "ranking mirrors.. this can take a while!" 
-    #rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
+    rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
     [ -f "${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked" ] && grep '^Server' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked >> /dev/null
     if [ $? -ne 0 ];then
         echo "WARNING: rankmirror created an empty mirror list?????"
