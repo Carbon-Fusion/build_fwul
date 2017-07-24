@@ -6,7 +6,6 @@ dhclient
 dnsmasq
 dosfstools
 exfat-utils
-cryptsetup
 f2fs-tools
 file-roller
 firefox
@@ -30,6 +29,7 @@ python2-pyusb
 refind-efi
 sudo
 testdisk
+openssh
 thunar-archive-plugin
 thunar-volman
 ttf-freefont
