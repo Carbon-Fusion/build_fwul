@@ -145,7 +145,7 @@ EOPACC
     fi
 
     # if i686 add archlinux32 mirror to the top of the list
-    [ "$arch" == "i686" ] && sed -i '1s|^|## Archlinux32 mirror\nServer = http://mirror.archlinux32.org/$repo/$arch\n|' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    #[ "$arch" == "i686" ] && sed -i '1s|^|## Archlinux32 mirror\nServer = http://mirror.archlinux32.org/$repo/$arch\n|' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors -t 1" run
@@ -188,7 +188,7 @@ make_setup_mkinitcpio() {
       gpg --export ${gpg_key} >${work_dir}/gpgkey
       exec 17<>${work_dir}/gpgkey
     fi
-    FKERN="$(ls ${work_dir}/${arch}/airootfs/boot/vmlinuz-*.*-rt-lts-${arch})"
+    FKERN="$(ls ${work_dir}/${arch}/airootfs/boot/vmlinuz-*)"
     ln -s ${FKERN##*/} ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux
     ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img" run
     if [[ ${gpg_key} ]]; then
