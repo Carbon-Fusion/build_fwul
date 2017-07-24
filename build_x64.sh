@@ -24,6 +24,7 @@ arch=$(uname -m)
 export arch=$arch
 export iso_version="$(date +%Y-%m-%d_%H-%M)"
 
+MKARCHISO=./mkarchiso
 verbose=""
 script_path=$(readlink -f ${0%/*})
 
@@ -102,38 +103,71 @@ make_pacman_conf() {
 
 # Base installation, plus needed packages (airootfs)
 make_basefs() {
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
 
     mkdir -p ${work_dir}/${arch}/airootfs/etc/pacman.d/
 
-    # copy the correct mirrorlist depending on the arch to build
-    cp -v $script_path/fwul-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/
+    # make a repo mirrorlist
+    echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    for entry in $(wget -q https://github.com/manjaro/manjaro-web-repo/raw/master/mirrors.json -O - |jq -r '.[].url');do
+        echo "... adding mirror: $entry"
+        echo -e "\nServer = ${entry}stable/\$repo/\$arch" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    done
+    #cp -v $script_path/fwul-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
     # set additional mirrors
-    cat >> ${work_dir}/pacman.conf <<EOAN
+#    cat >> ${work_dir}/pacman.conf <<EOAN
+#
+#[antergos]
+##SigLevel = Optional TrustAll
+#Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/fwul-mirrorlist
+#EOAN
+    cat >> ${work_dir}/pacman.conf <<EOPACC
 
-[antergos]
-#SigLevel = Optional TrustAll
-Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/fwul-mirrorlist
-EOAN
+[core]
+Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
-    rankmirrors -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked && mv -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+[extra]
+Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
-    # add archlinux32 mirror to the top of the list
+[community]
+Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+
+EOPACC
+
+    echo "ranking mirrors.. this can take a while!" 
+    #rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
+    [ -f "${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked" ] && grep '^Server' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked >> /dev/null
+    if [ $? -ne 0 ];then
+        echo "WARNING: rankmirror created an empty mirror list?????"
+    else
+        mv -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    fi
+
+    # if i686 add archlinux32 mirror to the top of the list
     [ "$arch" == "i686" ] && sed -i '1s|^|## Archlinux32 mirror\nServer = http://mirror.archlinux32.org/$repo/$arch\n|' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
-    
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode nbd" install
+
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors -t 1" run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman-key --init' run
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman --noconfirm -Syy gnupg archlinux-keyring manjaro-keyring' run
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'curl https://mirror.netcologne.de/manjaro/stable/core/x86_64/manjaro-keyring-20170603-1-any.pkg.tar.xz -o manjaro-keyring.pkg.tar.xz' run
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'rm -rf /etc/pacman.d/gnupg' run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman-key --populate archlinux manjaro' run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode nbd" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pkill gpg-agent||echo ignoreme' run
 }
 
 # Additional packages (airootfs)
 make_packages() {
     head ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "$(grep -h -v ^# ${script_path}/packages.{both,${arch}})" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "$(grep -h -v ^# ${script_path}/packages.{both,${arch}})" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pkill gpg-agent||echo ignoreme' run
 }
 
 # Needed packages for x86_64 EFI boot
 make_packages_efi() {
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "efitools" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "efitools" install
 }
 
 # Copy mkinitcpio archiso hooks and build initramfs (airootfs)
@@ -154,7 +188,9 @@ make_setup_mkinitcpio() {
       gpg --export ${gpg_key} >${work_dir}/gpgkey
       exec 17<>${work_dir}/gpgkey
     fi
-    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
+    FKERN="$(ls ${work_dir}/${arch}/airootfs/boot/vmlinuz-*.*-rt-lts-${arch})"
+    ln -s ${FKERN##*/} ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux
+    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img" run
     if [[ ${gpg_key} ]]; then
       exec 17<&-
     fi
@@ -166,11 +202,9 @@ make_customize_airootfs() {
 
     cp -af ${script_path}/airootfs ${work_dir}/${arch}
 
-    curl -o ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
-
     lynx -dump -nolist 'https://wiki.archlinux.org/index.php/Installation_Guide?action=render' >> ${work_dir}/${arch}/airootfs/root/install.txt
 
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r '/root/customize_airootfs.sh' run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r '/root/customize_airootfs.sh' run
     rm ${work_dir}/${arch}/airootfs/root/customize_airootfs.sh
 }
 
@@ -204,7 +238,7 @@ make_syslinux() {
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/memdisk ${work_dir}/iso/${install_dir}/boot/syslinux
     mkdir -p ${work_dir}/iso/${install_dir}/boot/syslinux/hdt
     gzip -c -9 ${work_dir}/${arch}/airootfs/usr/share/hwdata/pci.ids > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/pciids.gz
-    gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/*-ARCH/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
+    gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/4*-MANJARO/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
 }
 
 # Prepare /isolinux
@@ -292,8 +326,8 @@ make_efiboot() {
 # Build airootfs filesystem image
 make_prepare() {
     cp -a -l -f ${work_dir}/${arch}/airootfs ${work_dir}
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" pkglist
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" ${gpg_key:+-g ${gpg_key}} prepare
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}" -D "${install_dir}" pkglist
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}" -D "${install_dir}" ${gpg_key:+-g ${gpg_key}} prepare
     rm -rf ${work_dir}/airootfs
     # rm -rf ${work_dir}/${arch}/airootfs (if low space, this helps)
 }
@@ -373,8 +407,8 @@ persistent_iso() {
 # Build ISO
 make_iso() {
     export out_dir="${baseoutdir}/${arch}"
-    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
-    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
+    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
+    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
     targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
     if [ "x$persistent" == "xyes" ];then
         PERSGB=$((USBSIZEMB/1024))

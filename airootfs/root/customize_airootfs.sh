@@ -75,18 +75,18 @@ else
 fi
 
 # adding antergos and arch32 mirrors
-RET=$(egrep -q '^\[antergos' /etc/pacman.conf||echo missing)
-if [ "$RET" == "missing" ];then
-    echo "adding custom mirrors to conf"
-    cat >>/etc/pacman.conf<<EOPACMAN
-[antergos]
-Include = /etc/pacman.d/fwul-mirrorlist
-EOPACMAN
-else
-    echo skipping antergos mirror because it is configured already
-fi
+#RET=$(egrep -q '^\[antergos' /etc/pacman.conf||echo missing)
+#if [ "$RET" == "missing" ];then
+#    echo "adding custom mirrors to conf"
+#    cat >>/etc/pacman.conf<<EOPACMAN
+#[antergos]
+#Include = /etc/pacman.d/fwul-mirrorlist
+#EOPACMAN
+#else
+#    echo skipping antergos mirror because it is configured already
+#fi
 
-# initialize the needed keyrings
+# initialize the needed keyrings (again)
 haveged -w 1024
 pacman-key --init
 pacman-key --populate archlinux manjaro

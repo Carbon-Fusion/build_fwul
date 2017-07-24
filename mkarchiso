@@ -20,9 +20,8 @@ sfs_mode="sfs"
 sfs_comp="xz"
 gpg_key=
 
-PACMAN_PACKAGES="acl archlinux-keyring attr bzip2 curl expat glibc gpgme libarchive libassuan libgpg-error libnghttp2 libssh2 lzo openssl pacman pacman-mirrors xz zlib krb5 e2fsprogs keyutils libidn gcc-libs lz4 libpsl icu"
-BASIC_PACKAGES="${PACMAN_PACKAGES} filesystem"
-EXTRA_PACKAGES="coreutils bash grep gawk file tar sed manjaro-release syslinux"
+PACMAN_PACKAGES="acl archlinux-keyring manjaro-keyring attr bzip2 curl expat glibc gpgme libarchive libassuan libgpg-error libnghttp2 libssh2 lzo openssl pacman pacman-mirrors xz zlib krb5 e2fsprogs keyutils libidn gcc-libs lz4 libpsl icu filesystem"
+EXTRA_PACKAGES="coreutils bash grep gawk file tar sed manjaro-release syslinux pcmciautils systemd-sysvcompat"
 
 # Show an INFO message
 # $1: message string
@@ -48,7 +47,6 @@ _msg_error() {
 _chroot_init() {
     mkdir -p ${work_dir}/airootfs
     _pacman "${PACMAN_PACKAGES}"
-    _pacman "${BASIC_PACKAGES}"
     _pacman "${EXTRA_PACKAGES}"
 }
 

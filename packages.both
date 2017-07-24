@@ -1,5 +1,4 @@
 android-tools
-antergos-keyring
 base-devel
 dconf-editor
 dhclient
@@ -34,7 +33,7 @@ thunar-archive-plugin
 thunar-volman
 ttf-freefont
 vim
-virtualbox-guest-modules-arch
+linux-rt-lts-manjaro-virtualbox-guest-modules
 virtualbox-guest-utils
 wget
 wireless_tools
