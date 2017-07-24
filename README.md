@@ -7,7 +7,7 @@ Official XDA thread http://tinyurl.com/FWULatXDA
 
 No other distribution then Arch Linux is supported (for both: build system and FWUL release).
 
-1. `pacman -S archiso`
+1. `pacman -S archiso jq`
 1. `git clone https://github.com/Carbon-Fusion/build_fwul.git ~/build_fwul`
 
 
