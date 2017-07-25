@@ -188,8 +188,8 @@ make_setup_mkinitcpio() {
       gpg --export ${gpg_key} >${work_dir}/gpgkey
       exec 17<>${work_dir}/gpgkey
     fi
-    FKERN="$(ls ${work_dir}/${arch}/airootfs/boot/vmlinuz-*)"
-    ln -s ${FKERN##*/} ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux
+    FKERN="$(ls ${work_dir}/${arch}/airootfs/boot/vmlinuz-* |grep -v vmlinuz-linux)"
+    ln -fs ${FKERN##*/} ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux
     ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img" run
     if [[ ${gpg_key} ]]; then
       exec 17<&-
@@ -238,7 +238,8 @@ make_syslinux() {
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/memdisk ${work_dir}/iso/${install_dir}/boot/syslinux
     mkdir -p ${work_dir}/iso/${install_dir}/boot/syslinux/hdt
     gzip -c -9 ${work_dir}/${arch}/airootfs/usr/share/hwdata/pci.ids > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/pciids.gz
-    gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/4*-MANJARO/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
+    [ "${arch}" == "i686" ] && gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/linux*-MANJARO/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
+    [ "${arch}" == "x86_64" ] && gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/4*-MANJARO/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
 }
 
 # Prepare /isolinux
