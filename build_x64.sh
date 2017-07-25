@@ -135,7 +135,7 @@ Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
 EOPACC
 
-    echo "ranking mirrors.. this can take a while!" 
+    echo "ranking mirrors.. this can take a while!"
     rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
     [ -f "${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked" ] && grep '^Server' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked >> /dev/null
     if [ $? -ne 0 ];then
@@ -148,7 +148,7 @@ EOPACC
     #[ "$arch" == "i686" ] && sed -i '1s|^|## Archlinux32 mirror\nServer = http://mirror.archlinux32.org/$repo/$arch\n|' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
-    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors -t 1" run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors -m rank -t 1" run
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman-key --init' run
     #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman --noconfirm -Syy gnupg archlinux-keyring manjaro-keyring' run
     #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'curl https://mirror.netcologne.de/manjaro/stable/core/x86_64/manjaro-keyring-20170603-1-any.pkg.tar.xz -o manjaro-keyring.pkg.tar.xz' run
