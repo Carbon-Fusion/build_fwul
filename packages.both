@@ -9,11 +9,14 @@ f2fs-tools
 file-roller
 firefox
 gnome-keyring
+gvfs
 gvfs-gphoto2
 gvfs-mtp
 hexchat
+linux-rt-lts-manjaro-broadcom-wl
 java-runtime-common
 leafpad
+mdadm
 mtpfs
 networkmanager
 network-manager-applet
@@ -28,6 +31,7 @@ python2-pyusb
 refind-efi
 sudo
 testdisk
+usbutils
 openssh
 thunar-archive-plugin
 thunar-volman
