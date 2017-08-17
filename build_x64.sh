@@ -115,7 +115,7 @@ make_basefs() {
             echo -e "\nServer = ${entry}stable/\$repo/\$arch" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
         done
     else
-        A32MIRR="http://mirror.archlinux32.org/archlinux/i686/\$repo"
+        A32MIRR="http://mirror.archlinux32.org/i686/\$repo"
         echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
         echo "... adding arch32 mirror"
         echo -e "\nServer = ${A32MIRR}" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
