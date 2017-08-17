@@ -107,13 +107,20 @@ make_basefs() {
 
     mkdir -p ${work_dir}/${arch}/airootfs/etc/pacman.d/
 
-    # make a repo mirrorlist
-    echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
-    for entry in $(wget -q https://github.com/manjaro/manjaro-web-repo/raw/master/mirrors.json -O - |jq -r '.[].url');do
-        echo "... adding mirror: $entry"
+    if [ "$arch" == "x86_64" ];then
+        # make a repo mirrorlist
+        echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        for entry in $(wget -q https://github.com/manjaro/manjaro-web-repo/raw/master/mirrors.json -O - |jq -r '.[].url');do
+            echo "... adding mirror: $entry"
+            echo -e "\nServer = ${entry}stable/\$repo/\$arch" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        done
+    else
+        A32MIRR="http://mirror.archlinux32.org/archlinux/i686/\$repo"
+        echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        echo "... adding arch32 mirror"
         echo -e "\nServer = ${entry}stable/\$repo/\$arch" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
-    done
-    #cp -v $script_path/fwul-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    fi
+        #cp -v $script_path/fwul-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
     # set additional mirrors
 #    cat >> ${work_dir}/pacman.conf <<EOAN
@@ -135,17 +142,16 @@ Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
 EOPACC
 
-    echo "ranking mirrors.. this can take a while!"
-    rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
-    [ -f "${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked" ] && grep '^Server' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked >> /dev/null
-    if [ $? -ne 0 ];then
-        echo "WARNING: rankmirror created an empty mirror list?????"
-    else
-        mv -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    if [ "$arch" == "x86_64" ];then
+        echo "ranking mirrors.. this can take a while!"
+        rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
+        [ -f "${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked" ] && grep '^Server' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked >> /dev/null
+        if [ $? -ne 0 ];then
+            echo "WARNING: rankmirror created an empty mirror list?????"
+        else
+            mv -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        fi
     fi
-
-    # if i686 add archlinux32 mirror to the top of the list
-    #[ "$arch" == "i686" ] && sed -i '1s|^|## Archlinux32 mirror\nServer = http://mirror.archlinux32.org/$repo/$arch\n|' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors -m rank -t 1" run
