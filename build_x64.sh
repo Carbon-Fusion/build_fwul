@@ -118,7 +118,7 @@ make_basefs() {
         A32MIRR="http://mirror.archlinux32.org/archlinux/i686/\$repo"
         echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
         echo "... adding arch32 mirror"
-        echo -e "\nServer = ${entry}stable/\$repo/\$arch" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        echo -e "\nServer = ${A32MIRR}" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
     fi
         #cp -v $script_path/fwul-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
 
