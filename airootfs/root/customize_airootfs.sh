@@ -323,7 +323,7 @@ systemctl enable lightdm
 #cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
 cp -v /home/$LOGINUSR/.fwul/lightdm-gtk-greeter.conf /etc/lightdm/
 # copy background + icon for greeter
-cp -v /home/$LOGINUSR/.fwul/wallpaper_fwul.png /usr/share/pixmaps/greeter_background.png
+cp -v /home/$LOGINUSR/.fwul/fwul_login.png /usr/share/pixmaps/greeter_background.png
 cp -v  /home/$LOGINUSR/.fwul/greeter_icon.png /usr/share/pixmaps/
 
 # Special things needed for easier DEBUGGING
