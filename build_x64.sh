@@ -392,12 +392,12 @@ persistent_iso() {
     # part3: format it
     echo -e "\nFormatting persistent partition:\n"
     # get start of the persistent partition
-    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,Start|grep img${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOOFF:\t\t$LOOFF"
     LOOFFSET=$((LOOFF * 512))
     echo -e "\tLOOFFSET:\t$LOOFFSET"
     # get end of the persistent partition
-    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,End|grep img${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOSZ:\t\t$LOSZ"
     LOSZLIMIT=$((LOSZ * 512))
     echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
