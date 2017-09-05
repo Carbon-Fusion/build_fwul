@@ -147,6 +147,8 @@ wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-andro
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
+# fix missing heimdall icon
+sed -i 's/Icon=.*/Icon=heimdall-frontend/g' /home/$LOGINUSR/Desktop/Samsung/heimdall.desktop
 
 # install welcome screen
 echo -e "\nwelcome-screen:"
