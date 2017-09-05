@@ -283,6 +283,8 @@ chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 # prepare LG tools
 [ ! -d /home/$LOGINUSR/Desktop/LG ] && mkdir /home/$LOGINUSR/Desktop/LG/
 
+[ ! -d /home/$LOGINUSR/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /home/$LOGINUSR/programs/lglafng
+
 # LG LAF shortcut with auth
 echo -e "\nLG LAF shortcut with auth:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafauthshell.desktop <<EOSFT
