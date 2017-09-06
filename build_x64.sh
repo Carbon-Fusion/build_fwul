@@ -154,7 +154,7 @@ EOPACC
     fi
 
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
-    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors -m rank -t 1" run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors --geoip -m rank -t 1" run
     setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman-key --init' run
     #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman --noconfirm -Syy gnupg archlinux-keyring manjaro-keyring' run
     #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'curl https://mirror.netcologne.de/manjaro/stable/core/x86_64/manjaro-keyring-20170603-1-any.pkg.tar.xz -o manjaro-keyring.pkg.tar.xz' run
