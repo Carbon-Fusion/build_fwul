@@ -220,7 +220,7 @@ Type=Application
 Comment=Chromium Browser Installer
 Terminal=false
 Name=Chromium installer
-Exec=/home/$LOGINUSR/.fwul/install-chromium.sh
+Exec=/home/$LOGINUSR/.fwul/install_chromium.sh
 Icon=aptoncd
 EOsflashinst
 chmod +x /home/$LOGINUSR/Desktop/install-chromium.desktop
