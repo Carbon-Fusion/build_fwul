@@ -14,7 +14,7 @@ if [ $? -ne 0 ];then
     wget http://www.flashtool.net/torrents/patches/linux/x10flasher.jar
     [ ! -f x10flasher.jar ]&& echo "ERROR downloading PATCH file" && exit 3
     pacman -Q libselinux || sudo $HOME/.fwul/install_package.sh yaourt libselinux
-    makepkg -si
+    makepkg --noconfirm -si
     #pacman -Q xperia-flashtool || ~/.fwul/install_package.sh yaourt xperia-flashtool
     sudo cp x10flasher.jar /usr/lib/xperia-flashtool/
 fi
