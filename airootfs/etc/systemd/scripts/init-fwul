@@ -1,0 +1,10 @@
+#!/bin/bash
+################################################################
+#
+# initialize pacman db and sort mirrors to the users best speed
+#
+################################################################
+
+/usr/bin/pacman-mirrors --geoip -m rank
+/usr/bin/pacman -Sy
+
