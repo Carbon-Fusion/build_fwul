@@ -566,6 +566,8 @@ $RSUDOERS
 /home/$LOGINUSR/programs/welcome/icons/welcome.png
 /home/$LOGINUSR/.config/autostart/welcome.desktop
 /etc/profile.d/fwul-session.sh
+//etc/systemd/system/init-mirror.service
+/etc/systemd/scripts/init-fwul
 /home/$LOGINUSR/Desktop/welcome.desktop
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
