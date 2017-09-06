@@ -32,6 +32,7 @@ sudo
 testdisk
 usbutils
 openssh
+procps-ng
 thunar-archive-plugin
 thunar-volman
 ttf-freefont
