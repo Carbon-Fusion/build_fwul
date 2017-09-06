@@ -507,6 +507,9 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/*.pkg.tar.xz
 %wheel     ALL=(ALL) NOPASSWD: /bin/cp -vf /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/*.pkg.tar.xz /var/cache/pacman/*
 
+# when using fwul package installer no pw 
+%wheel     ALL=(ALL) NOPASSWD: /home/$LOGINUSR/.fwul/install_package.sh *
+
 # query file sizes without any prompt
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --print-format %s -S *
 
