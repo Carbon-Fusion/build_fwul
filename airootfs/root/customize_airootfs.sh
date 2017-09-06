@@ -156,7 +156,7 @@ if [ ! -d /home/$LOGINUSR/programs/welcome ];then
     git clone https://github.com/Carbon-Fusion/fwul_welcome.git /home/$LOGINUSR/programs/welcome
     # install the regular welcome screen
     if [ ! -f /home/$LOGINUSR/.config/autostart/welcome.desktop ];then
-        [ ! -d /home/$LOGINUSR/.config/autostart ] && mkdir -p /home/$LOGINUSR/.config/autostart
+        [ ! -d /home/$LOGINUSR/.config/autostart ] && mkdir -p /home/$LOGINUSR/.config/autostart && chown -R $LOGINUSR /home/$LOGINUSR/.config/autostart
         cat > /home/$LOGINUSR/.config/autostart/welcome.desktop<<EOWAS
 [Desktop Entry]
 Version=1.0
