@@ -316,6 +316,19 @@ Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 
+# LGLAF NG 
+echo -e "\nLG LAF NG shortcut:"
+cat >/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop <<EOLAFNG
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=LG LAF shell NG
+Terminal=true
+Name=LG LAF - NG
+Exec=xfce4-terminal --working-directory=/home/android/programs/lglafng
+Icon=terminal
+EOLAFNG
+
 # install display manager
 echo -e "\nDM:"
 #yaourt -Q webkitgtk2 || su -c - $LOGINUSR "yaourt -S --noconfirm webkitgtk2"
