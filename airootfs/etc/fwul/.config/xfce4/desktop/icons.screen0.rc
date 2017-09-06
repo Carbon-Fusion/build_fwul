@@ -2,38 +2,41 @@
 4.10.3+=true
 
 [/home/android/Desktop/pamac-manager.desktop]
-row=0
+row=1
 col=0
 
 [/home/android/Desktop/install-TV.desktop]
-row=8
-col=4
+row=3
+col=1
+
+[/home/android/Desktop/ADB.desktop]
+row=2
+col=0
 
 [/home/android/Desktop/Samsung]
-row=1
+row=2
 col=1
 
 [/home/android/Desktop/install-chromium.desktop]
-row=8
-col=1
+row=4
+col=0
 
 [/home/android/Desktop/install-sonyflash.desktop]
-row=8
-col=2
+row=4
+col=1
 
 [/home/android/Desktop/install-spflash.desktop]
-row=8
-col=3
+row=3
+col=0
 
 [/home/android/Desktop/welcome.desktop]
-row=8
+row=0
 col=0
 
 [/home/android/Desktop/LG]
 row=1
-col=0
+col=1
 
 [/home/android]
 row=0
 col=1
-
