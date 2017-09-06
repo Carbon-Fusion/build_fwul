@@ -448,6 +448,9 @@ if [ ! -f "$FWULXSETS" ];then
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
 
+# set aliases
+echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
+
 # cleanup
 echo -e "\nCleanup - locale:"
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
@@ -518,6 +521,9 @@ cat > $RSUDOERS <<EOSUDOERS
 
 # special rule for JAVA
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA
+
+# special rule for fastboot
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/fastboot *
 EOSUDOERS
 
 # set root password
@@ -557,6 +563,7 @@ $RSUDOERS
 /home/$LOGINUSR/programs/welcome/welcome.sh
 /home/$LOGINUSR/programs/welcome/icons/welcome.png
 /home/$LOGINUSR/.config/autostart/welcome.desktop
+/etc/profile.d/fwul-session.sh
 /home/$LOGINUSR/Desktop/welcome.desktop
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
