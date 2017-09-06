@@ -366,6 +366,7 @@ systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 systemctl enable systemd-networkd
 systemctl enable NetworkManager
+systemctl enable init-mirror
 
 # prepare theming stuff
 echo -e "\nThemes:"
