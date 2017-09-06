@@ -347,8 +347,12 @@ persistent_iso() {
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
 
-    # ensure we get not too big by substracting 8% of the given usb size
-    USBBORDER=$((USBSIZEMB/100*8))
+    echo -e "\tUSBSIZEMB: $USBSIZEMB"
+    # ensure we get not too big by substracting xxx% of the given usb size
+    # the shrink factor defined in percent (keep in mind that bash calc is not accurate!)
+    SHRINKFACTOR=15
+    echo -e "\tSHRINKFACTOR: $SHRINKFACTOR"
+    USBBORDER=$((USBSIZEMB / 100 * $SHRINKFACTOR))
     echo -e "\tUSBBORDER: $USBBORDER"    
     USBSIZE=$((USBSIZEMB - USBBORDER))
     echo -e "\tUSBSIZE: $USBSIZE"    
