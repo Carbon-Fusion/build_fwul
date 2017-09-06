@@ -1,17 +1,19 @@
-### Disclaimer
+### About you: The creator of this issue
 
-READ THIS CAREFULLY:
+I - the creator of this issue know that FWUL provides only the **base** for a range of Android related tools<br/>
+I - the creator of this issue know that there is **no** support for device related questions
 
-FWUL can **NOT** give you support on any **tool** it provides. 
-For this contact the developer of the problematic **tool** instead. Nevertheless if a shipped tool does not start or is missing, is outdated whatever let me know!
+### Version
 
-I know that FWUL provides the **base** for a range of Android related tools only
+Open a terminal and paste the output of: `cat /etc/fwul-release` or double-click the *Welcome* icon on the desktop
+
+Version:
+
 
 ### Vendor
 
-(note: delete all NOT matching lines)
+The issue is related to (delete NOT matching lines):
 
-- issue is not related to a specific device or vendor
 - HTC
 - Samsung
 - LG
@@ -21,21 +23,26 @@ I know that FWUL provides the **base** for a range of Android related tools only
 
 ### Architecture
 
-(note: delete all NOT matching lines)
+This issue is related to (delete NOT matching lines):
 
 - i686 (32bit)
 - x86_64 (64bit)
-- not related to any arch
 
 ### Description
 
-(describe your bug report, feature request and be as detailed as possible. Logfiles and bigger pastes better goes to an external pastebin service like for example: http://paste.omnirom.org)
+(describe your bug report / feature request as detailed as possible. Use gists.github.com to provide logfiles and such!)
 
 ### Screenshot(s) / Photo(s)
 
-(note: a great help is to attach a screenshot/photo of the issue/error)
+(note: a great help is to attach a screenshot/photo of the issue/error!)
 
 ### Links
 
-(note: any links like XDA posts or new tools to be added goes here)
+(note: any links like XDA posts or new tools to be added go here)
+
+Examples:
+
+- External report: ...
+- Possible solution: ...
+- Download: ...
 
