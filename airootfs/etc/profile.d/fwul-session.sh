@@ -17,9 +17,13 @@ TEMPLANG=$(cat "$LANGFILE" | grep ^Language= | cut -d '=' -f 2 | sed 's/utf8/UTF
 SETLAYOUT="$(echo $LANG | cut -d '@' -f 1 | cut -d '.' -f 1 | cut -d '_' -f 1)"
 
 setxkbmap -layout $SETLAYOUT
-echo "LANG=$LANG" > /etc/locale.conf
+
+# set global locale
+DMLANG=$(cat "$LANGFILE" | grep ^Language= | cut -d '=' -f 2)
+echo "LANG=$DMLANG" > /tmp/locale.conf
 # set fallback language
-echo "LANGUAGE=en_US.UTF8" >> /etc/locale.conf
+echo "LANGUAGE=en_US.utf8" >> /tmp/locale.conf
+sudo mv /tmp/locale.conf /etc/locale.conf
 
 ######
 # make more space available so we can install new software while running

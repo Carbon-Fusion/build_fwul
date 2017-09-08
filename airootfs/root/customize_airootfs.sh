@@ -505,10 +505,11 @@ rm -rvf /etc/fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
 
-# special rules for session
+# special rules for session & language
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
 %wheel     ALL=(ALL) NOPASSWD: /bin/umount -l /tmp
 %wheel     ALL=(ALL) NOPASSWD: /bin/mv /var/tmp/* /tmp/
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv /tmp/locale.conf /etc/locale.conf
 
 # let the user sync the databases without asking for pw
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
