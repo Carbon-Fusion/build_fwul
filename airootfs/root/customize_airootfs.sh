@@ -528,6 +528,7 @@ cat > $RSUDOERS <<EOSUDOERS
 
 # special rules for TeamViewer
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
+%wheel     ALL=(ALL) NOPASSWD: /bin/systemctl enable teamviewerd
 
 # special rule for Sony Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
