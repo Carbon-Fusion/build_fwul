@@ -533,7 +533,7 @@ cat > $RSUDOERS <<EOSUDOERS
 
 # special rule for Sony Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
-%wheel     ALL=(ALL) NOPASSWD: /bin/cp /home/$LOGINUSR/.fwul/x10flasher.jar /usr/lib/xperia-flashtool/
+%wheel     ALL=(ALL) NOPASSWD: /bin/cp x10flasher.jar /usr/lib/xperia-flashtool/
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -U /tmp/arch_xperia-flashtool/xperia-flashtool*.pkg.tar.xz
 
 # special rule for SP Flashtool
