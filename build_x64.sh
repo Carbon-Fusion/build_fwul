@@ -344,6 +344,10 @@ make_prepare() {
 
 # Enable persistent mode
 persistent_iso() {
+
+    PERSGB=$((USBSIZEMB/1024))
+    export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
+
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
 
@@ -416,6 +420,9 @@ persistent_iso() {
     CURDIR=$(pwd)
     cd ${out_dir} && zip $targetfile ${iso_name}${iso_version}_${arch}.img && rm ${iso_name}${iso_version}_${arch}.img
     cd "$CURDIR"
+
+    # part5: make checksum
+    make_checksum
 }
 
 # Build ISO
@@ -424,11 +431,14 @@ make_iso() {
     echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
     ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
     targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
+    make_checksum
     if [ "x$persistent" == "xyes" ];then
-        PERSGB=$((USBSIZEMB/1024))
-        export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
         persistent_iso
     fi
+}
+
+# # create checksums
+make_checksum(){
     CURDIR=$(pwd)
     cd ${out_dir}
     make_md5 "$targetfile"
