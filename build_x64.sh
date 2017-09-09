@@ -366,8 +366,8 @@ persistent_iso() {
         ISOPARTN=3
     fi
 
-    echo -e "\nRename persistent ISO\n"
-    mv -v ${out_dir}/${iso_name}${iso_version}_${arch}_forgetful.iso ${out_dir}/${iso_name}${iso_version}_${arch}.img
+    echo -e "\nCopy persistent ISO\n"
+    cp -v ${out_dir}/${iso_name}${iso_version}_${arch}_forgetful.iso ${out_dir}/${iso_name}${iso_version}_${arch}.img
 
     echo -e "\nPreparing persistent setup:\n"
 
