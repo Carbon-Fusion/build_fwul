@@ -419,7 +419,7 @@ persistent_iso() {
 
     # part4: compress & cleanup
     CURDIR=$(pwd)
-    [ -f $targetfile ] && rm -vf $targetfile && echo "previous $targetfile detected.. deleted!"
+    [ -f ${out_dir}/$targetfile ] && rm -vf ${out_dir}/$targetfile && echo "previous $targetfile detected.. deleted!"
     cd ${out_dir} && zip $targetfile ${iso_name}${iso_version}_${arch}.img && rm ${iso_name}${iso_version}_${arch}.img
     cd "$CURDIR"
 
