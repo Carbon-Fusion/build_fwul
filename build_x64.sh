@@ -345,8 +345,10 @@ make_prepare() {
 # Enable persistent mode
 persistent_iso() {
 
-    PERSGB=$((USBSIZEMB/1024))
+    export out_dir="${baseoutdir}/${arch}"
     export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
+
+    PERSGB=$((USBSIZEMB/1024))
 
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
