@@ -633,7 +633,8 @@ pacman --noconfirm -Rns expac
 # create a XDA copy template for the important FWUL package versions
 echo -ne '[*]Versions of the main FWUL components:\n[INDENT]ADB and fastboot: '
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
-CHLOG="heimdall-git xfwm4 xorg-server virtualbox-guest-utils" 
+echo -e 'simple-adb GUI -> [B]version: update4[\/B]'
+CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat"
 for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 done
