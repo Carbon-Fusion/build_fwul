@@ -432,9 +432,6 @@ make_iso() {
     ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
     targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
     make_checksum
-    if [ "x$persistent" == "xyes" ];then
-        persistent_iso
-    fi
 }
 
 # # create checksums
@@ -601,6 +598,7 @@ done
 for arch in $ARCH; do
     export work_dir="${basedir}/${arch}"
     run_once make_iso
+    [ "x$persistent" == "xyes" ] && run_once persistent_iso
 done
 
 rm $lock_file
