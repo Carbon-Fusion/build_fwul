@@ -29,7 +29,8 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
-echo $iso_version > /etc/fwul-release
+echo "fwulversion=$iso_version" > /etc/fwul-release
+echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
 
 # current java version provided with FWUL (to save disk space compressed and not installed)
 CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
@@ -74,11 +75,26 @@ else
     echo "SKIPPING multilib because of $arch"
 fi
 
-# initialize the needed keyrings
+# adding antergos and arch32 mirrors
+#RET=$(egrep -q '^\[antergos' /etc/pacman.conf||echo missing)
+#if [ "$RET" == "missing" ];then
+#    echo "adding custom mirrors to conf"
+#    cat >>/etc/pacman.conf<<EOPACMAN
+#[antergos]
+#Include = /etc/pacman.d/fwul-mirrorlist
+#EOPACMAN
+#else
+#    echo skipping antergos mirror because it is configured already
+#fi
+
+# initialize the needed keyrings (again)
 haveged -w 1024
 pacman-key --init
-pacman-key --populate archlinux antergos
-pacman -Syu --noconfirm
+pacman-key --populate archlinux manjaro
+pacman-key --refresh-keys
+pacman -Syyu --noconfirm
+# workaround until systemd is =>233
+#pacman -Syu --noconfirm --ignore netctl
 
 # install yaourt the hard way..
 #RET=0
@@ -131,6 +147,8 @@ wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-andro
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
+# fix missing heimdall icon
+sed -i 's/Icon=.*/Icon=heimdall-frontend/g' /home/$LOGINUSR/Desktop/Samsung/heimdall.desktop
 
 # install welcome screen
 echo -e "\nwelcome-screen:"
@@ -138,6 +156,7 @@ if [ ! -d /home/$LOGINUSR/programs/welcome ];then
     git clone https://github.com/Carbon-Fusion/fwul_welcome.git /home/$LOGINUSR/programs/welcome
     # install the regular welcome screen
     if [ ! -f /home/$LOGINUSR/.config/autostart/welcome.desktop ];then
+        [ ! -d /home/$LOGINUSR/.config/autostart ] && mkdir -p /home/$LOGINUSR/.config/autostart && chown -R $LOGINUSR /home/$LOGINUSR/.config/autostart
         cat > /home/$LOGINUSR/.config/autostart/welcome.desktop<<EOWAS
 [Desktop Entry]
 Version=1.0
@@ -201,7 +220,7 @@ Type=Application
 Comment=Chromium Browser Installer
 Terminal=false
 Name=Chromium installer
-Exec=/home/$LOGINUSR/.fwul/install-chromium.sh
+Exec=/home/$LOGINUSR/.fwul/install_chromium.sh
 Icon=aptoncd
 EOsflashinst
 chmod +x /home/$LOGINUSR/Desktop/install-chromium.desktop
@@ -267,6 +286,8 @@ chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 # prepare LG tools
 [ ! -d /home/$LOGINUSR/Desktop/LG ] && mkdir /home/$LOGINUSR/Desktop/LG/
 
+[ ! -d /home/$LOGINUSR/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /home/$LOGINUSR/programs/lglafng
+
 # LG LAF shortcut with auth
 echo -e "\nLG LAF shortcut with auth:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafauthshell.desktop <<EOSFT
@@ -295,13 +316,31 @@ Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 
+# LGLAF NG 
+echo -e "\nLG LAF NG shortcut:"
+cat >/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop <<EOLAFNG
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=LG LAF shell NG
+Terminal=true
+Name=LG LAF - NG
+Exec=xfce4-terminal --working-directory=/home/android/programs/lglafng
+Icon=terminal
+EOLAFNG
+
 # install display manager
 echo -e "\nDM:"
-yaourt -Q mdm-display-manager || su -c - $LOGINUSR "yaourt -S --noconfirm mdm-display-manager"
-systemctl enable mdm
+#yaourt -Q webkitgtk2 || su -c - $LOGINUSR "yaourt -S --noconfirm webkitgtk2"
+#yaourt -Q mdm-display-manager || su -c - $LOGINUSR "yaourt -S --noconfirm mdm-display-manager"
+systemctl enable lightdm
 
-# configure display manager
-cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
+# configure login/display manager
+#cp -v /home/$LOGINUSR/.fwul/mdm.conf /etc/mdm/custom.conf
+cp -v /home/$LOGINUSR/.fwul/lightdm-gtk-greeter.conf /etc/lightdm/
+# copy background + icon for greeter
+cp -v /home/$LOGINUSR/.fwul/fwul_login.png /usr/share/pixmaps/greeter_background.png
+cp -v  /home/$LOGINUSR/.fwul/greeter_icon.png /usr/share/pixmaps/
 
 # Special things needed for easier DEBUGGING
 if [ "$DEBUG" -eq 1 ];then
@@ -340,6 +379,7 @@ systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 systemctl enable systemd-networkd
 systemctl enable NetworkManager
+systemctl enable init-mirror
 
 # prepare theming stuff
 echo -e "\nThemes:"
@@ -423,13 +463,16 @@ if [ ! -f "$FWULXSETS" ];then
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
 
+# set aliases
+echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
+
 # cleanup
 echo -e "\nCleanup - locale:"
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme cryptsetup lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs testdisk"
+IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs testdisk"
 for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
@@ -462,37 +505,45 @@ rm -rvf /etc/fwul
 cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) ALL
 
-# special rules for session
+# special rules for session & language
 %wheel     ALL=(ALL) NOPASSWD: /bin/mount -o remount\,size=* /run/archiso/cowspace
 %wheel     ALL=(ALL) NOPASSWD: /bin/umount -l /tmp
 %wheel     ALL=(ALL) NOPASSWD: /bin/mv /var/tmp/* /tmp/
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv /tmp/locale.conf /etc/locale.conf
 
 # let the user sync the databases without asking for pw
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -Sy
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -Sy
+
+# let the user install deps and compiled packages by yaourt without asking for pw
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm *
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --asdeps --noconfirm *
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /bin/cp -vf /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/*.pkg.tar.xz /var/cache/pacman/*
+
+# when using fwul package installer no pw 
+%wheel     ALL=(ALL) NOPASSWD: /home/$LOGINUSR/.fwul/install_package.sh *
 
 # query file sizes without any prompt
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --print-format %s -S *
 
 # special rules for TeamViewer
 %wheel     ALL=(ALL) NOPASSWD: /bin/systemctl start teamviewerd
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm multilib/lib32-libjpeg6-turbo multilib/lib32-libxinerama multilib/lib32-libxrender multilib/lib32-fontconfig multilib/lib32-libsm multilib/lib32-libxtst multilib/lib32-libpng12
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/teamviewer*.pkg.tar.xz
-# i686 rule
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -S --asdeps --needed --noconfirm community/libpng12 community/libjpeg6-turbo
+%wheel     ALL=(ALL) NOPASSWD: /bin/systemctl enable teamviewerd
 
 # special rule for Sony Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --asdeps --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/libse*.pkg.tar.xz
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/xperia-flashtool-*.pkg.tar.xz
-%wheel     ALL=(ALL) NOPASSWD: /bin/cp /home/$LOGINUSR/.fwul/x10flasher.jar /usr/lib/xperia-flashtool/
+%wheel     ALL=(ALL) NOPASSWD: /bin/cp x10flasher.jar /usr/lib/xperia-flashtool/
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -U /tmp/arch_xperia-flashtool/xperia-flashtool*.pkg.tar.xz
 
 # special rule for SP Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
-%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --color auto -U --noconfirm /tmp/yaourt-tmp-$LOGINUSR/PKGDEST*/spflashtool-bin-*.pkg.tar.xz
 
 # special rule for JAVA
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman -U --noconfirm /home/$LOGINUSR/.fwul/$CURJAVA
+
+# special rule for fastboot
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/fastboot *
 EOSUDOERS
 
 # set root password
@@ -529,6 +580,13 @@ $RSUDOERS
 /usr/share/icons/Numix-Circle/index.theme
 /home/$LOGINUSR/.android/adb_usb.ini
 /etc/udev/rules.d/51-android.rules
+/home/$LOGINUSR/programs/welcome/welcome.sh
+/home/$LOGINUSR/programs/welcome/icons/welcome.png
+/home/$LOGINUSR/.config/autostart/welcome.desktop
+/etc/profile.d/fwul-session.sh
+//etc/systemd/system/init-mirror.service
+/etc/systemd/scripts/init-fwul
+/home/$LOGINUSR/Desktop/welcome.desktop
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 # 32bit requirements (extend with 32bit ONLY.
@@ -575,7 +633,8 @@ pacman --noconfirm -Rns expac
 # create a XDA copy template for the important FWUL package versions
 echo -ne '[*]Versions of the main FWUL components:\n[INDENT]ADB and fastboot: '
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
-CHLOG="heimdall-git xfwm4 xorg-server virtualbox-guest-utils" 
+echo -e 'simple-adb GUI -> [B]version: update4[\/B]'
+CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat"
 for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 done

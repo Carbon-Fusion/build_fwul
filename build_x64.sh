@@ -18,12 +18,13 @@ ARCH='i686 x86_64'
 
 # the default value for available space in MB on a persistent target (e.g. the full space u want to use on a USB stick)
 # can be overwritten by -U
-USBSIZEMB=4000
+USBSIZEMB=4096
 
 arch=$(uname -m)
 export arch=$arch
 export iso_version="$(date +%Y-%m-%d_%H-%M)"
 
+MKARCHISO=./mkarchiso
 verbose=""
 script_path=$(readlink -f ${0%/*})
 
@@ -33,14 +34,20 @@ _usage ()
     echo
     echo "Cleaning options:"
     echo 
-    echo "    -C                 Enforce a rebuild by cleaning lock files"
-    echo "                       (will keep ISO base)"
-    echo "    -F                 Enforce a FULL(!) clean (implies -C)"
-    echo "                       (will delete the whole ISO base)"
-    echo "    -c                 Enforce a re-run of customize script ONLY"
-    echo "                       (this is just useful for debugging purposes"
-    echo "                       of airootfs/root/customize_airootfs.sh"
-    echo "                       because it will NOT re-create the ISO)"
+    echo "    -C                     Enforce a rebuild by cleaning lock files"
+    echo "                           (will keep ISO base)"
+    echo "    -F                     Enforce a FULL(!) clean (implies -C)"
+    echo "                           (will delete the whole ISO base)"
+    echo "    -c                     Enforce a re-run of customize script ONLY"
+    echo "                           (this is just useful for debugging purposes"
+    echo "                           of airootfs/root/customize_airootfs.sh"
+    echo "                           because it will NOT re-create the ISO)"
+    echo "    -u 'lock1 lock2 ..'    Define your own set of lockfiles (MEGA ADVANCED!)"
+    echo "                           Use this with care it can result in completely"
+    echo "                           broken builds and/or may leave you with an unusable"
+    echo "                           build server! Multiple lock files = space separated list."
+    echo "                           Specify filename not path and do not add _{arch} because"
+    echo "                           this gets auto added."
     echo 
     echo "******************************************************************"
     echo 
@@ -96,18 +103,77 @@ make_pacman_conf() {
 
 # Base installation, plus needed packages (airootfs)
 make_basefs() {
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode nbd" install
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
+
+    mkdir -p ${work_dir}/${arch}/airootfs/etc/pacman.d/
+
+    if [ "$arch" == "x86_64" ];then
+        # make a repo mirrorlist
+        echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        for entry in $(wget -q https://github.com/manjaro/manjaro-web-repo/raw/master/mirrors.json -O - |jq -r '.[].url');do
+            echo "... adding mirror: $entry"
+            echo -e "\nServer = ${entry}stable/\$repo/\$arch" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        done
+    else
+        A32MIRR="http://mirror.archlinux32.org/i686/\$repo"
+        echo '# Autocreated in build process' > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        echo "... adding arch32 mirror"
+        echo -e "\nServer = ${A32MIRR}" >>${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+    fi
+        #cp -v $script_path/fwul-mirrorlist ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+
+    # set additional mirrors
+#    cat >> ${work_dir}/pacman.conf <<EOAN
+#
+#[antergos]
+##SigLevel = Optional TrustAll
+#Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/fwul-mirrorlist
+#EOAN
+    cat >> ${work_dir}/pacman.conf <<EOPACC
+
+[core]
+Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+
+[extra]
+Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+
+[community]
+Include = ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+
+EOPACC
+
+    if [ "$arch" == "x86_64" ];then
+        echo "ranking mirrors.. this can take a while!"
+        rankmirrors ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist > ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked 
+        [ -f "${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked" ] && grep '^Server' ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked >> /dev/null
+        if [ $? -ne 0 ];then
+            echo "WARNING: rankmirror created an empty mirror list?????"
+        else
+            mv -v ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist.ranked ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist
+        fi
+    fi
+
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" init
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "pacman-mirrors --geoip -m rank -t 1" run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman-key --init' run
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman --noconfirm -Syy gnupg archlinux-keyring manjaro-keyring' run
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'curl https://mirror.netcologne.de/manjaro/stable/core/x86_64/manjaro-keyring-20170603-1-any.pkg.tar.xz -o manjaro-keyring.pkg.tar.xz' run
+    #setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'rm -rf /etc/pacman.d/gnupg' run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pacman-key --populate archlinux manjaro' run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "haveged intel-ucode nbd" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pkill gpg-agent||echo ignoreme' run
 }
 
 # Additional packages (airootfs)
 make_packages() {
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "$(grep -h -v ^# ${script_path}/packages.{both,${arch}})" install
+    head ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "$(grep -h -v ^# ${script_path}/packages.{both,${arch}})" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'pkill gpg-agent||echo ignoreme' run
 }
 
 # Needed packages for x86_64 EFI boot
 make_packages_efi() {
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "efitools" install
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -p "efitools" install
 }
 
 # Copy mkinitcpio archiso hooks and build initramfs (airootfs)
@@ -128,7 +194,12 @@ make_setup_mkinitcpio() {
       gpg --export ${gpg_key} >${work_dir}/gpgkey
       exec 17<>${work_dir}/gpgkey
     fi
-    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
+    FKERN="$(ls ${work_dir}/${arch}/airootfs/boot/vmlinuz-* |grep -v vmlinuz-linux)"
+    [ -f "$FKERN" ]|| echo ERROR kernel not found
+    echo FKERN: $FKERN
+    ln -fs ${FKERN##*/} ${work_dir}/${arch}/airootfs/boot/vmlinuz-linux
+    ls -la ${work_dir}/${arch}/airootfs/boot/
+    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r "mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img" run
     if [[ ${gpg_key} ]]; then
       exec 17<&-
     fi
@@ -140,11 +211,9 @@ make_customize_airootfs() {
 
     cp -af ${script_path}/airootfs ${work_dir}/${arch}
 
-    curl -o ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
-
     lynx -dump -nolist 'https://wiki.archlinux.org/index.php/Installation_Guide?action=render' >> ${work_dir}/${arch}/airootfs/root/install.txt
 
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r '/root/customize_airootfs.sh' run
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r '/root/customize_airootfs.sh' run
     rm ${work_dir}/${arch}/airootfs/root/customize_airootfs.sh
 }
 
@@ -168,13 +237,18 @@ make_syslinux() {
         sed "s|%ARCHISO_LABEL%|${iso_label}|g;
              s|%INSTALL_DIR%|${install_dir}|g" ${_cfg} > ${work_dir}/iso/${install_dir}/boot/syslinux/${_cfg##*/}
     done
+
+    # show persistent mode entries when needed only
+    [ "x$persistent" != "xyes" ]&& rm ${work_dir}/iso/${install_dir}/boot/syslinux/fwul*-persistent.cfg
+
     cp ${script_path}/syslinux/splash.png ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/*.c32 ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/lpxelinux.0 ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/bios/memdisk ${work_dir}/iso/${install_dir}/boot/syslinux
     mkdir -p ${work_dir}/iso/${install_dir}/boot/syslinux/hdt
     gzip -c -9 ${work_dir}/${arch}/airootfs/usr/share/hwdata/pci.ids > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/pciids.gz
-    gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/*-ARCH/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
+    [ "${arch}" == "i686" ] && gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/3*-MANJARO/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
+    [ "${arch}" == "x86_64" ] && gzip -c -9 ${work_dir}/${arch}/airootfs/usr/lib/modules/4*-MANJARO/modules.alias > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/modalias.gz
 }
 
 # Prepare /isolinux
@@ -204,6 +278,9 @@ make_efi() {
         sed "s|%ARCHISO_LABEL%|${iso_label}|g;
              s|%INSTALL_DIR%|${install_dir}|g" $econf > ${work_dir}/iso/loader/entries/$rneconf
     done
+
+    # show persistent mode entries when needed only
+    [ "x$persistent" != "xyes" ]&& rm ${work_dir}/iso/loader/entries/fwul-persistent*
 
     # EFI Shell 2.0 for UEFI 2.3+
     curl -o ${work_dir}/iso/EFI/shellx64_v2.efi https://raw.githubusercontent.com/tianocore/edk2/master/ShellBinPkg/UefiShell/X64/Shell.efi
@@ -247,6 +324,9 @@ make_efiboot() {
             $econf > ${work_dir}/efiboot/loader/entries/$rneconf
     done
 
+    # show persistent mode entries when needed only
+    [ "x$persistent" != "xyes" ]&& rm ${work_dir}/efiboot/loader/entries/fwul-persistent*
+
     cp ${work_dir}/iso/EFI/shellx64_v2.efi ${work_dir}/efiboot/EFI/
     cp ${work_dir}/iso/EFI/shellx64_v1.efi ${work_dir}/efiboot/EFI/
 
@@ -256,19 +336,28 @@ make_efiboot() {
 # Build airootfs filesystem image
 make_prepare() {
     cp -a -l -f ${work_dir}/${arch}/airootfs ${work_dir}
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" pkglist
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" ${gpg_key:+-g ${gpg_key}} prepare
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}" -D "${install_dir}" pkglist
+    setarch ${arch} ${MKARCHISO} ${verbose} -w "${work_dir}" -D "${install_dir}" ${gpg_key:+-g ${gpg_key}} prepare
     rm -rf ${work_dir}/airootfs
     # rm -rf ${work_dir}/${arch}/airootfs (if low space, this helps)
 }
 
 # Enable persistent mode
 persistent_iso() {
+
+    PERSGB=$((USBSIZEMB/1024))
+    export out_dir="${baseoutdir}/${arch}"
+    export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
+
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
 
-    # ensure we get not too big by substracting 8% of the given usb size
-    USBBORDER=$((USBSIZEMB/100*8))
+    echo -e "\tUSBSIZEMB: $USBSIZEMB"
+    # ensure we get not too big by substracting xxx% of the given usb size
+    # the shrink factor defined in percent (keep in mind that bash calc is not accurate!)
+    SHRINKFACTOR=15
+    echo -e "\tSHRINKFACTOR: $SHRINKFACTOR"
+    USBBORDER=$((USBSIZEMB / 100 * $SHRINKFACTOR))
     echo -e "\tUSBBORDER: $USBBORDER"    
     USBSIZE=$((USBSIZEMB - USBBORDER))
     echo -e "\tUSBSIZE: $USBSIZE"    
@@ -282,11 +371,14 @@ persistent_iso() {
         ISOPARTN=3
     fi
 
+    echo -e "\nCopy persistent ISO\n"
+    cp -v ${out_dir}/${iso_name}${iso_version}_${arch}_forgetful.iso ${out_dir}/${iso_name}${iso_version}_${arch}.img
+
     echo -e "\nPreparing persistent setup:\n"
 
     # part1: blow the ISO up
     # get the size of the FWUL ISO
-    ISOFSIZEB=$(stat -c %s ${out_dir}/${iso_name}${iso_version}_${arch}.iso)
+    ISOFSIZEB=$(stat -c %s ${out_dir}/${iso_name}${iso_version}_${arch}.img)
     echo -e "\tISOFSIZEB:\t$ISOFSIZEB"
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
     ISOFSIZEMB=$((ISOFSIZEB / 1024 / 1024))
@@ -299,48 +391,53 @@ persistent_iso() {
     PERSISTSIZE=$((REMAINSIZE * 1024 * 2))
     echo -e "\tPERSISTSIZE:\t$PERSISTSIZE"
     # extend the ISO with the calculated amount
-    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}_${arch}.iso
+    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}_${arch}.img
     
     # part2: partitioning
     echo -e "\nCreating persistent partition:\n"
     # the following will magically create a partition with all space of the previous blowed up space
-    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}_${arch}.iso
+    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}_${arch}.img
 
     # part3: format it
     echo -e "\nFormatting persistent partition:\n"
     # get start of the persistent partition
-    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.iso -o Device,Start|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,Start|grep img${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOOFF:\t\t$LOOFF"
     LOOFFSET=$((LOOFF * 512))
     echo -e "\tLOOFFSET:\t$LOOFFSET"
     # get end of the persistent partition
-    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.iso -o Device,End|grep iso${ISOPARTN} |cut -d " " -f2)
+    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,End|grep img${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOSZ:\t\t$LOSZ"
     LOSZLIMIT=$((LOSZ * 512))
     echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
     # prepare loop device
     LOOPDEV="$(losetup -f)"
-    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}_${arch}.iso
+    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}_${arch}.img
     # format it (label is important for the Arch boot later!)
     mkfs -t ext4 -L $PERSLABEL $LOOPDEV
     losetup -d $LOOPDEV
 
     # part4: compress & cleanup
     CURDIR=$(pwd)
-    cd ${out_dir} && zip ${iso_name}${iso_version}_${arch}.zip ${iso_name}${iso_version}_${arch}.iso && rm ${iso_name}${iso_version}_${arch}.iso
+    [ -f ${out_dir}/$targetfile ] && rm -vf ${out_dir}/$targetfile && echo "previous $targetfile detected.. deleted!"
+    cd ${out_dir} && zip $targetfile ${iso_name}${iso_version}_${arch}.img && rm ${iso_name}${iso_version}_${arch}.img
     cd "$CURDIR"
+
+    # part5: make checksum
+    make_checksum
 }
 
 # Build ISO
 make_iso() {
     export out_dir="${baseoutdir}/${arch}"
-    echo "mkarchiso ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}.iso"
-    mkarchiso ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}.iso"
-    targetfile="${iso_name}${iso_version}_${arch}.iso"
-    if [ "x$persistent" == "xyes" ];then
-        persistent_iso
-        targetfile=${iso_name}${iso_version}_${arch}.zip
-    fi
+    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
+    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
+    targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
+    make_checksum
+}
+
+# # create checksums
+make_checksum(){
     CURDIR=$(pwd)
     cd ${out_dir}
     make_md5 "$targetfile"
@@ -350,10 +447,21 @@ make_iso() {
 # clean lock files
 F_CLEANLOCKS() {
 	echo -e "\n\nCLEANING UP LOCKS! THIS WILL ENFORCE AN ISO REBUILD (but leaving the ISO base intact):\n\n"
-        for arch in i686 x86_64;do
+        for arch in $ARCH;do
 	    rm -fv ${work_dir}/$arch/build.make_*
         done
 	echo finished..
+}
+
+F_CLEANUSER(){
+    b_lock="$1"
+    echo -e "\n\nCLEANING UP CUSTOM BUILD LOCK: ${b_lock} for arch $ARCH\n"
+    if [ -f ${work_dir}/$ARCH/${b_lock}_${ARCH} ];then
+        rm -fv ${work_dir}/$ARCH/${b_lock}_${ARCH}
+    else
+        echo "${work_dir}/$ARCH/${b_lock}_${ARCH} does not exists. skipped."
+    fi
+    echo done.
 }
 
 F_FULLCLEAN(){
@@ -367,7 +475,7 @@ F_FULLCLEAN(){
 
 F_CUSTCLEAN(){
     echo -e "\nEnforcing re-run of customize script. This will NOT re-create the ISO!\n\n"
-    for arch in i686 x86_64;do
+    for arch in $ARCH;do
         rm -vf ${work_dir}/$arch/build.make_customize_airootfs*
     done
     echo finished..
@@ -396,18 +504,20 @@ fi
 CLEANALL=0
 CLEANCUST=0
 CLEANLOCK=0
+CLEANUSER=0
 
 # do not run builds in parallel 
 [ -f $lock_file ] && echo -e "\nERROR: There is a build currently running?!\nIf you are sure that there is none running delete $lock_file\n" && exit 9
 > $lock_file
 chmod 666 $lock_file
 
-while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
+while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:u:' arg; do
     case "${arg}" in
         S) SILENT=yes;;
         P) persistent=yes ;;
         U) USBSIZEMB="$OPTARG";;
         C) CLEANLOCK=1 ;;
+        u) CLEANUSER="$OPTARG";;
         F) CLEANALL=1 ;;
         c) CLEANCUST=1 ;;
         N) iso_name="${OPTARG}" ;;
@@ -419,7 +529,7 @@ while getopts 'N:V:L:D:w:o:g:vhCFcPU:SA:' arg; do
         g) gpg_key="${OPTARG}" ;;
         v) verbose="-v" ;;
         h) _usage 0 ;;
-        A) ARCH="${OPTARG}" ;;
+        A) export ARCH="${OPTARG}" ;;
         *)
            echo "Invalid argument '${arg}'"
            _usage 1
@@ -430,6 +540,8 @@ done
 [ "$CLEANALL" -eq 1 ]&& F_FULLCLEAN
 [ "$CLEANCUST" -eq 1 ]&& F_CUSTCLEAN
 [ "$CLEANLOCK" -eq 1 ]&& F_CLEANLOCKS
+[ "$CLEANUSER" != "0" ]&& for b_lock in $CLEANUSER; do F_CLEANUSER "$b_lock";done
+
 
 basedir=$work_dir
 baseoutdir=$out_dir
@@ -488,6 +600,7 @@ done
 for arch in $ARCH; do
     export work_dir="${basedir}/${arch}"
     run_once make_iso
+    [ "x$persistent" == "xyes" ] && run_once persistent_iso
 done
 
 rm $lock_file

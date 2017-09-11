@@ -1,5 +1,5 @@
-favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,otter-browser.desktop
-recent=otter-browser.desktop,Thunar.desktop
+favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,firefox.desktop
+recent=firefox.desktop,Thunar.desktop
 button-title=Anwendungen
 button-icon=/home/android/.fwul/arch_logo.jpg
 button-single-row=false

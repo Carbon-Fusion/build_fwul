@@ -18,9 +18,9 @@ YAD="$YBIN --center --top --title FWUL-Installer --window-icon=preferences-deskt
 
 # depending on the package manager we need to start it as root or not
 if [ "$PMAN" == "pacman" ];then
-    PMANEXEC="sudo pacman"
+    PMANEXEC="pacman"
 else
-    PMANEXEC="$PMAN"
+    PMANEXEC="sudo -u $SUDO_USER $PMAN"
 fi
 
 # check for space requirements and warn!
@@ -58,7 +58,7 @@ if [ $? -eq 0 ];then
     # start a progress bar to give some user feedback
     tail -f $PREPRG | $YAD --width=300 --progress --percentage=10 --auto-close &
     # install the package
-    xterm -e "sudo $PMAN --noconfirm -Sy"
+    xterm -e "$PMAN --noconfirm -Sy"
     PRECHK=$(F_CHKSPACE "$PKG")
     if [ "$PRECHK" -eq 0 ];then
         xterm -e "$PMANEXEC -S --noconfirm $PKG && >/tmp/install-$PKG-success"

@@ -1,0 +1,11 @@
+[Unit]
+Description=Initialize pacman database and sort mirrors when there is internet
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/etc/systemd/scripts/init-fwul
+
+[Install]
+WantedBy=multi-user.target
