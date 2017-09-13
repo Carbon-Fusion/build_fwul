@@ -348,7 +348,6 @@ persistent_iso() {
     PERSGB=$((USBSIZEMB/1024))
     PERSIMG="${iso_name}${iso_version}_${arch}_persistent.img"
     export out_dir="${baseoutdir}/${arch}"
-    export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
     PERSIMGFULL="${out_dir}/${PERSIMG}"
 
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
@@ -420,6 +419,7 @@ persistent_iso() {
     losetup -d $LOOPDEV
 
     # part4: compress & cleanup
+    export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
     CURDIR=$(pwd)
     [ -f ${out_dir}/$targetfile ] && rm -vf ${out_dir}/$targetfile && echo "previous $targetfile detected.. deleted!"
     cd ${out_dir} && zip $targetfile $PERSIMG && rm $PERSIMG
