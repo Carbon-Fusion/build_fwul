@@ -427,9 +427,6 @@ persistent_iso() {
 
     # part5: make checksum
     make_checksum
-    
-    # part6: clean
-    rm -v "$PERSIMGFULL"
 }
 
 # Build ISO
