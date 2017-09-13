@@ -346,6 +346,8 @@ make_prepare() {
 persistent_iso() {
 
     PERSGB=$((USBSIZEMB/1024))
+    PERSIMG="${iso_name}${iso_version}_${arch}_persistent.img"
+    PERSIMGFULL="${out_dir}/${PERSIMG}"
     export out_dir="${baseoutdir}/${arch}"
     export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
 
@@ -371,8 +373,8 @@ persistent_iso() {
         ISOPARTN=3
     fi
 
-    echo -e "\nCopy persistent ISO\n"
-    cp -v ${out_dir}/${iso_name}${iso_version}_${arch}_forgetful.iso ${out_dir}/${iso_name}${iso_version}_${arch}.img
+    echo -e "\nCreating persistent image\n"
+    make_IMG
 
     echo -e "\nPreparing persistent setup:\n"
 
@@ -425,6 +427,9 @@ persistent_iso() {
 
     # part5: make checksum
     make_checksum
+    
+    # part6: clean
+    rm -v "$PERSIMGFULL"
 }
 
 # Build ISO
@@ -433,6 +438,15 @@ make_iso() {
     echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
     ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
     targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
+    make_checksum
+}
+
+# build image
+make_IMG() {
+    export out_dir="${baseoutdir}/${arch}"
+    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso $PERSIMG"
+    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "$PERSIMG"
+    targetfile="$PERSIMG"
     make_checksum
 }
 
