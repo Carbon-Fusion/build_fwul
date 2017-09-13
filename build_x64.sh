@@ -440,11 +440,9 @@ make_iso() {
 
 # build image
 make_IMG() {
-    export out_dir="${baseoutdir}/${arch}"
+    out_dir="${baseoutdir}/${arch}"
     echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso $PERSIMG"
     ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "$PERSIMG"
-    targetfile="$PERSIMG"
-    make_checksum
 }
 
 # # create checksums
