@@ -347,9 +347,9 @@ persistent_iso() {
 
     PERSGB=$((USBSIZEMB/1024))
     PERSIMG="${iso_name}${iso_version}_${arch}_persistent.img"
-    PERSIMGFULL="${out_dir}/${PERSIMG}"
     export out_dir="${baseoutdir}/${arch}"
     export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
+    PERSIMGFULL="${out_dir}/${PERSIMG}"
 
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
