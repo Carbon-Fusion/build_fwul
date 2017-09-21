@@ -378,7 +378,7 @@ chmod -v 755 /usr/share
 #https://github.com/Carbon-Fusion/build_fwul/issues/57
 git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
     && cd /tmp/fwulpatch \
-    && su -c - $LOGINUSR makepkg -si
+    && su -c - $LOGINUSR "makepkg -si"
 cd / 
 
 # make all desktop files usable
@@ -608,7 +608,7 @@ $RSUDOERS
 /home/$LOGINUSR/programs/welcome/icons/welcome.png
 /home/$LOGINUSR/.config/autostart/welcome.desktop
 /etc/profile.d/fwul-session.sh
-//etc/systemd/system/init-mirror.service
+/etc/systemd/system/init-mirror.service
 /etc/systemd/scripts/init-fwul
 /home/$LOGINUSR/Desktop/welcome.desktop
 /etc/fwul-release
