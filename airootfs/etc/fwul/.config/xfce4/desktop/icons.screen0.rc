@@ -13,6 +13,10 @@ col=1
 row=2
 col=0
 
+[/home/android/Desktop/livepatcher.desktop]
+row=0
+col=1
+
 [/home/android/Desktop/Samsung]
 row=2
 col=1
@@ -39,4 +43,4 @@ col=1
 
 [/home/android]
 row=0
-col=1
+col=2
