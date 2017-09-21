@@ -370,6 +370,13 @@ java -jar /home/$LOGINUSR/programs/sadb/S-ADB.jar
 EOEXECADB
 chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
 
+# fix perms
+# https://github.com/Carbon-Fusion/build_fwul/issues/58
+chown -v root.root /usr
+chmod -v 755 /usr
+chown -v root.root /usr/share
+chmod -v 755 /usr/share
+
 # make all desktop files usable
 chmod +x /home/$LOGINUSR/Desktop/*.desktop /home/$LOGINUSR/Desktop/*/*.desktop
 chown -R $LOGINUSR /home/$LOGINUSR/Desktop/
