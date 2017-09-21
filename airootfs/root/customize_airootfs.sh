@@ -378,7 +378,7 @@ chmod -v 755 /usr/share
 #https://github.com/Carbon-Fusion/build_fwul/issues/57
 git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
     && cd /tmp/fwulpatch \
-    && chown $LOGINUSER /tmp/fwulpatch \
+    && chown $LOGINUSR /tmp/fwulpatch \
     && su -c - $LOGINUSR "makepkg -si"
 cd / 
 
