@@ -480,7 +480,15 @@ fi
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
 
+# hotfix until upstream fixed
+# https://github.com/Carbon-Fusion/build_fwul/issues/56
+bash /opt/fwul/patches/2-2-1_issue56.sh
+
+###############################################################################################################
+#
 # cleanup
+#
+###############################################################################################################
 echo -e "\nCleanup - locale:"
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
