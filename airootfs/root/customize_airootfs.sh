@@ -29,9 +29,6 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
-echo "fwulversion=$iso_version" > /etc/fwul-release
-echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
-
 # current java version provided with FWUL (to save disk space compressed and not installed)
 CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
 INSTJAVA="sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/jre-8u131-1-${arch}.pkg.tar.xz"
@@ -574,6 +571,11 @@ $RPW
 $RPW
 EOSETPWROOTPW
 
+# set release info
+echo "fwulversion=$iso_version" > /etc/fwul-release
+echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
+echo "patchlevel=0" >> /etc/fwul-release
+
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
@@ -609,6 +611,11 @@ $RSUDOERS
 //etc/systemd/system/init-mirror.service
 /etc/systemd/scripts/init-fwul
 /home/$LOGINUSR/Desktop/welcome.desktop
+/etc/fwul-release
+/usr/local/bin/livepatcher.sh
+/usr/local/bin/liveupdater.sh
+/var/lib/fwul/generic.vars
+/var/lib/fwul/generic.func
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 # 32bit requirements (extend with 32bit ONLY.
