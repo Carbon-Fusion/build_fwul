@@ -29,6 +29,11 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
+# set fake release info (get overwritten later)
+echo "fwulversion=0.0" > /etc/fwul-release
+echo "fwulbuild=0" >> /etc/fwul-release
+echo "patchlevel=0" >> /etc/fwul-release
+
 # current java version provided with FWUL (to save disk space compressed and not installed)
 CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
 INSTJAVA="sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/jre-8u131-1-${arch}.pkg.tar.xz"
@@ -573,7 +578,7 @@ $RPW
 $RPW
 EOSETPWROOTPW
 
-# set release info
+# set real release info
 echo "fwulversion=$iso_version" > /etc/fwul-release
 echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
 echo "patchlevel=0" >> /etc/fwul-release
