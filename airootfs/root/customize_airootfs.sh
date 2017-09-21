@@ -380,7 +380,7 @@ git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch 
     && cd /tmp/fwulpatch \
     && chown $LOGINUSR /tmp/fwulpatch \
     && su -c - $LOGINUSR "makepkg -s" \
-    && pacman -U fwulpatch-*.pkg.tar.xz
+    && pacman --noconfirm -U fwulpatch-*.pkg.tar.xz
 cd / 
 
 # make all desktop files usable
