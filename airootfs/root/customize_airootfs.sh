@@ -377,6 +377,13 @@ chmod -v 755 /usr
 chown -v root.root /usr/share
 chmod -v 755 /usr/share
 
+# install FWUL LivePatcher
+#https://github.com/Carbon-Fusion/build_fwul/issues/57
+git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
+    && cd /tmp/fwulpatch \
+    && su -c - $LOGINUSR makepkg -si
+cd / 
+
 # make all desktop files usable
 chmod +x /home/$LOGINUSR/Desktop/*.desktop /home/$LOGINUSR/Desktop/*/*.desktop
 chown -R $LOGINUSR /home/$LOGINUSR/Desktop/
