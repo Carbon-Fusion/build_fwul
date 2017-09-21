@@ -379,7 +379,8 @@ chmod -v 755 /usr/share
 git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
     && cd /tmp/fwulpatch \
     && chown $LOGINUSR /tmp/fwulpatch \
-    && su -c - $LOGINUSR "makepkg -si"
+    && su -c - $LOGINUSR "makepkg -s" \
+    && pacman -U fwulpatch-*.pkg.tar.xz
 cd / 
 
 # make all desktop files usable
