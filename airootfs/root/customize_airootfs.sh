@@ -372,13 +372,6 @@ java -jar /home/$LOGINUSR/programs/sadb/S-ADB.jar
 EOEXECADB
 chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
 
-# fix perms
-# https://github.com/Carbon-Fusion/build_fwul/issues/58
-chown -v root.root /usr
-chmod -v 755 /usr
-chown -v root.root /usr/share
-chmod -v 755 /usr/share
-
 # install FWUL LivePatcher
 #https://github.com/Carbon-Fusion/build_fwul/issues/57
 git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
@@ -584,13 +577,6 @@ echo "fwulversion=$iso_version" > /etc/fwul-release
 echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
 echo "patchlevel=0" >> /etc/fwul-release
 
-# fix perms (again)
-# https://github.com/Carbon-Fusion/build_fwul/issues/58
-chown -v root.root /usr
-chmod -v 755 /usr
-chown -v root.root /usr/share
-chmod -v 755 /usr/share
-
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
@@ -684,6 +670,13 @@ for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 done
 echo -e '[/INDENT]'
+
+# fix perms
+# https://github.com/Carbon-Fusion/build_fwul/issues/58
+chown -v root.root /usr
+chmod -v 755 /usr
+chown -v root.root /usr/share
+chmod -v 755 /usr/share
 
 #########################################################################################
 # this has always to be the very last thing!
