@@ -584,6 +584,13 @@ echo "fwulversion=$iso_version" > /etc/fwul-release
 echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
 echo "patchlevel=0" >> /etc/fwul-release
 
+# fix perms (again)
+# https://github.com/Carbon-Fusion/build_fwul/issues/58
+chown -v root.root /usr
+chmod -v 755 /usr
+chown -v root.root /usr/share
+chmod -v 755 /usr/share
+
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
