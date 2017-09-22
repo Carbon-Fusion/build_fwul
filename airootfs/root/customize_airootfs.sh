@@ -487,6 +487,7 @@ echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/
 # hotfix until upstream fixed
 # https://github.com/Carbon-Fusion/build_fwul/issues/56
 bash /opt/fwul/patches/2-2-1_issue56.sh
+cat /var/log/fwul/2-2-1_issue56.log
 
 ###############################################################################################################
 #
