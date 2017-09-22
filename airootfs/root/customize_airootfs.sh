@@ -29,8 +29,10 @@ LOGINUSR=android
 LOGINPW=linux
 RPW=$LOGINPW
 
-echo "fwulversion=$iso_version" > /etc/fwul-release
-echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
+# set fake release info (get overwritten later)
+echo "fwulversion=0.0" > /etc/fwul-release
+echo "fwulbuild=0" >> /etc/fwul-release
+echo "patchlevel=0" >> /etc/fwul-release
 
 # current java version provided with FWUL (to save disk space compressed and not installed)
 CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
@@ -46,7 +48,7 @@ $LOGINPW
 EOSETPW
 
 # prepare user home
-cp -aT /etc/fwul/ /home/$LOGINUSR/
+cp -avT /etc/fwul/ /home/$LOGINUSR/
 [ ! -d /home/$LOGINUSR/Desktop ] && mkdir /home/$LOGINUSR/Desktop
 chmod 700 /home/$LOGINUSR
 
@@ -370,6 +372,22 @@ java -jar /home/$LOGINUSR/programs/sadb/S-ADB.jar
 EOEXECADB
 chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
 
+# fix perms
+# https://github.com/Carbon-Fusion/build_fwul/issues/58
+chown -v root.root /usr
+chmod -v 755 /usr
+chown -v root.root /usr/share
+chmod -v 755 /usr/share
+
+# install FWUL LivePatcher
+#https://github.com/Carbon-Fusion/build_fwul/issues/57
+git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
+    && cd /tmp/fwulpatch \
+    && chown $LOGINUSR /tmp/fwulpatch \
+    && su -c - $LOGINUSR "makepkg -s" \
+    && pacman --noconfirm -U fwulpatch-*.pkg.tar.xz
+cd / 
+
 # make all desktop files usable
 chmod +x /home/$LOGINUSR/Desktop/*.desktop /home/$LOGINUSR/Desktop/*/*.desktop
 chown -R $LOGINUSR /home/$LOGINUSR/Desktop/
@@ -466,7 +484,15 @@ fi
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
 
+# hotfix until upstream fixed
+# https://github.com/Carbon-Fusion/build_fwul/issues/56
+bash /opt/fwul/patches/2-2-1_issue56.sh
+
+###############################################################################################################
+#
 # cleanup
+#
+###############################################################################################################
 echo -e "\nCleanup - locale:"
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
@@ -552,6 +578,11 @@ $RPW
 $RPW
 EOSETPWROOTPW
 
+# set real release info
+echo "fwulversion=$iso_version" > /etc/fwul-release
+echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
+echo "patchlevel=0" >> /etc/fwul-release
+
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
@@ -584,9 +615,15 @@ $RSUDOERS
 /home/$LOGINUSR/programs/welcome/icons/welcome.png
 /home/$LOGINUSR/.config/autostart/welcome.desktop
 /etc/profile.d/fwul-session.sh
-//etc/systemd/system/init-mirror.service
+/etc/systemd/system/init-mirror.service
 /etc/systemd/scripts/init-fwul
 /home/$LOGINUSR/Desktop/welcome.desktop
+/etc/fwul-release
+/usr/local/bin/livepatcher.sh
+/usr/local/bin/liveupdater.sh
+/var/lib/fwul/generic.vars
+/var/lib/fwul/generic.func
+/home/$LOGINUSR/.config/xfce4/desktop/icons.screen0.rc
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 # 32bit requirements (extend with 32bit ONLY.

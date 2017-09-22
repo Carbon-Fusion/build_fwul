@@ -346,8 +346,9 @@ make_prepare() {
 persistent_iso() {
 
     PERSGB=$((USBSIZEMB/1024))
+    PERSIMG="${iso_name}v${iso_version}_${arch}_persistent.img"
     export out_dir="${baseoutdir}/${arch}"
-    export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
+    PERSIMGFULL="${out_dir}/${PERSIMG}"
 
     # define a label for the persistent partition (if changed here - change it in BIOS and UEFI boot confs as well!)
     PERSLABEL=fwulforever 
@@ -371,14 +372,14 @@ persistent_iso() {
         ISOPARTN=3
     fi
 
-    echo -e "\nCopy persistent ISO\n"
-    cp -v ${out_dir}/${iso_name}${iso_version}_${arch}_forgetful.iso ${out_dir}/${iso_name}${iso_version}_${arch}.img
+    echo -e "\nCreating persistent image\n"
+    make_IMG
 
     echo -e "\nPreparing persistent setup:\n"
 
     # part1: blow the ISO up
     # get the size of the FWUL ISO
-    ISOFSIZEB=$(stat -c %s ${out_dir}/${iso_name}${iso_version}_${arch}.img)
+    ISOFSIZEB=$(stat -c %s $PERSIMGFULL)
     echo -e "\tISOFSIZEB:\t$ISOFSIZEB"
     # calculation of the space to use (bash will auto-round! could be not what we want though..)
     ISOFSIZEMB=$((ISOFSIZEB / 1024 / 1024))
@@ -391,36 +392,37 @@ persistent_iso() {
     PERSISTSIZE=$((REMAINSIZE * 1024 * 2))
     echo -e "\tPERSISTSIZE:\t$PERSISTSIZE"
     # extend the ISO with the calculated amount
-    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> ${out_dir}/${iso_name}${iso_version}_${arch}.img
+    dd status=progress if=/dev/zero bs=512 count=$PERSISTSIZE >> $PERSIMGFULL
     
     # part2: partitioning
     echo -e "\nCreating persistent partition:\n"
     # the following will magically create a partition with all space of the previous blowed up space
-    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk ${out_dir}/${iso_name}${iso_version}_${arch}.img
+    echo -e "n\np\n$ISOPARTN\n \n \nw" | fdisk $PERSIMGFULL
 
     # part3: format it
     echo -e "\nFormatting persistent partition:\n"
     # get start of the persistent partition
-    LOOFF=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,Start|grep img${ISOPARTN} |cut -d " " -f2)
+    LOOFF=$(fdisk -l $PERSIMGFULL -o Device,Start|grep img${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOOFF:\t\t$LOOFF"
     LOOFFSET=$((LOOFF * 512))
     echo -e "\tLOOFFSET:\t$LOOFFSET"
     # get end of the persistent partition
-    LOSZ=$(fdisk -l ${out_dir}/${iso_name}${iso_version}_${arch}.img -o Device,End|grep img${ISOPARTN} |cut -d " " -f2)
+    LOSZ=$(fdisk -l $PERSIMGFULL -o Device,End|grep img${ISOPARTN} |cut -d " " -f2)
     echo -e "\tLOSZ:\t\t$LOSZ"
     LOSZLIMIT=$((LOSZ * 512))
     echo -e "\tLOSZLIMIT:\t$LOSZLIMIT"
     # prepare loop device
     LOOPDEV="$(losetup -f)"
-    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV ${out_dir}/${iso_name}${iso_version}_${arch}.img
+    losetup -o $LOOFFSET --sizelimit $LOSZLIMIT $LOOPDEV $PERSIMGFULL
     # format it (label is important for the Arch boot later!)
     mkfs -t ext4 -L $PERSLABEL $LOOPDEV
     losetup -d $LOOPDEV
 
     # part4: compress & cleanup
+    export targetfile="${iso_name}v${iso_version}_${arch}_${PERSGB}GB.zip"
     CURDIR=$(pwd)
     [ -f ${out_dir}/$targetfile ] && rm -vf ${out_dir}/$targetfile && echo "previous $targetfile detected.. deleted!"
-    cd ${out_dir} && zip $targetfile ${iso_name}${iso_version}_${arch}.img && rm ${iso_name}${iso_version}_${arch}.img
+    cd ${out_dir} && zip $targetfile $PERSIMG && rm $PERSIMG
     cd "$CURDIR"
 
     # part5: make checksum
@@ -430,10 +432,17 @@ persistent_iso() {
 # Build ISO
 make_iso() {
     export out_dir="${baseoutdir}/${arch}"
-    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
-    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
-    targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
+    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}v${iso_version}_${arch}_forgetful.iso"
+    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}v${iso_version}_${arch}_forgetful.iso"
+    targetfile="${iso_name}v${iso_version}_${arch}_forgetful.iso"
     make_checksum
+}
+
+# build image
+make_IMG() {
+    out_dir="${baseoutdir}/${arch}"
+    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso $PERSIMG"
+    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "$PERSIMG"
 }
 
 # # create checksums
