@@ -623,6 +623,7 @@ $RSUDOERS
 /usr/local/bin/liveupdater.sh
 /var/lib/fwul/generic.vars
 /var/lib/fwul/generic.func
+/home/$LOGINUSR/.config/xfce4/desktop/icons.screen0.rc
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 # 32bit requirements (extend with 32bit ONLY.
