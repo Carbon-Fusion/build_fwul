@@ -346,7 +346,7 @@ make_prepare() {
 persistent_iso() {
 
     PERSGB=$((USBSIZEMB/1024))
-    PERSIMG="${iso_name}${iso_version}_${arch}_persistent.img"
+    PERSIMG="${iso_name}v${iso_version}_${arch}_persistent.img"
     export out_dir="${baseoutdir}/${arch}"
     PERSIMGFULL="${out_dir}/${PERSIMG}"
 
@@ -419,7 +419,7 @@ persistent_iso() {
     losetup -d $LOOPDEV
 
     # part4: compress & cleanup
-    export targetfile="${iso_name}${iso_version}_${arch}_${PERSGB}GB.zip"
+    export targetfile="${iso_name}v${iso_version}_${arch}_${PERSGB}GB.zip"
     CURDIR=$(pwd)
     [ -f ${out_dir}/$targetfile ] && rm -vf ${out_dir}/$targetfile && echo "previous $targetfile detected.. deleted!"
     cd ${out_dir} && zip $targetfile $PERSIMG && rm $PERSIMG
@@ -432,9 +432,9 @@ persistent_iso() {
 # Build ISO
 make_iso() {
     export out_dir="${baseoutdir}/${arch}"
-    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}${iso_version}_${arch}_forgetful.iso"
-    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}${iso_version}_${arch}_forgetful.iso"
-    targetfile="${iso_name}${iso_version}_${arch}_forgetful.iso"
+    echo "${MKARCHISO} ${verbose} -P $PUBLISHER -w ${work_dir} -D ${install_dir} -L ${iso_label} -o "${out_dir}" iso ${iso_name}v${iso_version}_${arch}_forgetful.iso"
+    ${MKARCHISO} ${verbose} -P "$PUBLISHER" -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}v${iso_version}_${arch}_forgetful.iso"
+    targetfile="${iso_name}v${iso_version}_${arch}_forgetful.iso"
     make_checksum
 }
 
