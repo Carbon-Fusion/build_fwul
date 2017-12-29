@@ -713,7 +713,7 @@ expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 40
 pacman --noconfirm -Rns expac
 
 # create a XDA copy template for the important FWUL package versions
-echo -ne '[*]Versions of the main FWUL components:\n[INDENT]\nKernel -> [B]'version: $(uname -mr)'[/B]\nADB and fastboot: '
+echo -ne '[*]Versions of the main FWUL components:\n[INDENT]\nKernel -> [B]'version:$(pacman -Qi linux-rt-manjaro |grep Version| cut -d ":" -f 2)'[/B]\nADB and fastboot: '
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 echo -e 'simple-adb GUI -> [B]version: update4[/B]'
 CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat"
