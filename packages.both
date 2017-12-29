@@ -27,6 +27,8 @@ ntp
 p7zip
 pamac
 pulseaudio
+python-crypto
+python-pyusb
 python2-crypto
 python2-pyusb
 refind-efi
