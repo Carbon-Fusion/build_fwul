@@ -310,7 +310,7 @@ echo -e "\nSALT:"
 [ ! -d /home/$LOGINUSR/programs/SALT ] && git clone https://github.com/steadfasterX/salt.git /home/$LOGINUSR/programs/SALT
 [ ! -d /root/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/lglafng
 [ ! -d /root/programs/kdztools ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/kdztools
-su -c - $LOGINUSR "bash /home/$LOGINUSR/programs/SALT/install-desktop.sh && mv /home/$LOGINUSR/SALT.desktop /home/$LOGINUSR/LG/"
+su -c - $LOGINUSR "bash /home/$LOGINUSR/programs/SALT/install-desktop.sh && mv /home/$LOGINUSR/Desktop/SALT.desktop /home/$LOGINUSR/Desktop/LG/"
 chmod +x /home/$LOGINUSR/LG/SALT.desktop
 
 # pure LG LAF
