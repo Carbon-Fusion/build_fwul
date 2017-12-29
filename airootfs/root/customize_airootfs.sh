@@ -305,32 +305,28 @@ chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 # prepare LG tools
 [ ! -d /home/$LOGINUSR/Desktop/LG ] && mkdir /home/$LOGINUSR/Desktop/LG/
 
-[ ! -d /home/$LOGINUSR/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /home/$LOGINUSR/programs/lglafng
+# SALT
+echo -e "\nSALT:"
+[ ! -d /home/$LOGINUSR/programs/SALT ] && git clone https://github.com/steadfasterX/salt.git /home/$LOGINUSR/programs/SALT
+[ ! -d /root/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/lglafng
+[ ! -d /root/programs/kdztools ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/kdztools
+su -c - $LOGINUSR "/home/$LOGINUSR/programs/SALT/install-desktop.sh && mv /home/$LOGINUSR/SALT.desktop /home/$LOGINUSR/LG/"
+chmod +x /home/$LOGINUSR/LG/SALT.desktop
+
+# pure LG LAF
+echo -e "\npure lglaf:"
+[ ! -d /home/$LOGINUSR/programs/lglaf ] && git clone https://github.com/Lekensteyn/lglaf.git /home/$LOGINUSR/programs/lglaf
 
 # LG LAF shortcut with auth
 echo -e "\nLG LAF shortcut with auth:"
-cat >/home/$LOGINUSR/Desktop/LG/open-lglafauthshell.desktop <<EOSFT
-[Desktop Entry]
-Version=1.0
-Type=Application
-Comment=LG LAF shell with authentication challenge (for newer devices)
-Terminal=false
-Name=LG LAF (auth)
-Exec=/home/$LOGINUSR/.fwul/lglaf.sh --unlock
-Icon=terminal
-EOSFT
-chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafauthshell.desktop
-
-# LGLaf shortcut no auth
-echo -e "\nLG LAF shortcut without auth:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop <<EOSFT
 [Desktop Entry]
 Version=1.0
 Type=Application
-Comment=LG LAF shell without authentication challenge (for older devices)
+Comment=LG LAF
 Terminal=false
-Name=LG LAF (no auth)
-Exec=/home/$LOGINUSR/.fwul/lglaf.sh
+Name=LG LAF (origin)
+Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf
 Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
@@ -341,10 +337,10 @@ cat >/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop <<EOLAFNG
 [Desktop Entry]
 Version=1.0
 Type=Application
-Comment=LG LAF shell NG
+Comment=LG LAF with steadfasterX patches
 Terminal=true
 Name=LG LAF - NG
-Exec=xfce4-terminal --working-directory=/home/android/programs/lglafng
+Exec=gksudo xfce4-terminal --working-directory=/root/programs/lglafng
 Icon=terminal
 EOLAFNG
 
@@ -600,6 +596,13 @@ $FWULDESKTOP
 $FWULXFWM4
 $FWULXSETS
 $RSUDOERS
+/home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
+/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop
+/home/$LOGINUSR/programs/SALT/salt
+/root/programs/lglafng/partitions.py
+/home/$LOGINUSR/programs/lglaf/partitions.py
+/root/programs/kdztools/unkdz.py
+/home/$LOGINUSR/LG/SALT.desktop
 /usr/share/mdm/themes/Arc-Wise/MdmGreeterTheme.desktop
 /home/$LOGINUSR/Desktop/ADB.desktop
 /home/$LOGINUSR/programs/sadb/starter.sh
