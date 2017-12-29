@@ -322,7 +322,7 @@ Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
 Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
 EOFDSK
 fi
-if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];the
+if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];then
     cat > /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop <<EOFDSKFB
 [Desktop Entry]
 Version=1.0
