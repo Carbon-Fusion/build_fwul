@@ -145,6 +145,23 @@ sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.d
 # always update the udev rules to be top current
 wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-android.rules -O /etc/udev/rules.d/51-android.rules
 
+# install & prepare tmate
+echo -e "\ntmate:"
+yaourt -Q tmate || su -c - $LOGINUSR "yaourt -S --noconfirm tmate"
+# install the ssh keygenerator
+[ ! -d /home/$LOGINUSR/.config/autostart ] && mkdir -p /home/$LOGINUSR/.config/autostart && chown -R $LOGINUSR /home/$LOGINUSR/.config/autostart
+echo -e '#!/bin/bash\n[ !'" -f /home/$LOGINUSR/.ssh/id_rsa ] && ssh-keygen -b 4096 -f /home/$LOGINUSR/.ssh/id_rsa -P ''" > /home/$LOGINUSR/.fwul/sshkeygen.sh
+cat > /home/$LOGINUSR/.config/autostart/sshkeygen.desktop<<EOSSHKG
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=sshkeygen
+Terminal=false
+Name=sshkeygen
+Exec=/home/$LOGINUSR/.fwul/sshkeygen.sh
+EOSSHKG
+
+
 # install & add Heimdall
 echo -e "\nheimdall:"
 yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
@@ -618,6 +635,8 @@ $RSUDOERS
 /var/lib/fwul/generic.vars
 /var/lib/fwul/generic.func
 /home/$LOGINUSR/.config/xfce4/desktop/icons.screen0.rc
+/home/$LOGINUSR/.fwul/sshkeygen.sh
+/home/$LOGINUSR/.config/autostart/sshkeygen.desktop
 /home/$LOGINUSR/.fwul/$CURJAVA"
 
 # 32bit requirements (extend with 32bit ONLY.
