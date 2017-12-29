@@ -361,9 +361,9 @@ cat >/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop <<EOLAFNG
 Version=1.0
 Type=Application
 Comment=LG LAF with steadfasterX patches
-Terminal=true
+Terminal=false
 Name=LG LAF - NG
-Exec=gksudo xfce4-terminal --working-directory=/root/programs/lglafng
+Exec=gksudo "xfce4-terminal --working-directory=/root/programs/lglafng"
 Icon=terminal
 EOLAFNG
 
