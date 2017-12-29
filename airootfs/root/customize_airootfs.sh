@@ -616,6 +616,14 @@ echo "patchlevel=0" >> /etc/fwul-release
 
 echo -e "\nTESTING FWUL BUILD!"
 
+if [ -e /boot/vmlinuz-linux ];then 
+    echo "Kernel in place!"
+else
+    echo "ERROR: Kernel symlink not valid!"
+    ls -la /boot
+    false
+fi
+
 # arch independent requirements
 REQFILES="/home/$LOGINUSR/.fwul/wallpaper_fwul.png 
 $FWULDESKTOP
