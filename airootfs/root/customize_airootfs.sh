@@ -163,7 +163,7 @@ Terminal=false
 Name=sshkeygen
 Exec=/home/$LOGINUSR/.fwul/sshkeygen.sh
 EOSSHKG
-
+chmod +x /home/$LOGINUSR/.fwul/sshkeygen.sh
 
 # install & add Heimdall
 echo -e "\nheimdall:"
