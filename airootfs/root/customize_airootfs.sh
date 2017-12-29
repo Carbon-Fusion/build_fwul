@@ -310,9 +310,31 @@ echo -e "\nSALT:"
 [ ! -d /home/$LOGINUSR/programs/SALT ] && git clone https://github.com/steadfasterX/salt.git /home/$LOGINUSR/programs/SALT
 [ ! -d /root/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/lglafng
 [ ! -d /root/programs/kdztools ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/kdztools
-su -c - $LOGINUSR "bash /home/$LOGINUSR/programs/SALT/install-desktop.sh"
-mv /home/$LOGINUSR/Desktop/SALT.desktop /home/$LOGINUSR/Desktop/LG/
-chmod +x /home/$LOGINUSR/LG/SALT.desktop
+if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT.desktop ];then
+    cat > /home/$LOGINUSR/Desktop/LG/SALT.desktop <<EOFDSK
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=SALT
+Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
+Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
+Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
+EOFDSK
+fi
+if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];the
+    cat > /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop <<EOFDSKFB
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Name=SALT (debug)
+Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
+Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
+Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
+EOFDSKFB
+fi
+chmod +x /home/$LOGINUSR/Desktop/LG/*.desktop
 
 # pure LG LAF
 echo -e "\npure lglaf:"
@@ -573,6 +595,9 @@ cat > $RSUDOERS <<EOSUDOERS
 
 # special rule for fastboot
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/fastboot *
+
+# SALT
+%wheel     ALL=(ALL) NOPASSWD: /home/$LOGINUSR/programs/SALT/salt
 EOSUDOERS
 
 # set root password
