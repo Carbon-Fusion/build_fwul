@@ -309,7 +309,7 @@ chmod +x /home/$LOGINUSR/Desktop/install-sonyflash.desktop
 echo -e "\nSALT:"
 [ ! -d /home/$LOGINUSR/programs/SALT ] && git clone https://github.com/steadfasterX/salt.git /home/$LOGINUSR/programs/SALT
 [ ! -d /root/programs/lglafng ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/lglafng
-[ ! -d /root/programs/kdztools ] && git clone https://github.com/steadfasterX/lglaf.git /root/programs/kdztools
+[ ! -d /root/programs/kdztools ] && git clone https://github.com/steadfasterX/kdztools.git /root/programs/kdztools
 if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT.desktop ];then
     cat > /home/$LOGINUSR/Desktop/LG/SALT.desktop <<EOFDSK
 [Desktop Entry]
