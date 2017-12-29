@@ -628,7 +628,7 @@ $RSUDOERS
 /root/programs/lglafng/partitions.py
 /home/$LOGINUSR/programs/lglaf/partitions.py
 /root/programs/kdztools/unkdz.py
-/home/$LOGINUSR/LG/SALT.desktop
+/home/$LOGINUSR/Desktop/LG/SALT.desktop
 /usr/share/mdm/themes/Arc-Wise/MdmGreeterTheme.desktop
 /home/$LOGINUSR/Desktop/ADB.desktop
 /home/$LOGINUSR/programs/sadb/starter.sh
