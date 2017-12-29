@@ -1,2 +1,5 @@
-linux-rt-lts-manjaro-virtualbox-guest-modules
-linux-rt-lts-manjaro-broadcom-wl
+linux-rt-manjaro
+linux-rt-manjaro-broadcom-wl
+linux-rt-manjaro-r8168
+linux-rt-manjaro-rt3562sta
+linux-rt-manjaro-virtualbox-guest-modules

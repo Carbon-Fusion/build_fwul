@@ -34,6 +34,9 @@ echo "fwulversion=0.0" > /etc/fwul-release
 echo "fwulbuild=0" >> /etc/fwul-release
 echo "patchlevel=0" >> /etc/fwul-release
 
+# remove LTS kernel and all dependencies
+pacman --noconfirm -Rsunc linux-rt-lts-manjaro
+
 # current java version provided with FWUL (to save disk space compressed and not installed)
 CURJAVA="jre-8u131-1-${arch}.pkg.tar.xz"
 INSTJAVA="sudo pacman -U --noconfirm /home/$LOGINUSR/.fwul/jre-8u131-1-${arch}.pkg.tar.xz"
