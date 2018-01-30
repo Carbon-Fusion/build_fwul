@@ -89,6 +89,9 @@ fi
 #    echo skipping antergos mirror because it is configured already
 #fi
 
+# disable free disk check
+sed -i 's/^CheckSpace/#CheckSpace/' /etc/pacman.conf
+
 # initialize the needed keyrings (again)
 haveged -w 1024
 pacman-key --init
