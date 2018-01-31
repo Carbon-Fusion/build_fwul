@@ -44,6 +44,7 @@ thunar-volman
 ttf-freefont
 usbutils
 vim
+virtualbox-guest-utils
 wget
 wireless_tools
 wpa_actiond
