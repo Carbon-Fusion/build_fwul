@@ -16,6 +16,7 @@ gvfs-mtp
 hexchat
 java-runtime-common
 leafpad
+libbsd
 libxslt
 lightdm
 lightdm-gtk-greeter
