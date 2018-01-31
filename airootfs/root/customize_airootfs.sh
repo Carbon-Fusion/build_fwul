@@ -513,6 +513,11 @@ if [ ! -f "$FWULXSETS" ];then
     F_FILEWAIT $MD5BEF "$FWULXSETS"
 fi
 
+# weird issue with text shadows on icons
+MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
+su -c - $LOGINUSR "dbus-launch xfconf-query -c xfce4-desktop -p /desktop-icons/center-text -n -t bool -s false"
+F_FILEWAIT $MD5BEF "$FWULDESKTOP"
+
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
 
