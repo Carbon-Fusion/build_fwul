@@ -216,8 +216,8 @@ yaourt -Q jre || xterm -e "$INSTJAVA"
 JAVA_HOME=/usr/lib/jvm/java-8-jre /home/$LOGINUSR/programs/JOdin/JOdin3CASUAL
 EOEXECOD
         chmod +x /home/$LOGINUSR/programs/JOdin/starter.sh
-        wget "http://droid.binbash.it:8008/misc/JOdin3CASUAL-r1142-dist.tar.gz" -O JOdin.tgz
-        tar -xzf JOdin.tgz -C /home/$LOGINUSR/programs/JOdin/ && rm -rf JOdin.tgz /home/$LOGINUSR/programs/JOdin/runtime
+        # wget "http://droid.binbash.it:8008/misc/JOdin3CASUAL-r1142-dist.tar.gz" -O JOdin.tgz
+        tar -xzf /home/nightlies/roms/misc/JOdin3CASUAL-r1142-dist.tar.gz -C /home/$LOGINUSR/programs/JOdin/ && rm -rf /home/$LOGINUSR/programs/JOdin/runtime
         cat >/home/$LOGINUSR/Desktop/Samsung/JOdin.desktop <<EOODIN
 [Desktop Entry]
 Version=1.0
