@@ -5,6 +5,7 @@
 #
 ################################################################
 
+ntpdate pool.ntp.org &
 /usr/bin/pacman-mirrors --geoip -m rank
 /usr/bin/pacman -Sy
 

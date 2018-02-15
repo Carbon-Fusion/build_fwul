@@ -7,6 +7,8 @@ set -e -u
 # 1 means debug on, 0 off.
 DEBUG=0
 
+ntpdate de.pool.ntp.org 
+
 locale-gen
 
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
