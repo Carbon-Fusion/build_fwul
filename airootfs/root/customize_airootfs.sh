@@ -529,14 +529,6 @@ F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
 
-###################
-# virtualbox stuff
-#-----------------
-
-# mount shared folders to the desktop:
-VBoxControl guestproperty set /VirtualBox/GuestAdd/SharedFolders/MountDir /home/$LOGINUSR/Desktop/
-
-
 ###############################################################################################################
 #
 # cleanup

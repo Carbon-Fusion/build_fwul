@@ -50,3 +50,8 @@ if [ $PERSMODE -eq 1 ] && [ "$MEMMB" -lt 1024 ];then
    sudo mv /var/tmp/* /tmp/
 fi
 
+###################
+# virtualbox stuff
+# mount shared folders to the desktop:
+VBoxControl guestproperty set /VirtualBox/GuestAdd/SharedFolders/MountDir $HOME/Desktop
+
