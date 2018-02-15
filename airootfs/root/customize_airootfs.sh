@@ -59,7 +59,7 @@ usermod -a -G vboxsf $LOGINUSR
 
 # session hacks
 sed -i "s#REPLACEVBOXHOME#/home/$LOGINUSR/Desktop#g" /etc/systemd/scripts/fwul-session.sh
-sed -i "s#REPLACEHOME#/home/$LOGINUSR#g" /etc/systemd/scripts/fwul-session.sh
+sed -i "s#REPLACEHOME#/home/$LOGINUSR#g" /etc/profile.d/fwul-session.sh
 
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
@@ -686,6 +686,7 @@ $RSUDOERS
 /home/$LOGINUSR/programs/welcome/icons/welcome.png
 /home/$LOGINUSR/.config/autostart/welcome.desktop
 /etc/systemd/scripts/fwul-session.sh
+/etc/profile.d/fwul-session.sh
 /etc/systemd/system/init-mirror.service
 /etc/systemd/scripts/init-fwul
 /home/$LOGINUSR/Desktop/welcome.desktop
