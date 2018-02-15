@@ -7,7 +7,7 @@
 
 ######
 # Language & Locale
-LANGFILE="$HOME/.dmrc"
+LANGFILE="REPLACEHOME/.dmrc"
 
 # extract, fix and export $LANG
 TEMPLANG=$(cat "$LANGFILE" | grep ^Language= | cut -d '=' -f 2 | sed 's/utf8/UTF8/')

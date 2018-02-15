@@ -1,0 +1,11 @@
+[Unit]
+Description=Initialize FWUL
+Wants=lightdm.service
+After=lightdm.service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/systemd/scripts/fwul-session.sh
+
+[Install]
+WantedBy=multi-user.target
