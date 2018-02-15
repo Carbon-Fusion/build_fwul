@@ -57,6 +57,9 @@ chmod 700 /home/$LOGINUSR
 # add user to required groups
 usermod -a -G vboxsf $LOGINUSR 
 
+# virtualbox hack
+sed -i "s#REPLACEVBOXHOME#/home/$LOGINUSR/Desktop#g" /etc/profile.d/fwul-session.sh
+
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
 cat > $TMPSUDOERS <<EOSUDOERS
