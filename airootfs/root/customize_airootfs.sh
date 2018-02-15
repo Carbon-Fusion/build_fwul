@@ -54,6 +54,9 @@ cp -avT /etc/fwul/ /home/$LOGINUSR/
 [ ! -d /home/$LOGINUSR/Desktop ] && mkdir /home/$LOGINUSR/Desktop
 chmod 700 /home/$LOGINUSR
 
+# add user to required groups
+usermod -a -G vboxsf $LOGINUSR 
+
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
 cat > $TMPSUDOERS <<EOSUDOERS
@@ -434,6 +437,7 @@ systemctl set-default graphical.target
 systemctl enable systemd-networkd
 systemctl enable NetworkManager
 systemctl enable init-mirror
+systemctl enable vboxservice
 
 # prepare theming stuff
 echo -e "\nThemes:"
@@ -524,6 +528,14 @@ F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
+
+###################
+# virtualbox stuff
+#-----------------
+
+# mount shared folders to the desktop:
+VBoxControl guestproperty set /VirtualBox/GuestAdd/SharedFolders/MountDir /home/$LOGINUSR/Desktop/
+
 
 ###############################################################################################################
 #
@@ -622,6 +634,10 @@ EOSETPWROOTPW
 echo "fwulversion=$iso_version" > /etc/fwul-release
 echo "fwulbuild=$(date +%s)" >> /etc/fwul-release
 echo "patchlevel=0" >> /etc/fwul-release
+
+# fix /media
+chmod 755 /media
+
 
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
