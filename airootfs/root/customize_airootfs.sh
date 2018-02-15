@@ -59,7 +59,7 @@ usermod -a -G vboxsf $LOGINUSR
 
 # session hacks
 sed -i "s#REPLACEVBOXHOME#/home/$LOGINUSR/Desktop#g" /etc/systemd/scripts/fwul-session.sh
-sed -i "s#REPLACEHOME#/home/$LOGINUSR/Desktop#g" /etc/systemd/scripts/fwul-session.sh
+sed -i "s#REPLACEHOME#/home/$LOGINUSR#g" /etc/systemd/scripts/fwul-session.sh
 
 # temp perms for archiso
 [ -f $RSUDOERS ]&& rm -vf $RSUDOERS      # ensures an update build will not fail
@@ -442,6 +442,7 @@ systemctl enable systemd-networkd
 systemctl enable NetworkManager
 systemctl enable init-mirror
 systemctl enable vboxservice
+systemctl enable fwul-session
 
 # prepare theming stuff
 echo -e "\nThemes:"

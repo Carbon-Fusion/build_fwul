@@ -53,6 +53,6 @@ fi
 ###################
 # virtualbox stuff
 # mount shared folders to the desktop:
-VBoxControl guestproperty set /VirtualBox/GuestAdd/SharedFolders/MountDir REPLACEVBOXHOME/Desktop
+VBoxControl guestproperty set /VirtualBox/GuestAdd/SharedFolders/MountDir REPLACEVBOXHOME
 systemctl restart vboxservice
 
