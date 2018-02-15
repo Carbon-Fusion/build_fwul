@@ -54,4 +54,5 @@ fi
 # virtualbox stuff
 # mount shared folders to the desktop:
 VBoxControl guestproperty set /VirtualBox/GuestAdd/SharedFolders/MountDir $HOME/Desktop
-
+[ ! -d /media ] && mkdir /media 
+chmod 755 /media
