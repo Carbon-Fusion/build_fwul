@@ -742,9 +742,10 @@ expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 40
 pacman --noconfirm -Rns expac
 
 # create a XDA copy template for the important FWUL package versions
-echo -ne '[*]Versions of the main FWUL components:\n[INDENT]\nKernel -> [B]'version:$(pacman -Qi linux-rt-manjaro |grep Version| cut -d ":" -f 2)'[/B]\nADB and fastboot: '
+echo -ne '[*]Versions of the main FWUL components:\n[INDENT]Kernel -> [B]'version:$(pacman -Qi linux-rt-manjaro |grep Version| cut -d ":" -f 2)'[/B]\nADB and fastboot: '
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
-echo -e 'simple-adb GUI -> [B]version: update4[/B]'
+echo -e 'simple-adb GUI -> [B]version: XXXXXXXXXXXXX[/B]'
+echo -e 'SALT -> [B]version: '$(egrep -o 'VERSION=.*' /home/$LOGINUSR/programs/SALT/salt.vars | cut -d '"' -f2) 
 CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat"
 for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
