@@ -1,5 +1,5 @@
 [Unit]
-Description=Initialize pacman database and sort mirrors when there is internet
+Description=Initialize pacman database and sort mirrors when internet becomes available
 Wants=network-online.target
 After=network-online.target
 
