@@ -634,6 +634,9 @@ echo "patchlevel=0" >> /etc/fwul-release
 [ ! -d /media ] && mkdir /media
 chmod 755 /media
 
+# etc fix
+chown -R root.root /etc
+
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
