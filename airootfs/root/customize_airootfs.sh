@@ -740,7 +740,7 @@ pacman --noconfirm -Rns expac
 echo -ne '[*]Versions of the main FWUL components:\n[INDENT]Kernel -> [B]'version:$(pacman -Qi linux-rt-manjaro |grep Version| cut -d ":" -f 2)'[/B]\nADB and fastboot: '
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 echo -e 'simple-adb GUI -> [B]version: XXXXXXXXXXXXX[/B]'
-echo -e 'SALT -> [B]version: '$(egrep -o 'VERSION=.*' /home/$LOGINUSR/programs/SALT/salt.vars | cut -d '"' -f2) 
+echo -e 'SALT -> [B]version: '$(egrep -o 'VDIG=.*' /home/$LOGINUSR/programs/SALT/salt.vars | cut -d '"' -f2) 
 CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat"
 for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
