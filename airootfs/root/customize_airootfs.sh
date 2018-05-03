@@ -648,10 +648,6 @@ chmod 755 /media
 # etc fix
 chown -R root.root /etc
 
-# vboxservice fix (https://bugs.archlinux.org/task/45738) for forgetful mode
-wget https://archive.archlinux.org/packages/s/systemd/systemd-237.31-1-x86_64.pkg.tar.xz -O systemd_x86_64.pkg.tar.xz
-pacman -U --noconfirm systemd_x86_64.pkg.tar.xz
-
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
