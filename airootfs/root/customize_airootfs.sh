@@ -179,7 +179,7 @@ sed -i 's/Icon=.*/Icon=heimdall-frontend/g' /home/$LOGINUSR/Desktop/Samsung/heim
 # install testdisk/photorec incl. GUI support
 # (https://github.com/Carbon-Fusion/build_fwul/issues/66)
 echo -e "\nphotorec:"
-yaourt -Q testdisk || pacman --noconfirm -R testdisk
+yaourt -Q testdisk && pacman --noconfirm -R testdisk
 yaourt -Q qt5-tools || pacman --noconfirm -S qt5-tools
 yaourt -Q testdisk-wip || su -c - $LOGINUSR "yaourt -S --noconfirm testdisk-wip"
 
