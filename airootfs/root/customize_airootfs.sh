@@ -328,7 +328,7 @@ Terminal=false
 Name=SALT
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
+Exec=gksu /home/$LOGINUSR/programs/SALT/salt
 EOFDSK
 fi
 if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];then
@@ -340,7 +340,7 @@ Terminal=true
 Name=SALT (debug)
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
+Exec=gksu /home/$LOGINUSR/programs/SALT/salt
 EOFDSKFB
 fi
 chmod +x /home/$LOGINUSR/Desktop/LG/*.desktop
@@ -357,7 +357,7 @@ Version=1.0
 Type=Application
 Comment=LG LAF
 Terminal=false
-Name=LG LAF (origin)
+Name=LG LAF (PeterWu)
 Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf
 Icon=terminal
 EOSFT
@@ -372,7 +372,21 @@ Type=Application
 Comment=LG LAF with steadfasterX patches
 Terminal=false
 Name=LG LAF - NG
-Exec=gksudo "xfce4-terminal --working-directory=/root/programs/lglafng"
+Exec=gksu "xfce4-terminal --working-directory=/root/programs/lglafng"
+Icon=terminal
+EOLAFNG
+
+# LGLAFsploit
+[ ! -d /home/$LOGINUSR/programs/lglafsploit ] && git https://github.com/runningnak3d/lglaf.git /home/$LOGINUSR/programs/lglafsploit
+echo -e "\nLG LAF lafsploit shortcut:"
+cat >/home/$LOGINUSR/Desktop/LG/open-lglafsploit.desktop <<EOLAFNG
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=LG LAF with runningnak3d patches
+Terminal=false
+Name=LG LAFsploit
+Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglafsploit
 Icon=terminal
 EOLAFNG
 
