@@ -176,6 +176,13 @@ cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
 # fix missing heimdall icon
 sed -i 's/Icon=.*/Icon=heimdall-frontend/g' /home/$LOGINUSR/Desktop/Samsung/heimdall.desktop
 
+# install testdisk/photorec incl. GUI support
+# (https://github.com/Carbon-Fusion/build_fwul/issues/66)
+echo -e "\nphotorec:"
+yaourt -Q testdisk || pacman --noconfirm -R testdisk
+yaourt -Q qt5-tools || pacman --noconfirm -S qt5-tools
+yaourt -Q testdisk-wip || su -c - $LOGINUSR "yaourt -S --noconfirm testdisk-wip"
+
 # install welcome screen
 echo -e "\nwelcome-screen:"
 if [ ! -d /home/$LOGINUSR/programs/welcome ];then
@@ -553,7 +560,7 @@ for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs testdisk linux316"
+IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 qt5-tools"
 for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
@@ -755,7 +762,7 @@ echo -ne '[*]Versions of the main FWUL components:\n[INDENT]Kernel -> [B]'versio
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 echo -e 'simple-adb GUI -> [B]version: XXXXXXXXXXXXX[/B]'
 echo -e 'SALT -> [B]version: '$(egrep -o 'VDIG=.*' /home/$LOGINUSR/programs/SALT/salt.vars | cut -d '"' -f2)'[/B]'
-CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat tmate"
+CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat testdisk-wip tmate"
 for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 done
