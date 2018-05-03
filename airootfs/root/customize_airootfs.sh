@@ -377,7 +377,7 @@ Icon=terminal
 EOLAFNG
 
 # LGLAFsploit
-[ ! -d /home/$LOGINUSR/programs/lglafsploit ] && git https://github.com/runningnak3d/lglaf.git /home/$LOGINUSR/programs/lglafsploit
+[ ! -d /home/$LOGINUSR/programs/lglafsploit ] && git clone https://github.com/runningnak3d/lglaf.git /home/$LOGINUSR/programs/lglafsploit
 echo -e "\nLG LAF lafsploit shortcut:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafsploit.desktop <<EOLAFNG
 [Desktop Entry]
