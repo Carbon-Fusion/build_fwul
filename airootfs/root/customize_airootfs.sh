@@ -182,6 +182,9 @@ echo -e "\nphotorec:"
 yaourt -Q testdisk && pacman --noconfirm -R testdisk
 yaourt -Q qt5-tools || pacman --noconfirm -S qt5-tools
 yaourt -Q testdisk-wip || su -c - $LOGINUSR "yaourt -S --noconfirm testdisk-wip"
+cp -v /usr/share/applications/qphotorec.desktop /home/$LOGINUSR/Desktop/
+chmod +x /home/$LOGINUSR/Desktop/qphotorec.desktop 
+chown $LOGINUSR /home/$LOGINUSR/Desktop/qphotorec.desktop
 
 # install welcome screen
 echo -e "\nwelcome-screen:"
@@ -691,6 +694,8 @@ $RSUDOERS
 /usr/bin/fastboot
 /usr/bin/heimdall
 /usr/bin/yaourt
+/usr/bin/qphotorec
+/home/$LOGINUSR/Desktop/qphotorec.desktop
 /home/$LOGINUSR/.fwul/odin-logo.jpg
 /home/$LOGINUSR/.fwul/install_spflash.sh
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
