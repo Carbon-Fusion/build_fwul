@@ -382,7 +382,7 @@ Type=Application
 Comment=LG LAF with steadfasterX patches
 Terminal=false
 Name=LG LAF - NG
-Exec=gksu "xfce4-terminal --working-directory=/root/programs/lglafng"
+Exec=gksu xfce4-terminal --working-directory=/root/programs/lglafng
 Icon=terminal
 EOLAFNG
 
