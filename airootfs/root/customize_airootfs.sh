@@ -574,6 +574,15 @@ for igpkg in $IGNPKG;do
     pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
 done
 
+echo -e "\nCleanup - python stuff:"
+for pydir in "/usr/lib/python2.7" "/usr/lib/python3.6";do
+    echo "deleting test dir for $pydir"
+    rm -rvf $pydir/test/*
+    echo "deleting pyo's,pyc's & pycaches in $pydir"
+    find "$pydir" -type f -name "*.py[co]" -delete -print
+    find "$pydir" -type d -name "__pycache__" -delete -print 2>/dev/null
+done
+
 echo -e "\nCleanup - pacman orphans:"
 PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
 echo -e "\nCleanup - yaourt orphans:"
