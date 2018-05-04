@@ -558,10 +558,16 @@ echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/
 # cleanup
 #
 ###############################################################################################################
-echo -e "\nCleanup - locale:"
-for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
-    grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
-done
+echo -e "\nCleanup - locale & MAN pages:"
+#for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
+#    grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
+#done
+yaourt -Q localepurge || su -c - $LOGINUSR "yaourt -S --noconfirm localepurge"
+# set the locales we want to keep:
+cut -d ' ' -f1 /etc/locale.gen >> /etc/locale.purge
+# purge locales and manpages:
+localepurge -v
+
 echo -e "\nCleanup - pacman:"
 IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 qt5-tools"
 for igpkg in $IGNPKG;do
@@ -573,8 +579,8 @@ PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
 echo -e "\nCleanup - yaourt orphans:"
 YERR=$(su -c - $LOGINUSR "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
 
-echo -e "\nCleanup - manpages:"
-rm -rvf /usr/share/man/*
+#echo -e "\nCleanup - manpages:"
+#rm -rvf /usr/share/man/*
 
 echo -e "\nCleanup - docs:"
 rm -rvf /usr/share/doc/* /usr/share/gtk-doc/html/*
