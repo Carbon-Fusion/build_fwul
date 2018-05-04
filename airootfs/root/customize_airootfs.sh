@@ -559,14 +559,14 @@ echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/
 #
 ###############################################################################################################
 echo -e "\nCleanup - locale & MAN pages:"
-#for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
-#    grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
-#done
 yaourt -Q localepurge || su -c - $LOGINUSR "yaourt -S --noconfirm localepurge"
 # set the locales we want to keep:
 cut -d ' ' -f1 /etc/locale.gen >> /etc/locale.purge
 # purge locales and manpages:
 localepurge -v
+for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
+    grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
+done
 
 echo -e "\nCleanup - pacman:"
 IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 qt5-tools"
