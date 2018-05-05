@@ -561,7 +561,10 @@ echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/
 echo -e "\nCleanup - locale & MAN pages:"
 yaourt -Q localepurge || su -c - $LOGINUSR "yaourt -S --noconfirm localepurge"
 # set the locales we want to keep:
-cut -d ' ' -f1 /etc/locale.gen >> /etc/locale.purge
+cut -d ' ' -f1 /etc/locale.gen >> /etc/locale.nopurge
+cut -d ' ' -f1 /etc/locale.gen | cut -d '.' -f 1 >> /etc/locale.nopurge
+cut -d ' ' -f1 /etc/locale.gen | cut -d '.' -f 1 | cut -d "_" -f1 >> /etc/locale.nopurge
+
 # purge locales and manpages:
 localepurge -v
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
