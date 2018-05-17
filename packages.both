@@ -9,7 +9,7 @@ dnsmasq
 dosfstools
 exfat-utils
 f2fs-tools
-featherpad
+leafpad
 firefox
 gksu
 gnome-keyring
