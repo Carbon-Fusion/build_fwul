@@ -514,41 +514,41 @@ F_FILEWAIT(){
 chown -R ${LOGINUSR}.users /home/$LOGINUSR/
 
 # activate wallpaper, icons & theme
-echo -e "\nActivate theme etc:"
-FWULDESKTOP="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
-FWULXFWM4="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
-FWULXSETS="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
-
-if [ ! -f "$FWULDESKTOP" ];then
-    echo -e "\t... setting desktop wallpaper"
-    MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
-    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
-    F_FILEWAIT $MD5BEF "$FWULDESKTOP"
-    # stretch wallpaper
-    MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
-    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t int -c xfce4-desktop -s 3 -p /backdrop/screen0/monitor0/workspace0/image-style"
-    F_FILEWAIT $MD5BEF "$FWULDESKTOP"
-fi
-if [ ! -f "$FWULXFWM4" ];then
-    echo -e "\t... setting themes and icons 1"
-    MD5BEF=$(F_DOMD5 "$FWULXFWM4")
-    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
-    F_FILEWAIT $MD5BEF "$FWULXFWM4"
-fi
-if [ ! -f "$FWULXSETS" ];then
-    echo -e "\t... setting themes and icons 2"
-    MD5BEF=$(F_DOMD5 "$FWULXSETS")
-    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
-    F_FILEWAIT $MD5BEF "$FWULXSETS"
-    MD5BEF=$(F_DOMD5 "$FWULXSETS")
-    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Numix-Circle"
-    F_FILEWAIT $MD5BEF "$FWULXSETS"
-fi
+#echo -e "\nActivate theme etc:"
+#FWULDESKTOP="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+#FWULXFWM4="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+#FWULXSETS="/home/$LOGINUSR/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+#
+#if [ ! -f "$FWULDESKTOP" ];then
+#    echo -e "\t... setting desktop wallpaper"
+#    MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
+#    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfce4-desktop -s /home/$LOGINUSR/.fwul/wallpaper_fwul.png -p /backdrop/screen0/monitor0/workspace0/last-image"
+#    F_FILEWAIT $MD5BEF "$FWULDESKTOP"
+#    # stretch wallpaper
+#    MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
+#    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t int -c xfce4-desktop -s 3 -p /backdrop/screen0/monitor0/workspace0/image-style"
+#    F_FILEWAIT $MD5BEF "$FWULDESKTOP"
+#fi
+#if [ ! -f "$FWULXFWM4" ];then
+#    echo -e "\t... setting themes and icons 1"
+#    MD5BEF=$(F_DOMD5 "$FWULXFWM4")
+#    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xfwm4 -p /general/theme -s Windows10Dark"
+#    F_FILEWAIT $MD5BEF "$FWULXFWM4"
+#fi
+#if [ ! -f "$FWULXSETS" ];then
+#    echo -e "\t... setting themes and icons 2"
+#    MD5BEF=$(F_DOMD5 "$FWULXSETS")
+#    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/ThemeName -s Windows10Dark"
+#    F_FILEWAIT $MD5BEF "$FWULXSETS"
+#    MD5BEF=$(F_DOMD5 "$FWULXSETS")
+#    su -c - $LOGINUSR "dbus-launch xfconf-query --create -t string -c xsettings -p /Net/IconThemeName -s Numix-Circle"
+#    F_FILEWAIT $MD5BEF "$FWULXSETS"
+#fi
 
 # weird issue with text shadows on icons
-MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
-su -c - $LOGINUSR "dbus-launch xfconf-query -c xfce4-desktop -p /desktop-icons/center-text -n -t bool -s false"
-F_FILEWAIT $MD5BEF "$FWULDESKTOP"
+#MD5BEF=$(F_DOMD5 "$FWULDESKTOP")
+#su -c - $LOGINUSR "dbus-launch xfconf-query -c xfce4-desktop -p /desktop-icons/center-text -n -t bool -s false"
+#F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
