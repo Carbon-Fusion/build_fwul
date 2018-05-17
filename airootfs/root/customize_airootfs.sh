@@ -458,7 +458,7 @@ chown -R $LOGINUSR /home/$LOGINUSR/Desktop/
 systemctl enable pacman-init.service choose-mirror.service
 systemctl set-default graphical.target
 systemctl enable systemd-networkd
-systemctl enable NetworkManager
+systemctl enable connman
 systemctl enable init-mirror
 systemctl enable vboxservice
 systemctl enable fwul-session
