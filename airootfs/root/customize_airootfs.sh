@@ -591,8 +591,8 @@ PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
 echo -e "\nCleanup - yaourt orphans:"
 YERR=$(su -c - $LOGINUSR "yaourt -Qtd --noconfirm" || echo no yaourt orphans)
 
-#echo -e "\nCleanup - manpages:"
-#rm -rvf /usr/share/man/*
+echo -e "\nCleanup - manpages:"
+rm -rvf /usr/share/man/*
 
 echo -e "\nCleanup - docs:"
 rm -rvf /usr/share/doc/* /usr/share/gtk-doc/html/*
