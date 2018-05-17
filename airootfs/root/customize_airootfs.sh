@@ -691,9 +691,6 @@ fi
 
 # arch independent requirements
 REQFILES="/home/$LOGINUSR/.fwul/wallpaper_fwul.png 
-$FWULDESKTOP
-$FWULXFWM4
-$FWULXSETS
 $RSUDOERS
 /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 /home/$LOGINUSR/Desktop/LG/open-lglafng.desktop
