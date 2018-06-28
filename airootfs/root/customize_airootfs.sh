@@ -174,7 +174,7 @@ echo -e "\nheimdall:"
 
 # workaround (issue #71) as heimdall moved to gitlab but AUR is outdated:
 #yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
-git clone "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=heimdall-git" aurheim
+git clone "https://aur.archlinux.org/heimdall-git.git" aurheim
 chown $LOGINUSR aurheim
 cd aurheim
 sed -i 's#git://github.com/Benjamin-Dobell/Heimdall.git#git+https://gitlab.com/BenjaminDobell/Heimdall.git#g' PKGBUILD
