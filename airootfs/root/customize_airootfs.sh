@@ -174,10 +174,10 @@ echo -e "\nheimdall:"
 
 # workaround (issue #71) as heimdall moved to gitlab but AUR is outdated:
 #yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
-git clone "https://aur.archlinux.org/heimdall-git.git" aurheim
-chown $LOGINUSR aurheim
+git clone https://aur.archlinux.org/heimdall-git.git aurheim
+chown -Rv $LOGINUSR aurheim
 cd aurheim
-sed -i 's#git://github.com/Benjamin-Dobell/Heimdall.git#git+https://gitlab.com/BenjaminDobell/Heimdall.git#g' PKGBUILD
+sed -i 's#git://github.com/Benjamin-Dobell/Heimdall.git#git+https://gitlab.com/BenjaminDobell/Heimdall.git#g' PKGBUILD && echo "workaround patch applied"
 su -c - $LOGINUSR "makepkg"
 pacman -U --noconfirm heimdall-.*pkg.tar.xz
 cd .. && rm -rf aurheim
