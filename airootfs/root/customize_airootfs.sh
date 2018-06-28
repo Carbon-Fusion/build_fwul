@@ -177,7 +177,11 @@ echo -e "\nheimdall:"
 git clone https://aur.archlinux.org/heimdall-git.git aurheim
 chown -Rv $LOGINUSR aurheim
 cd aurheim
-sed -i 's#git://github.com/Benjamin-Dobell/Heimdall.git#git+https://gitlab.com/BenjaminDobell/Heimdall.git#g' PKGBUILD && echo "workaround patch applied"
+su -c - $LOGINUSR "cat PKGBUILD"
+sed -i 's#git://github.com/Benjamin-Dobell/Heimdall.git#git+https://gitlab.com/BenjaminDobell/Heimdall.git#g' PKGBUILD && echo "heimdall-git: workaround patch (issue #71) applied"
+su -c - $LOGINUSR "cat PKGBUILD"
+sed -i "s#arch=.*#arch=\('any'\)#g" PKGBUILD && echo "heimdall-git: arch patch applied"
+su -c - $LOGINUSR "cat PKGBUILD"
 su -c - $LOGINUSR "makepkg -s --ignorearch"
 pacman -U --noconfirm heimdall-.*pkg.tar.xz
 cd .. && rm -rf aurheim
