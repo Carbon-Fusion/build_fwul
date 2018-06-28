@@ -171,7 +171,17 @@ chmod +x /home/$LOGINUSR/.fwul/sshkeygen.sh
 
 # install & add Heimdall
 echo -e "\nheimdall:"
-yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
+
+# workaround (issue #71) as heimdall moved to gitlab but AUR is outdated:
+#yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
+git clone "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=heimdall-git" aurheim
+chown $LOGINUSR aurheim
+cd aurheim
+sed -i 's#git://github.com/Benjamin-Dobell/Heimdall.git#git+https://gitlab.com/BenjaminDobell/Heimdall.git#g' PKGBUILD
+su -c - $LOGINUSR "makepkg"
+pacman -U --noconfirm heimdall-.*pkg.tar.xz
+cd .. && rm -rf aurheim
+
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
 # fix missing heimdall icon
 sed -i 's/Icon=.*/Icon=heimdall-frontend/g' /home/$LOGINUSR/Desktop/Samsung/heimdall.desktop
