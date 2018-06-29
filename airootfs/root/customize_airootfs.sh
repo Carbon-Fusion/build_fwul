@@ -589,8 +589,8 @@ echo -e "\nCleanup - pacman:"
 IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 linux316-virtualbox-guest-modules qt5-tools"
 for igpkg in $IGNPKG;do
     PFOUND=1
-    pacman -Q "$igpkg" 2>&1 >> /dev/null || PFOUND=0
-    [ $PFOUND -eq 1 ] && pacman --noconfirm -Rns -dd $igpkg
+    pacman -Q $igpkg || PFOUND=0 2>&1 >> /dev/null
+    [ $PFOUND -eq 1 ] && echo "trying to remove $igpkg as it seems to be installed.." && pacman --noconfirm -Rns -dd $igpkg
     [ $PFOUND -eq 0 ] && echo "PACMAN: package $igpkg not found for removal"
     true
 done
