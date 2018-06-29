@@ -54,6 +54,9 @@ cp -avT /etc/fwul/ /home/$LOGINUSR/
 [ ! -d /home/$LOGINUSR/Desktop ] && mkdir /home/$LOGINUSR/Desktop
 chmod 700 /home/$LOGINUSR
 
+# prepare hosts
+echo "10.0.228.17     leech.binbash.it" >> /etc/hosts
+
 # add user to required groups
 usermod -a -G vboxsf $LOGINUSR 
 
@@ -174,7 +177,6 @@ echo -e "\nheimdall:"
 
 # workaround (issue #71) as heimdall moved to gitlab but AUR is outdated:
 #yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
-echo "10.0.228.17     leech.binbash.it" >> /etc/hosts
 wget -O /tmp/hd.pkg.tar.xz "http://leech.binbash.it:8008/misc/heimdall-git-1.4.2.r5.g5377b62-1-x86_64.pkg.tar.xz"
 pacman -U --noconfirm /tmp/hd.pkg.tar.xz && echo "heimdall-git: workaround for issue #71 applied successfully"
 rm /tmp/hd.pkg.tar.xz
@@ -450,12 +452,17 @@ chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
 
 # install FWUL LivePatcher
 #https://github.com/Carbon-Fusion/build_fwul/issues/57
-git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
-    && cd /tmp/fwulpatch \
-    && chown $LOGINUSR /tmp/fwulpatch \
-    && su -c - $LOGINUSR "makepkg -s" \
-    && pacman --noconfirm -U fwulpatch-*.pkg.tar.xz
-cd / 
+#git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
+#    && cd /tmp/fwulpatch \
+#    && chown $LOGINUSR /tmp/fwulpatch \
+#    && su -c - $LOGINUSR "makepkg -s" \
+#    && pacman --noconfirm -U fwulpatch-*.pkg.tar.xz
+#cd /
+
+# makepkg is broken in chroot:
+wget -O /tmp/fwulpatch.pkg.tar.xz "http://leech.binbash.it:8008/misc/fwulpatch-2.2.2-1-any.pkg.tar.xz"
+pacman --noconfirm -U /tmp/fwulpatch.pkg.tar.xz
+rm /tmp/fwulpatch.pkg.tar.xz
 
 # make all desktop files usable
 chmod +x /home/$LOGINUSR/Desktop/*.desktop /home/$LOGINUSR/Desktop/*/*.desktop
