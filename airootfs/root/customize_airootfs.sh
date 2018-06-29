@@ -592,6 +592,7 @@ for igpkg in $IGNPKG;do
     pacman -Q "$igpkg" 2>&1 >> /dev/null || PFOUND=0
     [ $PFOUND -eq 1 ] && pacman --noconfirm -Rns -dd $igpkg
     [ $PFOUND -eq 0 ] && echo "PACMAN: package $igpkg not found for removal"
+    true
 done
 
 echo -e "\nCleanup - python stuff:"
@@ -607,6 +608,7 @@ echo -e "\nCleanup - folders:"
 DELFOLD="/usr/share/icons/HighContrast /usr/share/icons/hicolor /usr/share/icons/locolor /share/icons/Adwaita /usr/share/icons/gnome /usr/share/icons/Numix-Light /usr/share/icons/gnome"
 for delf in $DELFOLD;do
     [ -d "$delf" ] && rm -vrf "$delf"
+    true
 done
 
 echo -e "\nCleanup - pacman orphans:"
