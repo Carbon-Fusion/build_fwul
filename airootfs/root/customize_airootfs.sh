@@ -589,7 +589,7 @@ echo -e "\nCleanup - pacman:"
 IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 qt5-tools"
 for igpkg in $IGNPKG;do
     PFOUND=1
-    pacman -Q "$igpkg" 2>&1 /dev/null || PFOUND=0
+    pacman -Q "$igpkg" 2>&1 >> /dev/null || PFOUND=0
     [ $PFOUND -eq 1 ] && pacman --noconfirm -Rns -dd $igpkg
 done
 
