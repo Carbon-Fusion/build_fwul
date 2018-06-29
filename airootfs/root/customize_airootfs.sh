@@ -602,6 +602,12 @@ for pydir in "/usr/lib/python2.7" "/usr/lib/python3.6";do
     find "$pydir" -type d -name "__pycache__" -delete -print 2>/dev/null
 done
 
+echo -e "\nCleanup - folders:"
+DELFOLD="/usr/share/icons/HighContrast /usr/share/icons/hicolor /usr/share/icons/locolor /share/icons/Adwaita /usr/share/icons/gnome /usr/share/icons/Numix-Light /usr/share/icons/gnome"
+for delf in $DELFOLD;do
+    [ -d "$delf" ] && rm -vrf "$delf"
+done
+
 echo -e "\nCleanup - pacman orphans:"
 PMERR=$(pacman --noconfirm -Rns $(pacman -Qtdq) || echo no pacman orphans)
 echo -e "\nCleanup - yaourt orphans:"
