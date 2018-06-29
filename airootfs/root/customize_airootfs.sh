@@ -174,6 +174,7 @@ echo -e "\nheimdall:"
 
 # workaround (issue #71) as heimdall moved to gitlab but AUR is outdated:
 #yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
+echo "10.0.228.17     leech.binbash.it" >> /etc/hosts
 wget -O /tmp/hd.pkg.tar.xz "http://leech.binbash.it:8008/misc/heimdall-git-1.4.2.r5.g5377b62-1-x86_64.pkg.tar.xz"
 pacman -U --noconfirm /tmp/hd.pkg.tar.xz && echo "heimdall-git: workaround for issue #71 applied successfully"
 rm /tmp/hd.pkg.tar.xz
