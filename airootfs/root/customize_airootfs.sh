@@ -395,7 +395,7 @@ Exec=gksu xfce4-terminal --working-directory=/root/programs/lglafng
 Icon=terminal
 EOLAFNG
 
-# LGLAFsploit
+# LGLAF (runningnak3d)
 [ ! -d /home/$LOGINUSR/programs/lglafsploit ] && git clone https://gitlab.com/runningnak3d/lglaf.git /home/$LOGINUSR/programs/lglafsploit
 echo -e "\nLG LAF lafsploit shortcut:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafsploit.desktop <<EOLAFNG
@@ -404,7 +404,7 @@ Version=1.0
 Type=Application
 Comment=LG LAF with runningnak3d patches
 Terminal=false
-Name=LG LAFsploit
+Name=LG LAF (runningnak3d)
 Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglafsploit
 Icon=terminal
 EOLAFNG
