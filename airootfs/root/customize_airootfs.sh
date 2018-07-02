@@ -347,7 +347,7 @@ Terminal=false
 Name=SALT
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=gksu /home/$LOGINUSR/programs/SALT/salt
+Exec=lxsu /home/$LOGINUSR/programs/SALT/salt
 EOFDSK
 fi
 if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];then
@@ -359,7 +359,7 @@ Terminal=true
 Name=SALT (debug)
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=gksu /home/$LOGINUSR/programs/SALT/salt
+Exec=lxsu /home/$LOGINUSR/programs/SALT/salt
 EOFDSKFB
 fi
 chmod +x /home/$LOGINUSR/Desktop/LG/*.desktop
@@ -391,7 +391,7 @@ Type=Application
 Comment=LG LAF with steadfasterX patches
 Terminal=false
 Name=LG LAF - NG
-Exec=gksu xfce4-terminal --working-directory=/root/programs/lglafng
+Exec=lxsu xfce4-terminal --working-directory=/root/programs/lglafng
 Icon=terminal
 EOLAFNG
 
@@ -460,7 +460,7 @@ chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
 #cd /
 
 # makepkg is broken in chroot:
-wget -O /tmp/fwulpatch.pkg.tar.xz "http://leech.binbash.it:8008/misc/fwulpatch-2.2.2-1-any.pkg.tar.xz"
+wget -O /tmp/fwulpatch.pkg.tar.xz "http://leech.binbash.it:8008/misc/fwulpatch.pkg.tar.xz"
 pacman --noconfirm -U /tmp/fwulpatch.pkg.tar.xz
 rm /tmp/fwulpatch.pkg.tar.xz
 
@@ -566,6 +566,9 @@ F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 
 # set aliases
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
+
+# convenient linking (issue #67)
+ln -s /sbin/lxsu /sbin/gksu
 
 ###############################################################################################################
 #
