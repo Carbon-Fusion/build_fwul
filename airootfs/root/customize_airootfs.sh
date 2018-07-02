@@ -586,7 +586,7 @@ for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5
 done
 
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 linux316-virtualbox-guest-modules qt5-tools"
+IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-extra gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 linux316-virtualbox-guest-modules qt5-tools"
 for igpkg in $IGNPKG;do
     PFOUND=1
     pacman -Q $igpkg || PFOUND=0 2>&1 >> /dev/null
