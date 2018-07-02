@@ -701,6 +701,10 @@ chmod 755 /media
 # etc fix
 chown -R root.root /etc
 
+# set default user for lightdm
+test -d /var/lib/lightdm/.cache/lightdm-gtk-greeter || mkdir -p /var/lib/lightdm/.cache/lightdm-gtk-greeter/
+echo -e '[greeter]\nlast-user=android' > /var/lib/lightdm/.cache/lightdm-gtk-greeter/state && chmod 755 /var/lib/lightdm/.cache/lightdm-gtk-greeter/state
+
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
 
