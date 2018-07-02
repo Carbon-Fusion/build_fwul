@@ -568,7 +568,7 @@ F_FILEWAIT $MD5BEF "$FWULDESKTOP"
 echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/.bashrc
 
 # convenient linking (issue #67)
-ln -s /sbin/lxsu /sbin/gksu
+ln -s /sbin/lxsudo /sbin/gksudo
 
 ###############################################################################################################
 #
