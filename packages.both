@@ -8,7 +8,7 @@ exfat-utils
 f2fs-tools
 file-roller
 firefox
-gksu
+git
 gnome-keyring
 gvfs
 gvfs-gphoto2
@@ -36,6 +36,7 @@ python2-crypto
 python2-pyusb
 python-crypto
 python-pyusb
+qiv
 refind-efi
 sudo
 testdisk

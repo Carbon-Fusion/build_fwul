@@ -54,6 +54,10 @@ cp -avT /etc/fwul/ /home/$LOGINUSR/
 [ ! -d /home/$LOGINUSR/Desktop ] && mkdir /home/$LOGINUSR/Desktop
 chmod 700 /home/$LOGINUSR
 
+# prepare hosts
+cp /etc/hosts /etc/hosts.orig
+echo "10.0.228.17     leech.binbash.it" >> /etc/hosts
+
 # add user to required groups
 usermod -a -G vboxsf $LOGINUSR 
 
@@ -142,11 +146,6 @@ sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.d
 # disable tray to avoid bothering users for updating
 [ -f /etc/xdg/autostart/pamac-tray.desktop ] && rm /etc/xdg/autostart/pamac-tray.desktop
 
-# minimal web browser
-#yaourt -Q otter-browser || su -c - $LOGINUSR "yaourt -S --noconfirm otter-browser"
-#yaourt -Q liri-browser-git || su -c - $LOGINUSR "yaourt -S --noconfirm liri-browser-git"
-#yaourt -Q min || su -c - $LOGINUSR "yaourt -S --noconfirm min"
-
 # prepare Samsung tool dir
 [ ! -d /home/$LOGINUSR/Desktop/Samsung ] && mkdir /home/$LOGINUSR/Desktop/Samsung
 
@@ -176,10 +175,26 @@ chmod +x /home/$LOGINUSR/.fwul/sshkeygen.sh
 
 # install & add Heimdall
 echo -e "\nheimdall:"
-yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
+
+# workaround (issue #71) as heimdall moved to gitlab but AUR is outdated:
+#yaourt -Q heimdall-git || su -c - $LOGINUSR "yaourt -S --noconfirm heimdall-git"
+wget -O /tmp/hd.pkg.tar.xz "http://leech.binbash.it:8008/misc/heimdall-git-1.4.2.r5.g5377b62-1-x86_64.pkg.tar.xz"
+pacman -U --noconfirm /tmp/hd.pkg.tar.xz && echo "heimdall-git: workaround for issue #71 applied successfully"
+rm /tmp/hd.pkg.tar.xz
+
 cp /usr/share/applications/heimdall.desktop /home/$LOGINUSR/Desktop/Samsung/
 # fix missing heimdall icon
 sed -i 's/Icon=.*/Icon=heimdall-frontend/g' /home/$LOGINUSR/Desktop/Samsung/heimdall.desktop
+
+# install testdisk/photorec incl. GUI support
+# (https://github.com/Carbon-Fusion/build_fwul/issues/66)
+echo -e "\nphotorec:"
+yaourt -Q testdisk && pacman --noconfirm -R testdisk
+yaourt -Q qt5-tools || pacman --noconfirm -S qt5-tools
+yaourt -Q testdisk-wip || su -c - $LOGINUSR "yaourt -S --noconfirm testdisk-wip"
+cp -v /usr/share/applications/qphotorec.desktop /home/$LOGINUSR/Desktop/
+chmod +x /home/$LOGINUSR/Desktop/qphotorec.desktop 
+chown $LOGINUSR /home/$LOGINUSR/Desktop/qphotorec.desktop
 
 # install welcome screen
 echo -e "\nwelcome-screen:"
@@ -275,9 +290,9 @@ cat >/home/$LOGINUSR/Desktop/install-TV.desktop <<EOODIN
 Version=1.0
 Type=Application
 Comment=Teamviewer installer
-Terminal=false
+Terminal=true
 Name=TeamViewer Installer
-Exec=/home/$LOGINUSR/.fwul/install_tv.sh
+Exec=pkexec /home/$LOGINUSR/.fwul/install_tv.sh
 Icon=aptoncd
 EOODIN
 chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
@@ -333,7 +348,7 @@ Terminal=false
 Name=SALT
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
+Exec=pkexec /home/$LOGINUSR/programs/SALT/salt
 EOFDSK
 fi
 if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];then
@@ -345,7 +360,7 @@ Terminal=true
 Name=SALT (debug)
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=gksudo /home/$LOGINUSR/programs/SALT/salt
+Exec=pkexec /home/$LOGINUSR/programs/SALT/salt
 EOFDSKFB
 fi
 chmod +x /home/$LOGINUSR/Desktop/LG/*.desktop
@@ -362,13 +377,13 @@ Version=1.0
 Type=Application
 Comment=LG LAF
 Terminal=false
-Name=LG LAF (origin)
+Name=LG LAF (PeterWu)
 Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglaf
 Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 
-# LGLAF NG 
+# LGLAF (steadfasterX) 
 echo -e "\nLG LAF NG shortcut:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop <<EOLAFNG
 [Desktop Entry]
@@ -376,10 +391,38 @@ Version=1.0
 Type=Application
 Comment=LG LAF with steadfasterX patches
 Terminal=false
-Name=LG LAF - NG
-Exec=gksudo "xfce4-terminal --working-directory=/root/programs/lglafng"
+Name=LG LAF (steadfasterX)
+Exec=pkexec xfce4-terminal --working-directory=/root/programs/lglafng
 Icon=terminal
 EOLAFNG
+
+# LGLAF (runningnak3d)
+[ ! -d /home/$LOGINUSR/programs/lglafsploit ] && git clone https://gitlab.com/runningnak3d/lglaf.git /home/$LOGINUSR/programs/lglafsploit
+echo -e "\nLG LAF lafsploit shortcut:"
+cat >/home/$LOGINUSR/Desktop/LG/open-lglafsploit.desktop <<EOLAFNG
+[Desktop Entry]
+Version=1.0
+Type=Application
+Comment=LG LAF with runningnak3d patches
+Terminal=false
+Name=LG LAF (runningnak3d)
+Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglafsploit
+Icon=terminal
+EOLAFNG
+
+# tmate
+echo -e "\ntmate shortcut:"
+cat >/home/$LOGINUSR/Desktop/tmate.desktop <<EOTMATE
+[Desktop Entry]
+Name=tmate - Simple Remote Control
+GenericName=tmate
+Comment=Terminal sharing with tmate
+Exec=xfce4-terminal --maximize -e /home/$LOGINUSR/.fwul/tmate.sh
+Icon=/home/$LOGINUSR/.fwul/tmate-logo.png
+Terminal=false
+Type=Application
+EOTMATE
+chmod +x /home/$LOGINUSR/.fwul/tmate.sh
 
 # install display manager
 echo -e "\nDM:"
@@ -424,12 +467,17 @@ chmod +x /home/$LOGINUSR/programs/sadb/starter.sh
 
 # install FWUL LivePatcher
 #https://github.com/Carbon-Fusion/build_fwul/issues/57
-git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
-    && cd /tmp/fwulpatch \
-    && chown $LOGINUSR /tmp/fwulpatch \
-    && su -c - $LOGINUSR "makepkg -s" \
-    && pacman --noconfirm -U fwulpatch-*.pkg.tar.xz
-cd / 
+#git clone https://github.com/steadfasterX/arch_fwulpatch-pkg.git /tmp/fwulpatch \
+#    && cd /tmp/fwulpatch \
+#    && chown $LOGINUSR /tmp/fwulpatch \
+#    && su -c - $LOGINUSR "makepkg -s" \
+#    && pacman --noconfirm -U fwulpatch-*.pkg.tar.xz
+#cd /
+
+# makepkg is broken in chroot:
+wget -O /tmp/fwulpatch.pkg.tar.xz "http://leech.binbash.it:8008/misc/fwulpatch.pkg.tar.xz"
+pacman --noconfirm -U /tmp/fwulpatch.pkg.tar.xz
+rm /tmp/fwulpatch.pkg.tar.xz
 
 # make all desktop files usable
 chmod +x /home/$LOGINUSR/Desktop/*.desktop /home/$LOGINUSR/Desktop/*/*.desktop
@@ -539,14 +587,43 @@ echo -e '\n# FWUL aliases\nalias fastboot="sudo fastboot"\n' >> /home/$LOGINUSR/
 # cleanup
 #
 ###############################################################################################################
-echo -e "\nCleanup - locale:"
+echo -e "\nCleanup - locale & MAN pages:"
+yaourt -Q localepurge || su -c - $LOGINUSR "yaourt -S --noconfirm localepurge"
+# set the locales we want to keep:
+cut -d ' ' -f1 /etc/locale.gen >> /etc/locale.nopurge
+cut -d ' ' -f1 /etc/locale.gen | cut -d '.' -f 1 >> /etc/locale.nopurge
+cut -d ' ' -f1 /etc/locale.gen | cut -d '.' -f 1 | cut -d "_" -f1 >> /etc/locale.nopurge
+
+# purge locales and manpages:
+localepurge -v
 for localeinuse in $(find /usr/share/locale/ -maxdepth 1 -type d |cut -d "/" -f5 );do 
     grep -q $localeinuse /etc/locale.gen || rm -rfv /usr/share/locale/$localeinuse
 done
+
 echo -e "\nCleanup - pacman:"
-IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs testdisk linux316"
+IGNPKG="adwaita-icon-theme lvm2 man-db man-pages mdadm nano netctl openresolv pcmciautils reiserfsprogs s-nail vi xfsprogs zsh memtest86+ caribou gnome-backgrounds gnome-themes-extra gnome-themes-standard nemo telepathy-glib zeitgeist gnome-icon-theme webkit2gtk progsreiserfs linux316 linux316-virtualbox-guest-modules qt5-tools"
 for igpkg in $IGNPKG;do
-    pacman -Q $igpkg && pacman --noconfirm -Rns -dd $igpkg
+    PFOUND=1
+    pacman -Q $igpkg || PFOUND=0 2>&1 >> /dev/null
+    [ $PFOUND -eq 1 ] && echo "trying to remove $igpkg as it seems to be installed.." && pacman --noconfirm -Rns -dd $igpkg
+    [ $PFOUND -eq 0 ] && echo "PACMAN: package $igpkg not found for removal"
+    true
+done
+
+echo -e "\nCleanup - python stuff:"
+for pydir in "/usr/lib/python2.7" "/usr/lib/python3.6";do
+    echo "deleting test dir for $pydir"
+    rm -rvf $pydir/test/*
+    echo "deleting pyo's,pyc's & pycaches in $pydir"
+    find "$pydir" -type f -name "*.py[co]" -delete -print
+    find "$pydir" -type d -name "__pycache__" -delete -print 2>/dev/null
+done
+
+echo -e "\nCleanup - folders:"
+DELFOLD="/usr/share/icons/HighContrast /usr/share/icons/hicolor /usr/share/icons/locolor /share/icons/Adwaita /usr/share/icons/gnome /usr/share/icons/Numix-Light /usr/share/icons/gnome"
+for delf in $DELFOLD;do
+    [ -d "$delf" ] && rm -vrf "$delf"
+    true
 done
 
 echo -e "\nCleanup - pacman orphans:"
@@ -607,6 +684,7 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
 %wheel     ALL=(ALL) NOPASSWD: /bin/cp x10flasher.jar /usr/lib/xperia-flashtool/
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -U /tmp/arch_xperia-flashtool/xperia-flashtool*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -U xperia-flashtool*.pkg.tar.xz
 
 # special rule for SP Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
@@ -619,6 +697,9 @@ cat > $RSUDOERS <<EOSUDOERS
 
 # SALT
 %wheel     ALL=(ALL) NOPASSWD: /home/$LOGINUSR/programs/SALT/salt
+
+# FWUL mode
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv /tmp/fwul-release /etc/fwul-release
 EOSUDOERS
 
 # set root password
@@ -638,6 +719,13 @@ chmod 755 /media
 
 # etc fix
 chown -R root.root /etc
+
+# set default user for lightdm
+test -d /var/lib/lightdm/.cache/lightdm-gtk-greeter || mkdir -p /var/lib/lightdm/.cache/lightdm-gtk-greeter/
+echo -e '[greeter]\nlast-user=android' > /var/lib/lightdm/.cache/lightdm-gtk-greeter/state && chmod 755 /var/lib/lightdm/.cache/lightdm-gtk-greeter/state
+
+# ensure hosts does not contain build stuff
+mv /etc/hosts.orig /etc/hosts
 
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
@@ -675,6 +763,8 @@ $RSUDOERS
 /usr/bin/fastboot
 /usr/bin/heimdall
 /usr/bin/yaourt
+/usr/bin/qphotorec
+/home/$LOGINUSR/Desktop/qphotorec.desktop
 /home/$LOGINUSR/.fwul/odin-logo.jpg
 /home/$LOGINUSR/.fwul/install_spflash.sh
 /home/$LOGINUSR/.fwul/install_sonyflash.sh
@@ -698,7 +788,11 @@ $RSUDOERS
 /home/$LOGINUSR/.config/xfce4/desktop/icons.screen0.rc
 /home/$LOGINUSR/.fwul/sshkeygen.sh
 /home/$LOGINUSR/.config/autostart/sshkeygen.desktop
-/home/$LOGINUSR/.fwul/$CURJAVA"
+/home/$LOGINUSR/.fwul/$CURJAVA
+/home/$LOGINUSR/.fwul/pkexecgui
+/home/$LOGINUSR/Desktop/tmate.desktop
+/home/$LOGINUSR/.fwul/tmate.sh
+/home/$LOGINUSR/.fwul/tmate-logo.png"
 
 # 32bit requirements (extend with 32bit ONLY.
 # If the test is the same for both arch use REQFILES instead)
@@ -742,11 +836,11 @@ expac -H M -s "%-30n %m" | sort -rhk 2 | head -n 40
 pacman --noconfirm -Rns expac
 
 # create a XDA copy template for the important FWUL package versions
-echo -ne '[*]Versions of the main FWUL components:\n[INDENT]Kernel -> [B]'version:$(pacman -Qi linux-rt-manjaro |grep Version| cut -d ":" -f 2)'[/B]\nADB and fastboot: '
+echo -ne '[*]Versions of the main FWUL components:\n[INDENT]Kernel -> [B]'version:$(pacman -Qi linux-rt-lts-manjaro |grep Version| cut -d ":" -f 2)'[/B]\nADB and fastboot: '
 pacman -Q android-tools | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 echo -e 'simple-adb GUI -> [B]version: XXXXXXXXXXXXX[/B]'
-echo -e 'SALT -> [B]version: '$(egrep -o 'VERSION=.*' /home/$LOGINUSR/programs/SALT/salt.vars | cut -d '"' -f2) 
-CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat"
+echo -e 'SALT -> [B]version: '$(egrep -o 'VDIG=.*' /home/$LOGINUSR/programs/SALT/salt.vars | cut -d '"' -f2)'[/B]'
+CHLOG="heimdall-git xfwm4 lightdm xorg-server virtualbox-guest-utils firefox hexchat testdisk-wip tmate"
 for i in $CHLOG;do
         pacman -Q $i | sed 's/ / -> [B]version: /g;s/$/[\/B]/g'
 done

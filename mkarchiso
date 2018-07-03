@@ -20,8 +20,9 @@ sfs_mode="sfs"
 sfs_comp="xz"
 gpg_key=
 
-PACMAN_PACKAGES="acl archlinux-keyring manjaro-keyring attr bzip2 curl expat glibc gpgme libarchive libassuan libgpg-error libnghttp2 libssh2 lzo openssl pacman pacman-mirrors xz zlib krb5 e2fsprogs keyutils libidn gcc-libs lz4 libpsl icu filesystem"
-EXTRA_PACKAGES="coreutils bash grep gawk file tar sed manjaro-release syslinux pcmciautils systemd-sysvcompat"
+PACMAN_PACKAGES="pacman archlinux-keyring manjaro-keyring"
+BASE_PACKAGES="acl attr bzip2 curl expat glibc gpgme libarchive libassuan libgpg-error libnghttp2 libssh2 lzo openssl pacman-mirrors xz zlib krb5 e2fsprogs keyutils libidn gcc-libs lz4 libpsl icu filesystem"
+EXTRA_PACKAGES="coreutils bash grep gawk file tar sed manjaro-release syslinux systemd-sysvcompat"
 
 # Show an INFO message
 # $1: message string
@@ -47,6 +48,10 @@ _msg_error() {
 _chroot_init() {
     mkdir -p ${work_dir}/airootfs
     _pacman "${PACMAN_PACKAGES}"
+    run_cmd="pacman-key --init" _chroot_run
+    run_cmd="pacman-key --populate archlinux manjaro" _chroot_run
+    run_cmd="pacman -Syy" _chroot_run
+    _pacman "${BASE_PACKAGES}"
     _pacman "${EXTRA_PACKAGES}"
 }
 
@@ -158,9 +163,9 @@ _pacman ()
     _msg_info "Installing packages to '${work_dir}/airootfs/'..."
 
     if [[ "${quiet}" = "y" ]]; then
-        pacstrap -C "${pacman_conf}" -c -d -G -M "${work_dir}/airootfs" $* &> /dev/null
+        pacstrap -C "${pacman_conf}" -d -G -M "${work_dir}/airootfs" $* &> /dev/null
     else
-        pacstrap -C "${pacman_conf}" -c -d -G -M "${work_dir}/airootfs" $*
+        pacstrap -C "${pacman_conf}" -d -G -M "${work_dir}/airootfs" $*
     fi
 
     _msg_info "Packages installed successfully!"
