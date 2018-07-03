@@ -347,7 +347,7 @@ Terminal=false
 Name=SALT
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=lxsu /home/$LOGINUSR/programs/SALT/salt
+Exec=pkexec /home/$LOGINUSR/programs/SALT/salt
 EOFDSK
 fi
 if [ ! -f /home/$LOGINUSR/Desktop/LG/SALT_fb.desktop ];then
@@ -359,7 +359,7 @@ Terminal=true
 Name=SALT (debug)
 Icon=/home/$LOGINUSR/programs/SALT/icons/salt_icon.png
 Comment=SALT - [S]teadfasterX [A]ll-in-one [L]G [T]ool
-Exec=lxsu /home/$LOGINUSR/programs/SALT/salt
+Exec=pkexec /home/$LOGINUSR/programs/SALT/salt
 EOFDSKFB
 fi
 chmod +x /home/$LOGINUSR/Desktop/LG/*.desktop
