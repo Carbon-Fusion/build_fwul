@@ -290,9 +290,9 @@ cat >/home/$LOGINUSR/Desktop/install-TV.desktop <<EOODIN
 Version=1.0
 Type=Application
 Comment=Teamviewer installer
-Terminal=false
+Terminal=true
 Name=TeamViewer Installer
-Exec=/home/$LOGINUSR/.fwul/install_tv.sh
+Exec=pkexec /home/$LOGINUSR/.fwul/install_tv.sh
 Icon=aptoncd
 EOODIN
 chmod +x /home/$LOGINUSR/Desktop/install-TV.desktop
