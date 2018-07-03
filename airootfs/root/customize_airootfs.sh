@@ -409,6 +409,20 @@ Exec=xfce4-terminal --working-directory=/home/$LOGINUSR/programs/lglafsploit
 Icon=terminal
 EOLAFNG
 
+# tmate
+echo -e "\ntmate shortcut:"
+cat >/home/$LOGINUSR/Desktop/tmate.desktop <<EOTMATE
+[Desktop Entry]
+Name=tmate - Simple Remote Control
+GenericName=tmate
+Comment=Terminal sharing with tmate
+Exec=xfce4-terminal --maximize -e /home/$LOGINUSR/.fwul/tmate.sh
+Icon=/home/$LOGINUSR/.fwul/tmate-logo.png
+Terminal=false
+Type=Application
+EOTMATE
+chmod +x /home/$LOGINUSR/.fwul/tmate.sh
+
 # install display manager
 echo -e "\nDM:"
 #yaourt -Q webkitgtk2 || su -c - $LOGINUSR "yaourt -S --noconfirm webkitgtk2"
@@ -770,7 +784,10 @@ $RSUDOERS
 /home/$LOGINUSR/.fwul/sshkeygen.sh
 /home/$LOGINUSR/.config/autostart/sshkeygen.desktop
 /home/$LOGINUSR/.fwul/$CURJAVA
-/home/$LOGINUSR/.fwul/pkexecgui"
+/home/$LOGINUSR/.fwul/pkexecgui
+/home/$LOGINUSR/Desktop/tmate.desktop
+/home/$LOGINUSR/.fwul/tmate.sh
+/home/$LOGINUSR/.fwul/tmate-logo.png"
 
 # 32bit requirements (extend with 32bit ONLY.
 # If the test is the same for both arch use REQFILES instead)
