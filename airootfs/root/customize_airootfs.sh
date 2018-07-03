@@ -382,7 +382,7 @@ Icon=terminal
 EOSFT
 chmod +x /home/$LOGINUSR/Desktop/LG/open-lglafshell.desktop
 
-# LGLAF NG 
+# LGLAF (steadfasterX) 
 echo -e "\nLG LAF NG shortcut:"
 cat >/home/$LOGINUSR/Desktop/LG/open-lglafng.desktop <<EOLAFNG
 [Desktop Entry]
@@ -390,7 +390,7 @@ Version=1.0
 Type=Application
 Comment=LG LAF with steadfasterX patches
 Terminal=false
-Name=LG LAF - NG
+Name=LG LAF (steadfasterX)
 Exec=lxsu xfce4-terminal --working-directory=/root/programs/lglafng
 Icon=terminal
 EOLAFNG
