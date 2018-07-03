@@ -769,7 +769,8 @@ $RSUDOERS
 /home/$LOGINUSR/.config/xfce4/desktop/icons.screen0.rc
 /home/$LOGINUSR/.fwul/sshkeygen.sh
 /home/$LOGINUSR/.config/autostart/sshkeygen.desktop
-/home/$LOGINUSR/.fwul/$CURJAVA"
+/home/$LOGINUSR/.fwul/$CURJAVA
+/home/$LOGINUSR/.fwul/pkexecgui"
 
 # 32bit requirements (extend with 32bit ONLY.
 # If the test is the same for both arch use REQFILES instead)

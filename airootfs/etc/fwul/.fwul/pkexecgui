@@ -1,0 +1,14 @@
+#!/bin/bash
+#########################################################
+# simple pkexec wrapper for GUI applications
+#########################################################
+
+UCMD="$1"
+ARGS="$2"
+
+if [ ! -f "$UCMD" ];then
+	echo ERROR missing arg for pkexec
+else
+	pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $UCMD $ARGS
+fi
+
