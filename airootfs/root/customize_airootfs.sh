@@ -55,6 +55,7 @@ cp -avT /etc/fwul/ /home/$LOGINUSR/
 chmod 700 /home/$LOGINUSR
 
 # prepare hosts
+cp /etc/hosts /etc/hosts.orig
 echo "10.0.228.17     leech.binbash.it" >> /etc/hosts
 
 # add user to required groups
@@ -721,6 +722,9 @@ chown -R root.root /etc
 # set default user for lightdm
 test -d /var/lib/lightdm/.cache/lightdm-gtk-greeter || mkdir -p /var/lib/lightdm/.cache/lightdm-gtk-greeter/
 echo -e '[greeter]\nlast-user=android' > /var/lib/lightdm/.cache/lightdm-gtk-greeter/state && chmod 755 /var/lib/lightdm/.cache/lightdm-gtk-greeter/state
+
+# ensure hosts does not contain build stuff
+mv /etc/hosts.orig /etc/hosts
 
 ########################################################################################
 # TEST AREA - TEST AREA - TEST AREA 
