@@ -25,3 +25,8 @@ echo "LANG=$DMLANG" > /tmp/locale.conf
 echo "LANGUAGE=en_US.utf8" >> /tmp/locale.conf
 sudo mv /tmp/locale.conf /etc/locale.conf
 
+# detect FWUL mode
+cp /etc/fwul-release /tmp
+hostnamectl status |grep -v ID |tr -d " " | tr ":" "=" |sed 's/^/fwul_/g' >> /tmp/fwul-release
+grep fwulversion /tmp/fwul-release >> /dev/null && sudo mv /tmp/fwul-release /etc/fwul-release
+

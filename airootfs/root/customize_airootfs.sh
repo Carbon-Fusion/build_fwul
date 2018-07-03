@@ -696,6 +696,9 @@ cat > $RSUDOERS <<EOSUDOERS
 
 # SALT
 %wheel     ALL=(ALL) NOPASSWD: /home/$LOGINUSR/programs/SALT/salt
+
+# FWUL mode
+%wheel     ALL=(ALL) NOPASSWD: /bin/mv /tmp/fwul-release /etc/fwul-release
 EOSUDOERS
 
 # set root password
