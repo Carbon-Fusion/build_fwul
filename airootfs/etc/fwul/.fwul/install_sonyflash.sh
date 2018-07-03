@@ -10,7 +10,7 @@ if [ $? -ne 0 ];then
     cd /tmp/
     wget http://leech.binbash.it:8008/misc/xperia-flashtool-interim.pkg.tar.xz -O xperia-flashtool-interim.pkg.tar.xz
     pacman -Q libselinux || sudo $HOME/.fwul/install_package.sh yaourt libselinux
-    sudo pacman -S --noconfirm xperia-flashtool-interim.pkg.tar.xz 
+    sudo pacman --noconfirm -U xperia-flashtool-interim.pkg.tar.xz 
     rm xperia-flashtool-interim.pkg.tar.xz
     # upstream outdated! issue #70 workaround
 fi

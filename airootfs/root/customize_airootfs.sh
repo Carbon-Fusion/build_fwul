@@ -684,6 +684,7 @@ cat > $RSUDOERS <<EOSUDOERS
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S xperia-flashtool
 %wheel     ALL=(ALL) NOPASSWD: /bin/cp x10flasher.jar /usr/lib/xperia-flashtool/
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -U /tmp/arch_xperia-flashtool/xperia-flashtool*.pkg.tar.xz
+%wheel     ALL=(ALL) NOPASSWD: /usr/bin/pacman --noconfirm -U xperia-flashtool*.pkg.tar.xz
 
 # special rule for SP Flashtool
 %wheel     ALL=(ALL) NOPASSWD: /usr/bin/yaourt --noconfirm -S spflashtool-bin
