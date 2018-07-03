@@ -37,6 +37,7 @@ python2-crypto
 python2-pyusb
 python-crypto
 python-pyusb
+qiv
 refind-efi
 sudo
 testdisk
