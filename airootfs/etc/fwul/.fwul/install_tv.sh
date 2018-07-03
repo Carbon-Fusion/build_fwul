@@ -6,6 +6,7 @@ source /etc/fwul-release
 
 PKEXEC_USR=$(id -un $PKEXEC_UID)
 
+pacman -Sy
 [ -d /tmp/tv ] && rm -rf /tmp/tv
 mkdir /tmp/tv && cd /tmp/tv \
   && wget http://leech.binbash.it:8008/FWUL/.repo/tv_fwul-v${fwulversion}.tar -O tv_fwul-v${fwulversion}.tar \
