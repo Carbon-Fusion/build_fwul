@@ -151,7 +151,7 @@ sed -i 's/Icon=.*/Icon=gnome-software/g' /home/$LOGINUSR/Desktop/pamac-manager.d
 
 # install udev-rules
 [ ! -d /home/$LOGINUSR/.android ] && mkdir /home/$LOGINUSR/.android
-[ ! -f /home/$LOGINUSR/.android/adb_usb.ini ] && wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/adb_usb.ini -O /home/$LOGINUSR/.android/adb_usb.ini
+[ ! -f /home/$LOGINUSR/.android/adb_usb.ini ] && wget https://github.com/M0Rf30/android-udev-rules/blob/704f83d8528a56c969dab8a9b63bf83279d4c71b/adb_usb.ini -O /home/$LOGINUSR/.android/adb_usb.ini
 
 # always update the udev rules to be top current
 wget https://raw.githubusercontent.com/M0Rf30/android-udev-rules/master/51-android.rules -O /etc/udev/rules.d/51-android.rules
