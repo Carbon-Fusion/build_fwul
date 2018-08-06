@@ -1,3 +1,21 @@
+
+# !! MOVED !!
+
+* Main repo: https://code.binbash.it:8443/Carbon-Fusion/build_fwul
+* Mirror: https://gitlab.com/steadfasterX/build_fwul
+
+# !! MOVED !!
+
+.
+
+.
+
+.
+
+.
+
+.
+
 ## Build environment/scripts for FWUL 
 ### ([F]orget [W]indows [U]se [L]inux)
 
