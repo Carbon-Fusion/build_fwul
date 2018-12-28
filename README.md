@@ -1,7 +1,7 @@
 
 # !! MOVED !!
 
-* Main repo: https://code.binbash.it:8443/Carbon-Fusion/build_fwul
+* Main repo: https://code.binbash.it:8443/FWUL/build_fwul
 * Mirror: https://gitlab.com/steadfasterX/build_fwul
 
 # !! MOVED !!
